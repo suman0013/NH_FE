@@ -9,6 +9,17 @@ Navigation layout: Horizontal top navigation bar instead of left sidebar for des
 
 ## Recent Changes
 
+### November 2025 - Mobile Responsiveness & Form Fixes COMPLETED ✅
+- **Mobile Namahatta Form**: Fixed dialog width to be responsive (`max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-4xl`)
+- **Step Indicator**: Made responsive - hidden text labels on mobile, showing only step numbers, with shorter connector lines
+- **Form Spacing**: Adjusted padding for mobile devices (p-4 sm:p-6)
+- **Result**: Namahatta create/edit form now works smoothly on mobile and tablet devices
+
+### November 2025 - React Child Rendering Error COMPLETED ✅
+- **Issue**: Officer selection dropdowns (secretary, president, accountant) were rendering full devotee objects as React children
+- **Fix**: Added type checking to extract string properties from devotee objects when available
+- **Result**: Namahatta edit form no longer throws React rendering errors
+
 ### November 2025 - Schema Migration "namhatta" to "namahatta" COMPLETED ✅
 - **Codebase Rename**: Renamed all instances of "namhatta" (one 'a') to "namahatta" (two 'a's) throughout TypeScript/JavaScript files
 - **Component Files**: Renamed NamahattaForm.tsx, NamahattaUpdateForm.tsx, ChangeNamahattaModal.tsx, NamahattaApprovalCard.tsx

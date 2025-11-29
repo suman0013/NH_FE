@@ -688,17 +688,17 @@ export default function NamahattaForm({
 
   // Render step indicator
   const renderStepIndicator = () => (
-    <div className="flex items-center justify-between mb-6">
+    <div className="flex items-center justify-between mb-4 sm:mb-6 gap-1 sm:gap-2 overflow-x-auto pb-2">
       {steps.map((step, index) => (
-        <div key={index} className="flex items-center">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+        <div key={index} className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+          <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium flex-shrink-0 ${
             index === currentStep ? 'bg-blue-500 text-white' : 
             index < currentStep ? 'bg-green-500 text-white' : 
             'bg-gray-200 text-gray-600'
           }`}>
             {index + 1}
           </div>
-          <span className={`ml-2 text-sm ${
+          <span className={`text-xs sm:text-sm whitespace-nowrap hidden sm:inline ${
             index === currentStep ? 'text-blue-600 font-medium' : 
             index < currentStep ? 'text-green-600' : 
             'text-gray-500'
@@ -706,7 +706,7 @@ export default function NamahattaForm({
             {step}
           </span>
           {index < steps.length - 1 && (
-            <div className={`w-8 h-0.5 mx-4 ${
+            <div className={`w-4 sm:w-8 h-0.5 flex-shrink-0 ${
               index < currentStep ? 'bg-green-500' : 'bg-gray-200'
             }`} />
           )}
@@ -819,7 +819,7 @@ export default function NamahattaForm({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-full max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
         <DialogHeader>
           <DialogTitle>{isEditing ? "Edit Namahatta" : "Add New Namahatta"}</DialogTitle>
           <DialogDescription>
