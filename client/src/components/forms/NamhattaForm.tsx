@@ -429,6 +429,9 @@ export default function NamhattaForm({
       queryClient.invalidateQueries({ queryKey: ["/api/devotees"] });
     }
     
+    // Invalidate available officers list so dropdown updates with newly created devotee
+    queryClient.invalidateQueries({ queryKey: ["/api/devotees/available-officers"] });
+    
     // Auto-assign the newly created devotee to the appropriate role
     const fieldMap: Record<typeof devoteeRole, keyof FormData> = {
       'MALA_SENAPOTI': 'malaSenapotiId',
