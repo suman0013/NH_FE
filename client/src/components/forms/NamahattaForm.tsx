@@ -480,9 +480,9 @@ export default function NamahattaForm({
         // This ensures that currently assigned officers appear in the dropdown even if they're not "available"
         if (isEditing && namahatta) {
           const currentOfficers = [
-            namahatta.secretaryId && { field: 'secretaryId', devotee: { id: namahatta.secretaryId, legalName: namahatta.secretary || 'Unknown', initiatedName: '' }},
-            namahatta.presidentId && { field: 'presidentId', devotee: { id: namahatta.presidentId, legalName: namahatta.president || 'Unknown', initiatedName: '' }},
-            namahatta.accountantId && { field: 'accountantId', devotee: { id: namahatta.accountantId, legalName: namahatta.accountant || 'Unknown', initiatedName: '' }}
+            namahatta.secretaryId && { field: 'secretaryId', devotee: { id: namahatta.secretaryId, legalName: typeof (namahatta.secretary as any)?.legalName === 'string' ? (namahatta.secretary as any).legalName : 'Unknown', initiatedName: typeof (namahatta.secretary as any)?.initiatedName === 'string' ? (namahatta.secretary as any).initiatedName : '' }},
+            namahatta.presidentId && { field: 'presidentId', devotee: { id: namahatta.presidentId, legalName: typeof (namahatta.president as any)?.legalName === 'string' ? (namahatta.president as any).legalName : 'Unknown', initiatedName: typeof (namahatta.president as any)?.initiatedName === 'string' ? (namahatta.president as any).initiatedName : '' }},
+            namahatta.accountantId && { field: 'accountantId', devotee: { id: namahatta.accountantId, legalName: typeof (namahatta.accountant as any)?.legalName === 'string' ? (namahatta.accountant as any).legalName : 'Unknown', initiatedName: typeof (namahatta.accountant as any)?.initiatedName === 'string' ? (namahatta.accountant as any).initiatedName : '' }}
           ].filter(Boolean);
           
           // Add missing current officers to the list
