@@ -176,9 +176,51 @@ export default function DevoteeDetail() {
       }
       return "Unknown";
     }
-    // For provided status IDs, always lookup from statuses list
+    
+    // Try lookup from statuses list
     const status = statuses?.find(s => s.id === statusId);
-    return status?.name || "Unknown";
+    if (status?.name) {
+      return status.name;
+    }
+    
+    // Fallback: if this is the devotee's current status ID and we have the name, use it
+    if (statusId === devotee?.devotionalStatusId && devotee?.devotionalStatusName) {
+      return devotee.devotionalStatusName;
+    }
+    
+    return "Unknown";
+  };
+
+  // Helper to get status name from history entry (handles both ID and name storage)
+  const getHistoryStatusName = (newStatusValue: string) => {
+    if (!newStatusValue) return "Unknown";
+    
+    // Try to parse as number (if stored as ID)
+    const statusId = parseInt(newStatusValue, 10);
+    if (!isNaN(statusId)) {
+      const status = statuses?.find(s => s.id === statusId);
+      if (status?.name) {
+        return status.name;
+      }
+      // If ID matches current devotee's status, use that name
+      if (statusId === devotee?.devotionalStatusId && devotee?.devotionalStatusName) {
+        return devotee.devotionalStatusName;
+      }
+    }
+    
+    // If not a valid number, it might be stored as the status name directly
+    // Check if it matches any known status name
+    const statusByName = statuses?.find(s => s.name === newStatusValue);
+    if (statusByName) {
+      return statusByName.name;
+    }
+    
+    // If it looks like a status name (non-numeric string), return it directly
+    if (isNaN(statusId) && newStatusValue.length > 0) {
+      return newStatusValue;
+    }
+    
+    return "Unknown";
   };
 
   const getStatusColor = (statusId?: number) => {
@@ -1045,7 +1087,7 @@ export default function DevoteeDetail() {
                           <div className="w-3 h-3 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full mt-1 shadow-sm" />
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
-                              Changed to {getStatusName(parseInt(entry.newStatus))}
+                              Changed to {getHistoryStatusName(entry.newStatus)}
                             </p>
                             <div className="flex items-center text-xs text-emerald-600 dark:text-emerald-400 mb-1">
                               <Calendar className="h-3 w-3 mr-1" />
