@@ -5,7 +5,8 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ChevronDown, ChevronRight, MapPin, Users, Home, BarChart3, RefreshCw, Loader2, TrendingUp, Building2, Globe } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { ChevronDown, ChevronRight, MapPin, Users, Home, BarChart3, RefreshCw, Loader2, TrendingUp, Building2, Globe, X } from "lucide-react";
 
 // Helper function to get card background color based on counts
 // Standardized coloring:
@@ -63,11 +64,20 @@ interface VillageData {
   devoteeCount: number;
 }
 
+interface SelectedArea {
+  name: string;
+  state?: string;
+  district?: string;
+  subDistrict?: string;
+  type: 'state' | 'district' | 'sub-district' | 'village';
+}
+
 export default function Reports() {
   const { user } = useAuth();
   const [openStates, setOpenStates] = useState<Set<string>>(new Set());
   const [openDistricts, setOpenDistricts] = useState<Set<string>>(new Set());
   const [openSubDistricts, setOpenSubDistricts] = useState<Set<string>>(new Set());
+  const [selectedArea, setSelectedArea] = useState<SelectedArea | null>(null);
 
   // Query to fetch all states
   const { data: statesData, isLoading: statesLoading, error: statesError, refetch: refetchStates, isFetching: statesFetching } = useQuery<StateData[]>({
@@ -200,8 +210,57 @@ export default function Reports() {
             </div>
           )}
         </div>
+        <NamahattasModal selectedArea={selectedArea} onClose={() => setSelectedArea(null)} />
       </div>
     </div>
+  );
+}
+
+function NamahattasModal({ selectedArea, onClose }: { selectedArea: SelectedArea | null; onClose: () => void }) {
+  const { data: namahattas, isLoading } = useQuery({
+    queryKey: ['/api/namahattas', selectedArea?.state, selectedArea?.district, selectedArea?.subDistrict],
+    enabled: !!selectedArea,
+  });
+
+  const filteredNamahattas = namahattas?.filter((n: any) => {
+    if (selectedArea?.type === 'state') return n.address?.stateCode === selectedArea.state;
+    if (selectedArea?.type === 'district') return n.address?.district === selectedArea.district;
+    if (selectedArea?.type === 'sub-district') return n.address?.subDistrict === selectedArea.subDistrict;
+    if (selectedArea?.type === 'village') return n.address?.village === selectedArea.name;
+    return false;
+  }) || [];
+
+  if (!selectedArea) return null;
+
+  return (
+    <Dialog open={!!selectedArea} onOpenChange={onClose}>
+      <DialogContent className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Namahattas in {selectedArea.name}</DialogTitle>
+          <DialogDescription>
+            Found {filteredNamahattas.length} namahatta{filteredNamahattas.length !== 1 ? 's' : ''}
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-2">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-4 w-4 animate-spin" />
+            </div>
+          ) : filteredNamahattas.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              No namahattas found in this area
+            </div>
+          ) : (
+            filteredNamahattas.map((namahatta: any) => (
+              <div key={namahatta.id} className="p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900">
+                <div className="font-semibold">{namahatta.name}</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Code: {namahatta.code}</div>
+              </div>
+            ))
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -246,7 +305,7 @@ function StateCard({
               <span className="text-slate-600 dark:text-purple-300 text-base">({state.country})</span>
             </div>
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
+              <div className="flex items-center gap-1 text-green-600 dark:text-green-400 cursor-pointer hover:text-green-700 dark:hover:text-green-300" onClick={() => setSelectedArea({ name: state.name, state: state.name, type: 'state' })} data-testid="button-state-namahattas">
                 <Building2 className="h-3 w-3" />
                 <span className="text-base font-medium">{state.namahattaCount}</span>
               </div>
@@ -324,7 +383,7 @@ function DistrictCard({
               <span className="text-slate-800 dark:text-white text-base font-medium">{district.name}</span>
             </div>
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
+              <div className="flex items-center gap-1 text-green-600 dark:text-green-400 cursor-pointer hover:text-green-700 dark:hover:text-green-300" onClick={() => setSelectedArea({ name: district.name, state: district.state, district: district.name, type: 'district' })} data-testid="button-district-namahattas">
                 <Building2 className="h-3 w-3" />
                 <span className="text-sm">{district.namahattaCount}</span>
               </div>
@@ -399,7 +458,7 @@ function SubDistrictCard({
               <span className="text-slate-800 dark:text-white text-base">{subDistrict.name}</span>
             </div>
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
+              <div className="flex items-center gap-1 text-green-600 dark:text-green-400 cursor-pointer hover:text-green-700 dark:hover:text-green-300" onClick={() => setSelectedArea({ name: subDistrict.name, state: districtState, district: subDistrict.district, subDistrict: subDistrict.name, type: 'sub-district' })} data-testid="button-subdistrict-namahattas">
                 <Home className="h-3 w-3" />
                 <span className="text-sm">{subDistrict.namahattaCount}</span>
               </div>
@@ -432,7 +491,7 @@ function SubDistrictCard({
                       <span className="text-slate-700 dark:text-white text-sm font-medium truncate" title={village.name}>{village.name}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
+                      <div className="flex items-center gap-1 text-green-600 dark:text-green-400 cursor-pointer hover:text-green-700 dark:hover:text-green-300" onClick={() => setSelectedArea({ name: village.name, state: districtState, district: village.subDistrict, subDistrict: village.subDistrict, type: 'village' })} data-testid="button-village-namahattas">
                         <Building2 className="h-2 w-2" />
                         <span className="text-sm">{village.namahattaCount}</span>
                       </div>
