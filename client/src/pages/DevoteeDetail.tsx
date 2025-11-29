@@ -177,14 +177,14 @@ export default function DevoteeDetail() {
       return "Unknown";
     }
     
-    // Try lookup from statuses list
-    const status = statuses?.find(s => s.id === statusId);
+    // Try lookup from statuses list (convert to number for comparison since DB returns strings)
+    const status = statuses?.find(s => Number(s.id) === statusId);
     if (status?.name) {
       return status.name;
     }
     
     // Fallback: if this is the devotee's current status ID and we have the name, use it
-    if (statusId === devotee?.devotionalStatusId && devotee?.devotionalStatusName) {
+    if (statusId === Number(devotee?.devotionalStatusId) && devotee?.devotionalStatusName) {
       return devotee.devotionalStatusName;
     }
     
@@ -198,12 +198,13 @@ export default function DevoteeDetail() {
     // Try to parse as number (if stored as ID)
     const statusId = parseInt(newStatusValue, 10);
     if (!isNaN(statusId)) {
-      const status = statuses?.find(s => s.id === statusId);
+      // Convert s.id to number for comparison since DB returns strings
+      const status = statuses?.find(s => Number(s.id) === statusId);
       if (status?.name) {
         return status.name;
       }
       // If ID matches current devotee's status, use that name
-      if (statusId === devotee?.devotionalStatusId && devotee?.devotionalStatusName) {
+      if (statusId === Number(devotee?.devotionalStatusId) && devotee?.devotionalStatusName) {
         return devotee.devotionalStatusName;
       }
     }
