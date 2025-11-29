@@ -11,7 +11,7 @@ import { getQueryFn } from "@/lib/queryClient";
 import { Map as MapIcon, ZoomIn, ZoomOut, RotateCcw, Globe, MapPin, ArrowRight, X } from "lucide-react";
 import { Link } from "wouter";
 import L from "leaflet";
-import namhattaLogo from "@assets/namhatta_logo_1757690747029.png";
+import namahattaLogo from "@assets/namhatta_logo_1757690747029.png";
 
 // Geographic boundaries for different zoom levels
 const ZOOM_LEVELS = {
@@ -33,7 +33,7 @@ interface MapData {
 export default function Map() {
   const [currentLevel, setCurrentLevel] = useState<MapLevel>('COUNTRY');
   const [zoomLevel, setZoomLevel] = useState<number>(3);
-  const [showNamhattaList, setShowNamhattaList] = useState(false);
+  const [showNamahattaList, setShowNamahattaList] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<MapData | null>(null);
   const [panelPosition, setPanelPosition] = useState<{ x: number; y: number } | null>(null);
   const mapRef = useRef<L.Map | null>(null);
@@ -88,19 +88,19 @@ export default function Map() {
     staleTime: 5 * 60 * 1000,
   });
 
-  // Query for namhattas in selected location
-  const { data: locationNamhattas, isLoading: namhattasLoading } = useQuery({
-    queryKey: ["/api/namhattas", selectedLocation?.level, selectedLocation?.name],
+  // Query for namahattas in selected location
+  const { data: locationNamahattas, isLoading: namahattasLoading } = useQuery({
+    queryKey: ["/api/namahattas", selectedLocation?.level, selectedLocation?.name],
     queryFn: async () => {
       if (!selectedLocation) return { data: [], total: 0 };
       const queryParams = buildLocationQuery(selectedLocation);
-      const response = await fetch(`/api/namhattas${queryParams}`, {
+      const response = await fetch(`/api/namahattas${queryParams}`, {
         credentials: 'include', // Include cookies for authentication
         headers: {
           'Content-Type': 'application/json',
         },
       });
-      if (!response.ok) throw new Error('Failed to fetch namhattas');
+      if (!response.ok) throw new Error('Failed to fetch namahattas');
       return response.json();
     },
     enabled: !!selectedLocation,
@@ -456,14 +456,14 @@ export default function Map() {
         
         const [lng, lat] = data.coordinates;
         
-        console.log(`Adding marker for ${data.name} at [${lat}, ${lng}] with ${data.count} namhattas`);
+        console.log(`Adding marker for ${data.name} at [${lat}, ${lng}] with ${data.count} namahattas`);
         
         // Create a combined marker with visible count
         const markerSize = Math.max(40, Math.sqrt(data.count) * 15);
         const combinedIcon = L.divIcon({
           html: `
             <div style="
-              background-image: url('${namhattaLogo}');
+              background-image: url('${namahattaLogo}');
               background-size: cover;
               background-position: center;
               background-repeat: no-repeat;
@@ -499,7 +499,7 @@ export default function Map() {
               <div style="font-size: ${Math.max(10, markerSize * 0.25)}px; opacity: 0.9; position: relative; z-index: 2; color: white;">${data.name.length > 8 ? data.name.substring(0, 8) + '...' : data.name}</div>
             </div>
           `,
-          className: 'namhatta-marker',
+          className: 'namahatta-marker',
           iconSize: [markerSize, markerSize],
           iconAnchor: [markerSize / 2, markerSize / 2]
         });
@@ -511,14 +511,14 @@ export default function Map() {
           <div style="padding: 12px; min-width: 200px;">
             <h3 style="font-size: 18px; font-weight: 600; margin: 0 0 8px 0; color: #1f2937;">${data.name}</h3>
             <p style="margin: 4px 0; color: #6b7280; font-size: 14px;">
-              <strong style="color: #374151;">Namhattas:</strong> 
+              <strong style="color: #374151;">Namahattas:</strong> 
               <span style="font-weight: 600; color: #059669;">${data.count}</span>
             </p>
             <p style="margin: 4px 0 0 0; color: #9ca3af; font-size: 12px;">
               Level: ${currentLevel.replace('_', ' ')}
             </p>
             <p style="margin: 8px 0 0 0; color: #6366f1; font-size: 12px; cursor: pointer;">
-              Click to view namhattas →
+              Click to view namahattas →
             </p>
           </div>
         `);
@@ -548,8 +548,8 @@ export default function Map() {
   const handleMarkerClick = (data: MapData) => {
     console.log('Marker clicked:', data.name, 'Level:', data.level, 'Count:', data.count);
     
-    // Always show namhatta list when clicking on markers
-    console.log('Showing namhatta list for:', data.name);
+    // Always show namahatta list when clicking on markers
+    console.log('Showing namahatta list for:', data.name);
     setSelectedLocation(data);
     
     // Calculate panel position based on marker coordinates
@@ -585,13 +585,13 @@ export default function Map() {
       }
     }
     
-    setShowNamhattaList(true);
+    setShowNamahattaList(true);
   };
 
-  // Build query params for namhatta API based on location level
+  // Build query params for namahatta API based on location level
   const buildLocationQuery = (location: MapData) => {
     const params = new URLSearchParams();
-    params.append('size', '50'); // Get up to 50 namhattas
+    params.append('size', '50'); // Get up to 50 namahattas
     
     switch (location.level) {
       case 'COUNTRY':
@@ -624,7 +624,7 @@ export default function Map() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <MapIcon className="h-6 w-6 text-primary" />
-          <h1 className="text-3xl font-bold">Namhatta Distribution Map</h1>
+          <h1 className="text-3xl font-bold">Namahatta Distribution Map</h1>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={handleReset}>
@@ -645,8 +645,8 @@ export default function Map() {
             style={{ minHeight: '68vh' }}
           />
           
-          {/* Embedded Namhatta List Panel */}
-          {showNamhattaList && selectedLocation && panelPosition && (
+          {/* Embedded Namahatta List Panel */}
+          {showNamahattaList && selectedLocation && panelPosition && (
             <div 
               className="absolute w-80 max-h-[60vh] bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden z-[1000]"
               style={{
@@ -671,7 +671,7 @@ export default function Map() {
                     size="sm"
                     className="h-8 w-8 p-0"
                     onClick={() => {
-                      setShowNamhattaList(false);
+                      setShowNamahattaList(false);
                       setPanelPosition(null);
                     }}
                   >
@@ -681,40 +681,40 @@ export default function Map() {
               </div>
               
               <div className="overflow-y-auto max-h-[50vh] p-2">
-                {namhattasLoading ? (
+                {namahattasLoading ? (
                   <div className="space-y-2 p-2">
                     {[...Array(3)].map((_, i) => (
                       <Skeleton key={i} className="h-16 w-full" />
                     ))}
                   </div>
-                ) : locationNamhattas && (locationNamhattas as any).data.length > 0 ? (
+                ) : locationNamahattas && (locationNamahattas as any).data.length > 0 ? (
                   <div className="space-y-2">
-                    {(locationNamhattas as any).data.map((namhatta: any) => (
+                    {(locationNamahattas as any).data.map((namahatta: any) => (
                       <Link
-                        key={namhatta.id}
-                        href={`/namhattas/${namhatta.id}`}
-                        onClick={() => setShowNamhattaList(false)}
+                        key={namahatta.id}
+                        href={`/namahattas/${namahatta.id}`}
+                        onClick={() => setShowNamahattaList(false)}
                       >
                         <div className="p-3 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-all duration-200 cursor-pointer group border border-gray-100 dark:border-gray-600">
                           <div className="flex items-start justify-between gap-2">
                             <div className="flex-1 min-w-0">
                               <h4 className="font-medium text-gray-900 dark:text-white text-sm truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                                {namhatta.name}
+                                {namahatta.name}
                               </h4>
                               <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
                                 {[
-                                  namhatta.address?.village,
-                                  namhatta.address?.subDistrict,
-                                  namhatta.address?.district,
-                                  namhatta.address?.state
+                                  namahatta.address?.village,
+                                  namahatta.address?.subDistrict,
+                                  namahatta.address?.district,
+                                  namahatta.address?.state
                                 ].filter(Boolean).join(", ")}
                               </div>
-                              {namhatta.status && (
+                              {namahatta.status && (
                                 <Badge 
-                                  variant={namhatta.status === 'APPROVED' ? 'default' : 'secondary'}
+                                  variant={namahatta.status === 'APPROVED' ? 'default' : 'secondary'}
                                   className="mt-1 text-xs h-5"
                                 >
-                                  {namhatta.status}
+                                  {namahatta.status}
                                 </Badge>
                               )}
                             </div>
@@ -727,7 +727,7 @@ export default function Map() {
                 ) : (
                   <div className="text-center py-6 text-gray-500 dark:text-gray-400">
                     <MapPin className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                    <p className="text-sm">No namhattas found</p>
+                    <p className="text-sm">No namahattas found</p>
                   </div>
                 )}
               </div>
@@ -743,7 +743,7 @@ export default function Map() {
             <div className="flex items-center gap-2">
               <Globe className="h-5 w-5 text-blue-500" />
               <div>
-                <p className="text-sm text-muted-foreground">Total Namhattas</p>
+                <p className="text-sm text-muted-foreground">Total Namahattas</p>
                 <p className="text-2xl font-bold">{currentData.reduce((sum, d) => sum + d.count, 0)}</p>
               </div>
             </div>

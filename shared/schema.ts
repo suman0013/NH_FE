@@ -18,7 +18,7 @@ export const devotees = pgTable("devotees", {
   maritalStatus: text("marital_status"), // MARRIED, UNMARRIED, WIDOWED
   // Remove inline address JSON fields - use normalized address tables instead
   devotionalStatusId: integer("devotional_status_id"),
-  namhattaId: integer("namhatta_id"),
+  namahattaId: integer("namahatta_id"),
   harinamInitiationGurudevId: integer("harinam_initiation_gurudev_id"), // Reference to gurudevs table
   pancharatrikInitiationGurudevId: integer("pancharatrik_initiation_gurudev_id"), // Reference to gurudevs table
   initiatedName: text("initiated_name"),
@@ -43,8 +43,8 @@ export const devotees = pgTable("devotees", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Namhattas table
-export const namhattas = pgTable("namhattas", {
+// Namahattas table
+export const namahattas = pgTable("namahattas", {
   id: serial("id").primaryKey(),
   code: text("code").notNull().unique(),
   name: text("name").notNull(),
@@ -92,10 +92,10 @@ export const statusHistory = pgTable("status_history", {
   comment: text("comment"),
 });
 
-// Namhatta Updates table
-export const namhattaUpdates = pgTable("namhatta_updates", {
+// Namahatta Updates table
+export const namahattaUpdates = pgTable("namahatta_updates", {
   id: serial("id").primaryKey(),
-  namhattaId: integer("namhatta_id").notNull(),
+  namahattaId: integer("namahatta_id").notNull(),
   programType: text("program_type").notNull(),
   date: text("date").notNull(),
   attendance: integer("attendance").notNull(),
@@ -160,12 +160,12 @@ export const devoteeAddresses = pgTable("devotee_addresses", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Junction table for namhatta addresses with landmark
-export const namhattaAddresses = pgTable("namhatta_addresses", {
+// Junction table for namahatta addresses with landmark
+export const namahattaAddresses = pgTable("namahatta_addresses", {
   id: serial("id").primaryKey(),
-  namhattaId: integer("namhatta_id").notNull(),
+  namahattaId: integer("namahatta_id").notNull(),
   addressId: integer("address_id").notNull(),
-  landmark: text("landmark"), // Specific landmark for this namhatta at this address
+  landmark: text("landmark"), // Specific landmark for this namahatta at this address
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -260,14 +260,14 @@ export const insertDevoteeSchema = createInsertSchema(devotees).omit({
     const num = typeof val === 'string' ? parseInt(val, 10) : val;
     return isNaN(num) ? undefined : num;
   }),
-  namhattaId: z.union([z.string(), z.number()]).optional().transform((val) => {
+  namahattaId: z.union([z.string(), z.number()]).optional().transform((val) => {
     if (val === null || val === undefined || val === '') return undefined;
     const num = typeof val === 'string' ? parseInt(val, 10) : val;
     return isNaN(num) ? undefined : num;
   })
 });
 
-export const insertNamhattaSchema = createInsertSchema(namhattas).omit({
+export const insertNamahattaSchema = createInsertSchema(namahattas).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -327,7 +327,7 @@ export const insertShraddhakutirSchema = createInsertSchema(shraddhakutirs).omit
   createdAt: true,
 });
 
-export const insertNamhattaUpdateSchema = createInsertSchema(namhattaUpdates).omit({
+export const insertNamahattaUpdateSchema = createInsertSchema(namahattaUpdates).omit({
   id: true,
   createdAt: true,
 });
@@ -352,7 +352,7 @@ export const insertDevoteeAddressSchema = createInsertSchema(devoteeAddresses).o
   createdAt: true,
 });
 
-export const insertNamhattaAddressSchema = createInsertSchema(namhattaAddresses).omit({
+export const insertNamahattaAddressSchema = createInsertSchema(namahattaAddresses).omit({
   id: true,
   createdAt: true,
 });
@@ -409,14 +409,14 @@ export type Devotee = typeof devotees.$inferSelect & {
 };
 export type InsertDevotee = z.infer<typeof insertDevoteeSchema>;
 
-export type Namhatta = typeof namhattas.$inferSelect & {
+export type Namahatta = typeof namahattas.$inferSelect & {
   devoteeCount?: number;
   districtSupervisorName?: string;
   districtSupervisorId: number;
   registrationNo?: string;
   registrationDate?: string;
 };
-export type InsertNamhatta = z.infer<typeof insertNamhattaSchema>;
+export type InsertNamahatta = z.infer<typeof insertNamahattaSchema>;
 
 export type DevotionalStatus = typeof devotionalStatuses.$inferSelect;
 export type InsertDevotionalStatus = z.infer<typeof insertDevotionalStatusSchema>;
@@ -424,8 +424,8 @@ export type InsertDevotionalStatus = z.infer<typeof insertDevotionalStatusSchema
 export type Shraddhakutir = typeof shraddhakutirs.$inferSelect;
 export type InsertShraddhakutir = z.infer<typeof insertShraddhakutirSchema>;
 
-export type NamhattaUpdate = typeof namhattaUpdates.$inferSelect;
-export type InsertNamhattaUpdate = z.infer<typeof insertNamhattaUpdateSchema>;
+export type NamahattaUpdate = typeof namahattaUpdates.$inferSelect;
+export type InsertNamahattaUpdate = z.infer<typeof insertNamahattaUpdateSchema>;
 
 export type Gurudev = typeof gurudevs.$inferSelect;
 export type InsertGurudev = z.infer<typeof insertGurudevSchema>;
@@ -441,8 +441,8 @@ export type InsertAddress = z.infer<typeof insertAddressSchema>;
 export type DevoteeAddress = typeof devoteeAddresses.$inferSelect;
 export type InsertDevoteeAddress = z.infer<typeof insertDevoteeAddressSchema>;
 
-export type NamhattaAddress = typeof namhattaAddresses.$inferSelect;
-export type InsertNamhattaAddress = z.infer<typeof insertNamhattaAddressSchema>;
+export type NamahattaAddress = typeof namahattaAddresses.$inferSelect;
+export type InsertNamahattaAddress = z.infer<typeof insertNamahattaAddressSchema>;
 
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;

@@ -33,10 +33,10 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import NamhattaForm from "@/components/forms/NamhattaForm";
-import NamhattaUpdateForm from "@/components/forms/NamhattaUpdateForm";
+import NamahattaForm from "@/components/forms/NamahattaForm";
+import NamahattaUpdateForm from "@/components/forms/NamahattaUpdateForm";
 import EnhancedDevoteeForm from "@/components/forms/EnhancedDevoteeForm";
-import NamhattaUpdateCard from "@/components/NamhattaUpdateCard";
+import NamahattaUpdateCard from "@/components/NamahattaUpdateCard";
 import { 
   Home, 
   Users, 
@@ -62,7 +62,7 @@ import {
   Grid3X3,
   List
 } from "lucide-react";
-import type { Namhatta, Devotee } from "@/lib/types";
+import type { Namahatta, Devotee } from "@/lib/types";
 
 // Registration form schema
 const registrationSchema = z.object({
@@ -72,7 +72,7 @@ const registrationSchema = z.object({
 
 type RegistrationData = z.infer<typeof registrationSchema>;
 
-export default function NamhattaDetail() {
+export default function NamahattaDetail() {
   const { id } = useParams();
   const { toast } = useToast();
   const { user } = useAuth();
@@ -85,7 +85,7 @@ export default function NamhattaDetail() {
   const [rejectionReason, setRejectionReason] = useState("");
   const [registrationCheckError, setRegistrationCheckError] = useState<string>("");
   const [viewMode, setViewMode] = useState<'grid' | 'list'>(() => {
-    const saved = sessionStorage.getItem('namhatta-devotees-view-mode');
+    const saved = sessionStorage.getItem('namahatta-devotees-view-mode');
     return (saved as 'grid' | 'list') || 'grid';
   });
   
@@ -109,7 +109,7 @@ export default function NamhattaDetail() {
     }
     
     try {
-      const response = await fetch(`/api/namhattas/check-registration/${regNo}`);
+      const response = await fetch(`/api/namahattas/check-registration/${regNo}`);
       const { exists } = await response.json();
       
       if (exists) {
@@ -136,27 +136,27 @@ export default function NamhattaDetail() {
     }
   };
 
-  const { data: namhatta, isLoading } = useQuery({
-    queryKey: ["/api/namhattas", id],
-    queryFn: () => api.getNamhatta(parseInt(id!)),
+  const { data: namahatta, isLoading } = useQuery({
+    queryKey: ["/api/namahattas", id],
+    queryFn: () => api.getNamahatta(parseInt(id!)),
     enabled: !!id,
   });
 
   const { data: devotees } = useQuery({
-    queryKey: ["/api/namhattas", id, "devotees"],
-    queryFn: () => api.getNamhattaDevotees(parseInt(id!), 1, 10),
+    queryKey: ["/api/namahattas", id, "devotees"],
+    queryFn: () => api.getNamahattaDevotees(parseInt(id!), 1, 10),
     enabled: !!id,
   });
 
   const { data: updates } = useQuery({
-    queryKey: ["/api/namhattas", id, "updates"],
-    queryFn: () => api.getNamhattaUpdates(parseInt(id!)),
+    queryKey: ["/api/namahattas", id, "updates"],
+    queryFn: () => api.getNamahattaUpdates(parseInt(id!)),
     enabled: !!id,
   });
 
   const { data: statusCounts } = useQuery({
-    queryKey: ["/api/namhattas", id, "status-count"],
-    queryFn: () => api.getNamhattaDevoteeStatusCount(parseInt(id!)),
+    queryKey: ["/api/namahattas", id, "status-count"],
+    queryFn: () => api.getNamahattaDevoteeStatusCount(parseInt(id!)),
     enabled: !!id,
   });
 
@@ -168,7 +168,7 @@ export default function NamhattaDetail() {
   const approveMutation = useMutation({
     mutationFn: (data: RegistrationData) => apiRequest(
       "POST",
-      `/api/namhattas/${id}/approve`,
+      `/api/namahattas/${id}/approve`,
       {
         registrationNo: data.registrationNo,
         registrationDate: data.registrationDate,
@@ -176,11 +176,11 @@ export default function NamhattaDetail() {
     ),
     onSuccess: () => {
       toast({
-        title: "Namhatta Approved",
-        description: "Namhatta has been successfully approved with registration details.",
+        title: "Namahatta Approved",
+        description: "Namahatta has been successfully approved with registration details.",
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/namhattas", id] });
-      queryClient.invalidateQueries({ queryKey: ["/api/namhattas"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/namahattas", id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/namahattas"] });
       setShowApprovalDialog(false);
       form.reset();
       setRegistrationCheckError("");
@@ -188,50 +188,50 @@ export default function NamhattaDetail() {
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to approve namhatta. Please try again.",
+        description: "Failed to approve namahatta. Please try again.",
         variant: "destructive",
       });
     },
   });
 
   const rejectMutation = useMutation({
-    mutationFn: (reason: string) => apiRequest("POST", `/api/namhattas/${id}/reject`, { reason }),
+    mutationFn: (reason: string) => apiRequest("POST", `/api/namahattas/${id}/reject`, { reason }),
     onSuccess: () => {
       toast({
-        title: "Namhatta Rejected",
-        description: "Namhatta has been rejected.",
+        title: "Namahatta Rejected",
+        description: "Namahatta has been rejected.",
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/namhattas", id] });
-      queryClient.invalidateQueries({ queryKey: ["/api/namhattas"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/namahattas", id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/namahattas"] });
       setShowRejectionDialog(false);
       setRejectionReason("");
     },
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to reject namhatta. Please try again.",
+        description: "Failed to reject namahatta. Please try again.",
         variant: "destructive",
       });
     },
   });
 
   if (isLoading) {
-    return <NamhattaDetailSkeleton />;
+    return <NamahattaDetailSkeleton />;
   }
 
-  if (!namhatta) {
+  if (!namahatta) {
     return (
       <div className="p-6">
         <Card className="glass-card">
           <CardContent className="p-6 text-center">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-              Namhatta not found
+              Namahatta not found
             </h2>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
-              The requested Namhatta could not be found.
+              The requested Namahatta could not be found.
             </p>
-            <Link href="/namhattas">
-              <Button>Back to Namhattas</Button>
+            <Link href="/namahattas">
+              <Button>Back to Namahattas</Button>
             </Link>
           </CardContent>
         </Card>
@@ -263,23 +263,23 @@ export default function NamhattaDetail() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <Link href="/namhattas">
+          <Link href="/namahattas">
             <Button variant="outline" size="icon" className="glass">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{namhatta.name}</h1>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{namahatta.name}</h1>
             <div className="flex items-center space-x-4 mt-2">
-              {getStatusBadge(namhatta.status)}
-              {namhatta.address && (
+              {getStatusBadge(namahatta.status)}
+              {namahatta.address && (
                 <div className="flex items-center text-gray-600 dark:text-gray-400">
                   <MapPin className="mr-1 h-4 w-4" />
                   <span>
                     {[
-                      namhatta.address.village,
-                      namhatta.address.district,
-                      namhatta.address.state
+                      namahatta.address.village,
+                      namahatta.address.district,
+                      namahatta.address.state
                     ].filter(Boolean).join(", ")}
                   </span>
                 </div>
@@ -289,7 +289,7 @@ export default function NamhattaDetail() {
         </div>
         <div className="flex space-x-3">
           {/* Approval buttons - only show for ADMIN and OFFICE users */}
-          {namhatta.status === "PENDING_APPROVAL" && canApprove && (
+          {namahatta.status === "PENDING_APPROVAL" && canApprove && (
             <>
               <Button
                 onClick={() => setShowApprovalDialog(true)}
@@ -357,7 +357,7 @@ export default function NamhattaDetail() {
                   <div>
                     <p className="text-sm text-gray-600 dark:text-gray-400">Meeting Schedule</p>
                     <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                      {namhatta.meetingDay ? `${namhatta.meetingDay} ${namhatta.meetingTime || ''}` : "Not scheduled"}
+                      {namahatta.meetingDay ? `${namahatta.meetingDay} ${namahatta.meetingTime || ''}` : "Not scheduled"}
                     </p>
                   </div>
                 </div>
@@ -377,76 +377,76 @@ export default function NamhattaDetail() {
             </CardHeader>
             <CardContent className="pt-2">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                {(namhatta as any).malaSenapotiName && (
+                {(namahatta as any).malaSenapotiName && (
                   <div className="p-2 bg-gradient-to-br from-purple-50 to-indigo-100 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
                     <div className="flex items-center mb-1">
                       <Crown className="h-3 w-3 text-purple-600 dark:text-purple-400 mr-1" />
                       <p className="text-xs font-medium text-purple-600 dark:text-purple-400">Mala Senapoti</p>
                     </div>
-                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namhatta as any).malaSenapotiName}</p>
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namahatta as any).malaSenapotiName}</p>
                   </div>
                 )}
-                {(namhatta as any).mahaChakraSenapotiName && (
+                {(namahatta as any).mahaChakraSenapotiName && (
                   <div className="p-2 bg-gradient-to-br from-blue-50 to-cyan-100 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                     <div className="flex items-center mb-1">
                       <Users className="h-3 w-3 text-blue-600 dark:text-blue-400 mr-1" />
                       <p className="text-xs font-medium text-blue-600 dark:text-blue-400">Maha Chakra Senapoti</p>
                     </div>
-                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namhatta as any).mahaChakraSenapotiName}</p>
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namahatta as any).mahaChakraSenapotiName}</p>
                   </div>
                 )}
-                {(namhatta as any).chakraSenapotiName && (
+                {(namahatta as any).chakraSenapotiName && (
                   <div className="p-2 bg-gradient-to-br from-emerald-50 to-green-100 dark:from-emerald-900/20 dark:to-green-900/20 rounded-lg border border-emerald-200 dark:border-emerald-800">
                     <div className="flex items-center mb-1">
                       <Activity className="h-3 w-3 text-emerald-600 dark:text-emerald-400 mr-1" />
                       <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400">Chakra Senapoti</p>
                     </div>
-                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namhatta as any).chakraSenapotiName}</p>
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namahatta as any).chakraSenapotiName}</p>
                   </div>
                 )}
-                {(namhatta as any).upaChakraSenapotiName && (
+                {(namahatta as any).upaChakraSenapotiName && (
                   <div className="p-2 bg-gradient-to-br from-orange-50 to-amber-100 dark:from-orange-900/20 dark:to-amber-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
                     <div className="flex items-center mb-1">
                       <TrendingUp className="h-3 w-3 text-orange-600 dark:text-orange-400 mr-1" />
                       <p className="text-xs font-medium text-orange-600 dark:text-orange-400">Upa Chakra Senapoti</p>
                     </div>
-                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namhatta as any).upaChakraSenapotiName}</p>
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namahatta as any).upaChakraSenapotiName}</p>
                   </div>
                 )}
-                {(namhatta as any).secretaryName && (
+                {(namahatta as any).secretaryName && (
                   <div className="p-2 bg-gradient-to-br from-pink-50 to-rose-100 dark:from-pink-900/20 dark:to-rose-900/20 rounded-lg border border-pink-200 dark:border-pink-800">
                     <div className="flex items-center mb-1">
                       <User className="h-3 w-3 text-pink-600 dark:text-pink-400 mr-1" />
                       <p className="text-xs font-medium text-pink-600 dark:text-pink-400">Secretary</p>
                     </div>
-                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namhatta as any).secretaryName}</p>
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namahatta as any).secretaryName}</p>
                   </div>
                 )}
-                {(namhatta as any).presidentName && (
+                {(namahatta as any).presidentName && (
                   <div className="p-2 bg-gradient-to-br from-indigo-50 to-violet-100 dark:from-indigo-900/20 dark:to-violet-900/20 rounded-lg border border-indigo-200 dark:border-indigo-800">
                     <div className="flex items-center mb-1">
                       <User className="h-3 w-3 text-indigo-600 dark:text-indigo-400 mr-1" />
                       <p className="text-xs font-medium text-indigo-600 dark:text-indigo-400">President</p>
                     </div>
-                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namhatta as any).presidentName}</p>
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namahatta as any).presidentName}</p>
                   </div>
                 )}
-                {(namhatta as any).accountantName && (
+                {(namahatta as any).accountantName && (
                   <div className="p-2 bg-gradient-to-br from-teal-50 to-cyan-100 dark:from-teal-900/20 dark:to-cyan-900/20 rounded-lg border border-teal-200 dark:border-teal-800">
                     <div className="flex items-center mb-1">
                       <Briefcase className="h-3 w-3 text-teal-600 dark:text-teal-400 mr-1" />
                       <p className="text-xs font-medium text-teal-600 dark:text-teal-400">Accountant</p>
                     </div>
-                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namhatta as any).accountantName}</p>
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namahatta as any).accountantName}</p>
                   </div>
                 )}
-                {!(namhatta as any).malaSenapotiName && !(namhatta as any).mahaChakraSenapotiName && !(namhatta as any).chakraSenapotiName && !(namhatta as any).upaChakraSenapotiName && !(namhatta as any).secretaryName && !(namhatta as any).presidentName && !(namhatta as any).accountantName && (
+                {!(namahatta as any).malaSenapotiName && !(namahatta as any).mahaChakraSenapotiName && !(namahatta as any).chakraSenapotiName && !(namahatta as any).upaChakraSenapotiName && !(namahatta as any).secretaryName && !(namahatta as any).presidentName && !(namahatta as any).accountantName && (
                   <div className="col-span-2 text-center py-12">
                     <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
                       <Crown className="h-8 w-8 text-gray-400" />
                     </div>
                     <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No Leadership Assigned</h3>
-                    <p className="text-gray-500 dark:text-gray-400">Leadership roles have not been assigned to this Namhatta yet.</p>
+                    <p className="text-gray-500 dark:text-gray-400">Leadership roles have not been assigned to this Namahatta yet.</p>
                   </div>
                 )}
               </div>
@@ -454,7 +454,7 @@ export default function NamhattaDetail() {
           </Card>
 
           {/* Address Details */}
-          {namhatta.address && (
+          {namahatta.address && (
             <Card className="glass-card">
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center text-base">
@@ -466,67 +466,67 @@ export default function NamhattaDetail() {
               </CardHeader>
               <CardContent className="pt-2">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                  {namhatta.address.country && (
+                  {namahatta.address.country && (
                     <div className="p-2 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                       <div className="flex items-center mb-1">
                         <Home className="h-3 w-3 text-blue-600 dark:text-blue-400 mr-1" />
                         <p className="text-xs font-medium text-blue-600 dark:text-blue-400">Country</p>
                       </div>
-                      <p className="font-semibold text-gray-900 dark:text-white text-sm">{namhatta.address.country}</p>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">{namahatta.address.country}</p>
                     </div>
                   )}
-                  {namhatta.address.state && (
+                  {namahatta.address.state && (
                     <div className="p-2 bg-gradient-to-br from-emerald-50 to-green-100 dark:from-emerald-900/20 dark:to-green-900/20 rounded-lg border border-emerald-200 dark:border-emerald-800">
                       <div className="flex items-center mb-1">
                         <MapPin className="h-3 w-3 text-emerald-600 dark:text-emerald-400 mr-1" />
                         <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400">State</p>
                       </div>
-                      <p className="font-semibold text-gray-900 dark:text-white text-sm">{namhatta.address.state}</p>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">{namahatta.address.state}</p>
                     </div>
                   )}
-                  {namhatta.address.district && (
+                  {namahatta.address.district && (
                     <div className="p-2 bg-gradient-to-br from-purple-50 to-violet-100 dark:from-purple-900/20 dark:to-violet-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
                       <div className="flex items-center mb-1">
                         <Activity className="h-3 w-3 text-purple-600 dark:text-purple-400 mr-1" />
                         <p className="text-xs font-medium text-purple-600 dark:text-purple-400">District</p>
                       </div>
-                      <p className="font-semibold text-gray-900 dark:text-white text-sm">{namhatta.address.district}</p>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">{namahatta.address.district}</p>
                     </div>
                   )}
-                  {namhatta.address.subDistrict && (
+                  {namahatta.address.subDistrict && (
                     <div className="p-2 bg-gradient-to-br from-orange-50 to-amber-100 dark:from-orange-900/20 dark:to-amber-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
                       <div className="flex items-center mb-1">
                         <TrendingUp className="h-3 w-3 text-orange-600 dark:text-orange-400 mr-1" />
                         <p className="text-xs font-medium text-orange-600 dark:text-orange-400">Sub-District</p>
                       </div>
-                      <p className="font-semibold text-gray-900 dark:text-white text-sm">{namhatta.address.subDistrict}</p>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">{namahatta.address.subDistrict}</p>
                     </div>
                   )}
-                  {namhatta.address.village && (
+                  {namahatta.address.village && (
                     <div className="p-2 bg-gradient-to-br from-pink-50 to-rose-100 dark:from-pink-900/20 dark:to-rose-900/20 rounded-lg border border-pink-200 dark:border-pink-800">
                       <div className="flex items-center mb-1">
                         <Home className="h-3 w-3 text-pink-600 dark:text-pink-400 mr-1" />
                         <p className="text-xs font-medium text-pink-600 dark:text-pink-400">Village</p>
                       </div>
-                      <p className="font-semibold text-gray-900 dark:text-white text-sm">{namhatta.address.village}</p>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">{namahatta.address.village}</p>
                     </div>
                   )}
-                  {namhatta.address.postalCode && (
+                  {namahatta.address.postalCode && (
                     <div className="p-2 bg-gradient-to-br from-cyan-50 to-blue-100 dark:from-cyan-900/20 dark:to-blue-900/20 rounded-lg border border-cyan-200 dark:border-cyan-800">
                       <div className="flex items-center mb-1">
                         <MapPin className="h-3 w-3 text-cyan-600 dark:text-cyan-400 mr-1" />
                         <p className="text-xs font-medium text-cyan-600 dark:text-cyan-400">Pincode</p>
                       </div>
-                      <p className="font-semibold text-gray-900 dark:text-white text-sm">{namhatta.address.postalCode}</p>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">{namahatta.address.postalCode}</p>
                     </div>
                   )}
-                  {namhatta.address.landmark && (
+                  {namahatta.address.landmark && (
                     <div className="md:col-span-2 lg:col-span-3 p-2 bg-gradient-to-br from-gray-50 to-slate-100 dark:from-gray-900/20 dark:to-slate-900/20 rounded-lg border border-gray-200 dark:border-gray-800">
                       <div className="flex items-center mb-1">
                         <MapPin className="h-3 w-3 text-gray-600 dark:text-gray-400 mr-1" />
                         <p className="text-xs font-medium text-gray-600 dark:text-gray-400">Landmark</p>
                       </div>
-                      <p className="font-semibold text-gray-900 dark:text-white text-sm">{namhatta.address.landmark}</p>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">{namahatta.address.landmark}</p>
                     </div>
                   )}
                 </div>
@@ -534,8 +534,8 @@ export default function NamhattaDetail() {
             </Card>
           )}
 
-          {/* Registration Details - shown for approved Namhattas with registration info */}
-          {namhatta.status === "APPROVED" && namhatta.registrationNo && (
+          {/* Registration Details - shown for approved Namahattas with registration info */}
+          {namahatta.status === "APPROVED" && namahatta.registrationNo && (
             <Card className="glass-card">
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center text-base">
@@ -555,12 +555,12 @@ export default function NamhattaDetail() {
                       <div>
                         <p className="text-sm font-medium text-emerald-800 dark:text-emerald-300">Registration Number</p>
                         <p className="text-lg font-mono font-bold text-emerald-900 dark:text-emerald-100 bg-white/50 dark:bg-black/20 px-3 py-1 rounded mt-1">
-                          {namhatta.registrationNo}
+                          {namahatta.registrationNo}
                         </p>
                       </div>
                     </div>
                     
-                    {namhatta.registrationDate && (
+                    {namahatta.registrationDate && (
                       <div className="flex items-start space-x-3">
                         <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
                           <Calendar className="h-5 w-5 text-white" />
@@ -568,7 +568,7 @@ export default function NamhattaDetail() {
                         <div>
                           <p className="text-sm font-medium text-emerald-800 dark:text-emerald-300">Registration Date</p>
                           <p className="text-lg font-semibold text-emerald-900 dark:text-emerald-100 mt-1">
-                            {new Date(namhatta.registrationDate).toLocaleDateString('en-US', {
+                            {new Date(namahatta.registrationDate).toLocaleDateString('en-US', {
                               year: 'numeric',
                               month: 'long',
                               day: 'numeric'
@@ -581,7 +581,7 @@ export default function NamhattaDetail() {
                   
                   <div className="mt-4 flex items-center space-x-2 text-sm text-emerald-700 dark:text-emerald-300">
                     <CheckCircle className="h-4 w-4" />
-                    <span className="font-medium">This Namhatta is officially registered and approved for operations.</span>
+                    <span className="font-medium">This Namahatta is officially registered and approved for operations.</span>
                   </div>
                 </div>
               </CardContent>
@@ -598,7 +598,7 @@ export default function NamhattaDetail() {
                 <button
                   onClick={() => {
                     setViewMode('grid');
-                    sessionStorage.setItem('namhatta-devotees-view-mode', 'grid');
+                    sessionStorage.setItem('namahatta-devotees-view-mode', 'grid');
                   }}
                   className={`p-2 rounded-md transition-colors ${
                     viewMode === 'grid'
@@ -612,7 +612,7 @@ export default function NamhattaDetail() {
                 <button
                   onClick={() => {
                     setViewMode('list');
-                    sessionStorage.setItem('namhatta-devotees-view-mode', 'list');
+                    sessionStorage.setItem('namahatta-devotees-view-mode', 'list');
                   }}
                   className={`p-2 rounded-md transition-colors ${
                     viewMode === 'list'
@@ -637,7 +637,7 @@ export default function NamhattaDetail() {
             : "grid grid-cols-1 md:grid-cols-2 gap-3"
           }>
             {devotees?.data?.map((devotee: any) => (
-              <DevoteeCard key={devotee.id} devotee={devotee} statuses={statuses} namhattaId={namhatta.id} viewMode={viewMode} />
+              <DevoteeCard key={devotee.id} devotee={devotee} statuses={statuses} namahattaId={namahatta.id} viewMode={viewMode} />
             ))}
           </div>
 
@@ -646,7 +646,7 @@ export default function NamhattaDetail() {
               <CardContent className="p-12 text-center">
                 <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No devotees found</h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-4">This Namhatta doesn't have any devotees yet.</p>
+                <p className="text-gray-600 dark:text-gray-400 mb-4">This Namahatta doesn't have any devotees yet.</p>
                 <Button className="gradient-button" onClick={() => setShowDevoteeForm(true)}>
                   <UserPlus className="mr-2 h-4 w-4" />
                   Add First Devotee
@@ -668,10 +668,10 @@ export default function NamhattaDetail() {
           {updates && updates.length > 0 ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {updates.map((update: any) => (
-                <NamhattaUpdateCard 
+                <NamahattaUpdateCard 
                   key={update.id} 
                   update={update}
-                  showNamhattaName={false}
+                  showNamahattaName={false}
                 />
               ))}
             </div>
@@ -681,7 +681,7 @@ export default function NamhattaDetail() {
                 <Calendar className="h-12 w-12 text-gray-400 mb-4" />
                 <p className="text-lg font-medium text-gray-900 dark:text-white mb-2">No updates yet</p>
                 <p className="text-gray-500 dark:text-gray-400 text-center mb-6">
-                  Start sharing updates about programs and activities at this Namhatta.
+                  Start sharing updates about programs and activities at this Namahatta.
                 </p>
                 <Button className="gradient-button" onClick={() => setShowUpdateForm(true)}>
                   <Plus className="mr-2 h-4 w-4" />
@@ -744,20 +744,20 @@ export default function NamhattaDetail() {
       </Tabs>
 
       {/* Edit Form Modal */}
-      <NamhattaForm
+      <NamahattaForm
         isOpen={showEditForm}
-        namhatta={namhatta}
+        namahatta={namahatta}
         onClose={() => setShowEditForm(false)}
         onSuccess={() => {
           setShowEditForm(false);
-          queryClient.invalidateQueries({ queryKey: ["/api/namhattas", id] });
+          queryClient.invalidateQueries({ queryKey: ["/api/namahattas", id] });
         }}
       />
 
       {/* Update Form Modal */}
-      {namhatta && (
-        <NamhattaUpdateForm
-          namhattaId={namhatta.id}
+      {namahatta && (
+        <NamahattaUpdateForm
+          namahattaId={namahatta.id}
           isOpen={showUpdateForm}
           onClose={() => setShowUpdateForm(false)}
         />
@@ -769,9 +769,9 @@ export default function NamhattaDetail() {
           onClose={() => setShowDevoteeForm(false)}
           onSuccess={() => {
             setShowDevoteeForm(false);
-            queryClient.invalidateQueries({ queryKey: ["/api/namhattas", id, "devotees"] });
+            queryClient.invalidateQueries({ queryKey: ["/api/namahattas", id, "devotees"] });
           }}
-          namhattaId={parseInt(id!)}
+          namahattaId={parseInt(id!)}
           isModal={true}
         />
       )}
@@ -780,9 +780,9 @@ export default function NamhattaDetail() {
       <Dialog open={showApprovalDialog} onOpenChange={setShowApprovalDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Approve Namhatta - Registration Details</DialogTitle>
+            <DialogTitle>Approve Namahatta - Registration Details</DialogTitle>
             <DialogDescription>
-              Please provide official registration details to approve "{namhatta?.name}". This will activate the namhatta and allow it to operate officially.
+              Please provide official registration details to approve "{namahatta?.name}". This will activate the namahatta and allow it to operate officially.
             </DialogDescription>
           </DialogHeader>
           
@@ -872,7 +872,7 @@ export default function NamhattaDetail() {
                   disabled={approveMutation.isPending || !!registrationCheckError}
                   data-testid="button-confirm-approval"
                 >
-                  {approveMutation.isPending ? "Approving..." : "Approve Namhatta"}
+                  {approveMutation.isPending ? "Approving..." : "Approve Namahatta"}
                 </Button>
               </DialogFooter>
             </form>
@@ -884,9 +884,9 @@ export default function NamhattaDetail() {
       <Dialog open={showRejectionDialog} onOpenChange={setShowRejectionDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Reject Namhatta</DialogTitle>
+            <DialogTitle>Reject Namahatta</DialogTitle>
             <DialogDescription>
-              Please provide a reason for rejecting this Namhatta registration.
+              Please provide a reason for rejecting this Namahatta registration.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -927,7 +927,7 @@ export default function NamhattaDetail() {
   );
 }
 
-function DevoteeCard({ devotee, statuses, namhattaId, viewMode = 'grid' }: { devotee: Devotee; statuses?: any[]; namhattaId: number; viewMode?: 'grid' | 'list' }) {
+function DevoteeCard({ devotee, statuses, namahattaId, viewMode = 'grid' }: { devotee: Devotee; statuses?: any[]; namahattaId: number; viewMode?: 'grid' | 'list' }) {
   const getStatusName = (statusId?: number) => {
     // Use the devotionalStatusName from the API response if available
     if (devotee.devotionalStatusName) {
@@ -953,7 +953,7 @@ function DevoteeCard({ devotee, statuses, namhattaId, viewMode = 'grid' }: { dev
   if (viewMode === 'list') {
     // List View - Minimal Details with Initiated Name
     return (
-      <Link href={`/devotees/${devotee.id}?from=${namhattaId}`} data-testid={`link-devotee-${devotee.id}`}>
+      <Link href={`/devotees/${devotee.id}?from=${namahattaId}`} data-testid={`link-devotee-${devotee.id}`}>
         <Card className="glass-card card-hover-effect group cursor-pointer">
           <CardContent className="p-3">
             <div className="flex items-center space-x-3">
@@ -992,7 +992,7 @@ function DevoteeCard({ devotee, statuses, namhattaId, viewMode = 'grid' }: { dev
   // Grid View (default)
   return (
     <div className="h-[160px]">
-      <Link href={`/devotees/${devotee.id}?from=${namhattaId}`} data-testid={`link-devotee-${devotee.id}`}>
+      <Link href={`/devotees/${devotee.id}?from=${namahattaId}`} data-testid={`link-devotee-${devotee.id}`}>
         <Card className="glass-card card-hover-effect group h-full cursor-pointer">
           <CardContent className="p-3 h-full flex flex-col">
             {/* Header */}
@@ -1099,7 +1099,7 @@ function UpdateCard({ update }: { update: any }) {
   );
 }
 
-function NamhattaDetailSkeleton() {
+function NamahattaDetailSkeleton() {
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">

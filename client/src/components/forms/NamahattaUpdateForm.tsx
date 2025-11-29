@@ -13,8 +13,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { Calendar, Users, Image, Link, Music, Utensils, BookOpen, Sparkles, Upload, X } from "lucide-react";
 
-interface NamhattaUpdateFormProps {
-  namhattaId: number;
+interface NamahattaUpdateFormProps {
+  namahattaId: number;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -48,7 +48,7 @@ const programTypes = [
   "Ladies Program"
 ];
 
-export default function NamhattaUpdateForm({ namhattaId, isOpen, onClose }: NamhattaUpdateFormProps) {
+export default function NamahattaUpdateForm({ namahattaId, isOpen, onClose }: NamahattaUpdateFormProps) {
   const { toast } = useToast();
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
@@ -96,15 +96,15 @@ export default function NamhattaUpdateForm({ namhattaId, isOpen, onClose }: Namh
         bhagwatPath: data.bhagwatPath ? 1 : 0,
       };
       
-      return api.createNamhattaUpdate({
-        namhattaId: Number(namhattaId),
+      return api.createNamahattaUpdate({
+        namahattaId: Number(namahattaId),
         ...processedData,
         imageUrls
       });
     },
     onSuccess: () => {
-      // Invalidate queries with the correct query key format used in NamhattaDetail page
-      queryClient.invalidateQueries({ queryKey: ["/api/namhattas", namhattaId.toString(), "updates"] });
+      // Invalidate queries with the correct query key format used in NamahattaDetail page
+      queryClient.invalidateQueries({ queryKey: ["/api/namahattas", namahattaId.toString(), "updates"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       // Also invalidate the general updates list
       queryClient.invalidateQueries({ queryKey: ["/api/updates"] });
@@ -174,7 +174,7 @@ export default function NamhattaUpdateForm({ namhattaId, isOpen, onClose }: Namh
         <DialogHeader>
           <DialogTitle className="flex items-center">
             <Calendar className="mr-2 h-5 w-5 text-indigo-500" />
-            Post Namhatta Update
+            Post Namahatta Update
           </DialogTitle>
           <DialogDescription>
             Share details about your program including attendance, activities, and photos.

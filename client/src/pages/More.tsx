@@ -61,10 +61,10 @@ export default function More() {
       category: "Core"
     },
     {
-      title: "Namhattas",
+      title: "Namahattas",
       description: "Manage spiritual centers and their details",
       icon: Home,
-      href: "/namhattas",
+      href: "/namahattas",
       color: "from-green-500 to-emerald-600",
       category: "Core"
     },
@@ -78,7 +78,7 @@ export default function More() {
     },
     {
       title: "Map View",
-      description: "Geographic distribution of namhattas",
+      description: "Geographic distribution of namahattas",
       icon: MapPin,
       href: "/map",
       color: "from-teal-500 to-cyan-600",
@@ -96,7 +96,7 @@ export default function More() {
     },
     {
       title: "Approvals",
-      description: "Review pending namhatta applications",
+      description: "Review pending namahatta applications",
       icon: CheckCircle,
       href: "/approvals",
       color: "from-red-500 to-rose-600",
@@ -130,7 +130,7 @@ export default function More() {
     // Activities & Information
     {
       title: "Updates",
-      description: "Recent namhatta program updates and events",
+      description: "Recent namahatta program updates and events",
       icon: Activity,
       href: "/updates",
       color: "from-orange-500 to-red-600",
@@ -169,7 +169,7 @@ export default function More() {
           More Options
         </h1>
         <p className="text-gray-600 dark:text-gray-400">
-          Navigate to all available pages and features in the Namhatta Management System
+          Navigate to all available pages and features in the Namahatta Management System
         </p>
       </div>
 
@@ -225,9 +225,9 @@ export default function More() {
                 Dashboard
               </Button>
             </Link>
-            <Link href="/namhattas">
+            <Link href="/namahattas">
               <Button variant="outline" className="w-full glass">
-                All Namhattas
+                All Namahattas
               </Button>
             </Link>
             <Link href="/devotees">

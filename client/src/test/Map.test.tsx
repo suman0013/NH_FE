@@ -115,7 +115,7 @@ describe('Map', () => {
     
     await waitFor(() => {
       expect(screen.getByText('Legend')).toBeInTheDocument()
-      expect(screen.getByText('Namhatta Count')).toBeInTheDocument()
+      expect(screen.getByText('Namahatta Count')).toBeInTheDocument()
     })
   })
 

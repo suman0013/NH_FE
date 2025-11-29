@@ -1,6 +1,6 @@
 import { db } from "./db";
-import { devotees, namhattas, devotionalStatuses, shraddhakutirs, namhattaUpdates, leaders, statusHistory, addresses, devoteeAddresses, namhattaAddresses, gurudevs, users, userDistricts, roleChangeHistory } from "@shared/schema";
-import { Devotee, InsertDevotee, Namhatta, InsertNamhatta, DevotionalStatus, InsertDevotionalStatus, Shraddhakutir, InsertShraddhakutir, NamhattaUpdate, InsertNamhattaUpdate, Leader, InsertLeader, StatusHistory, Gurudev, InsertGurudev, User, InsertUser, RoleChangeHistory, InsertRoleChangeHistory } from "@shared/schema";
+import { devotees, namahattas, devotionalStatuses, shraddhakutirs, namahattaUpdates, leaders, statusHistory, addresses, devoteeAddresses, namahattaAddresses, gurudevs, users, userDistricts, roleChangeHistory } from "@shared/schema";
+import { Devotee, InsertDevotee, Namahatta, InsertNamahatta, DevotionalStatus, InsertDevotionalStatus, Shraddhakutir, InsertShraddhakutir, NamahattaUpdate, InsertNamahattaUpdate, Leader, InsertLeader, StatusHistory, Gurudev, InsertGurudev, User, InsertUser, RoleChangeHistory, InsertRoleChangeHistory } from "@shared/schema";
 import { sql, eq, desc, asc, and, or, like, count, inArray, ne, isNotNull, isNull, not } from "drizzle-orm";
 import { IStorage } from "./storage-fresh";
 import { seedDatabase } from "./seed-data";
@@ -178,7 +178,7 @@ export class DatabaseStorage implements IStorage {
         maritalStatus: devotees.maritalStatus,
         devotionalStatusId: devotees.devotionalStatusId,
         devotionalStatusName: devotionalStatuses.name,
-        namhattaId: devotees.namhattaId,
+        namahattaId: devotees.namahattaId,
         harinamInitiationGurudevId: devotees.harinamInitiationGurudevId,
         pancharatrikInitiationGurudevId: devotees.pancharatrikInitiationGurudevId,
         harinamInitiationGurudevName: sql`harinamGurudev.name`,
@@ -295,10 +295,10 @@ export class DatabaseStorage implements IStorage {
     return devotee;
   }
 
-  async createDevoteeForNamhatta(devoteeData: any, namhattaId: number): Promise<Devotee> {
-    // Add namhattaId to the devotee data and use the enhanced createDevotee method
-    const devoteeWithNamhatta = { ...devoteeData, namhattaId };
-    return await this.createDevotee(devoteeWithNamhatta);
+  async createDevoteeForNamahatta(devoteeData: any, namahattaId: number): Promise<Devotee> {
+    // Add namahattaId to the devotee data and use the enhanced createDevotee method
+    const devoteeWithNamahatta = { ...devoteeData, namahattaId };
+    return await this.createDevotee(devoteeWithNamahatta);
   }
 
   async updateDevotee(id: number, devoteeData: any): Promise<Devotee> {
@@ -386,7 +386,7 @@ export class DatabaseStorage implements IStorage {
         hasSystemAccess: devotees.hasSystemAccess,
         appointedDate: devotees.appointedDate,
         reportingToDevoteeId: devotees.reportingToDevoteeId,
-        namhattaId: devotees.namhattaId
+        namahattaId: devotees.namahattaId
       })
       .from(devotees)
       .where(isNotNull(devotees.leadershipRole));
@@ -416,10 +416,10 @@ export class DatabaseStorage implements IStorage {
     return devoteesWithUserInfo;
   }
 
-  async getDevoteesByNamhatta(namhattaId: number, page = 1, size = 10, statusId?: number): Promise<{ data: Devotee[], total: number }> {
+  async getDevoteesByNamahatta(namahattaId: number, page = 1, size = 10, statusId?: number): Promise<{ data: Devotee[], total: number }> {
     const offset = (page - 1) * size;
     
-    let whereConditions = [eq(devotees.namhattaId, namhattaId)];
+    let whereConditions = [eq(devotees.namahattaId, namahattaId)];
     if (statusId) {
       whereConditions.push(eq(devotees.devotionalStatusId, statusId));
     }
@@ -515,19 +515,19 @@ export class DatabaseStorage implements IStorage {
     return hasAccess;
   }
 
-  // Namhattas
-  async getNamhattas(page = 1, size = 10, filters: any = {}): Promise<{ data: Namhatta[], total: number }> {
+  // Namahattas
+  async getNamahattas(page = 1, size = 10, filters: any = {}): Promise<{ data: Namahatta[], total: number }> {
     const offset = (page - 1) * size;
     
     let whereConditions = [];
     let addressFilters = [];
     
     if (filters.search) {
-      whereConditions.push(like(namhattas.name, `%${filters.search}%`));
+      whereConditions.push(like(namahattas.name, `%${filters.search}%`));
     }
     
     if (filters.status) {
-      whereConditions.push(eq(namhattas.status, filters.status));
+      whereConditions.push(eq(namahattas.status, filters.status));
     }
 
     // Address-based filtering
@@ -596,53 +596,53 @@ export class DatabaseStorage implements IStorage {
       }
     }
 
-    // If we have address filters, create a subquery to filter namhattas by address
+    // If we have address filters, create a subquery to filter namahattas by address
     if (addressFilters.length > 0) {
       const addressFilterSubquery = db
-        .select({ namhattaId: namhattaAddresses.namhattaId })
-        .from(namhattaAddresses)
-        .innerJoin(addresses, eq(namhattaAddresses.addressId, addresses.id))
+        .select({ namahattaId: namahattaAddresses.namahattaId })
+        .from(namahattaAddresses)
+        .innerJoin(addresses, eq(namahattaAddresses.addressId, addresses.id))
         .where(and(...addressFilters));
       
       whereConditions.push(
-        inArray(namhattas.id, addressFilterSubquery)
+        inArray(namahattas.id, addressFilterSubquery)
       );
     }
 
     const whereClause = whereConditions.length > 0 ? and(...whereConditions) : undefined;
     
     // Handle sorting - default to name ascending
-    let orderBy = asc(namhattas.name);
+    let orderBy = asc(namahattas.name);
     if (filters.sortBy === 'createdAt') {
-      orderBy = filters.sortOrder === 'desc' ? desc(namhattas.createdAt) : asc(namhattas.createdAt);
+      orderBy = filters.sortOrder === 'desc' ? desc(namahattas.createdAt) : asc(namahattas.createdAt);
     } else if (filters.sortBy === 'updatedAt') {
-      orderBy = filters.sortOrder === 'desc' ? desc(namhattas.updatedAt) : asc(namhattas.updatedAt);
+      orderBy = filters.sortOrder === 'desc' ? desc(namahattas.updatedAt) : asc(namahattas.updatedAt);
     } else if (filters.sortBy === 'name' || !filters.sortBy) {
       // Default to name sorting if no sortBy provided or explicitly name
-      orderBy = filters.sortOrder === 'desc' ? desc(namhattas.name) : asc(namhattas.name);
+      orderBy = filters.sortOrder === 'desc' ? desc(namahattas.name) : asc(namahattas.name);
     }
 
     const [data, totalResult] = await Promise.all([
       db.select({
-        id: namhattas.id,
-        code: namhattas.code,
-        name: namhattas.name,
-        meetingDay: namhattas.meetingDay,
-        meetingTime: namhattas.meetingTime,
-        malaSenapotiId: namhattas.malaSenapotiId,
-        mahaChakraSenapotiId: namhattas.mahaChakraSenapotiId,
-        chakraSenapotiId: namhattas.chakraSenapotiId,
-        upaChakraSenapotiId: namhattas.upaChakraSenapotiId,
-        secretaryId: namhattas.secretaryId,
-        presidentId: namhattas.presidentId,
-        accountantId: namhattas.accountantId,
-        districtSupervisorId: namhattas.districtSupervisorId,
-        status: namhattas.status,
-        registrationNo: namhattas.registrationNo,
-        registrationDate: namhattas.registrationDate,
-        createdAt: namhattas.createdAt,
-        updatedAt: namhattas.updatedAt,
-        devoteeCount: count(namhattas.id),
+        id: namahattas.id,
+        code: namahattas.code,
+        name: namahattas.name,
+        meetingDay: namahattas.meetingDay,
+        meetingTime: namahattas.meetingTime,
+        malaSenapotiId: namahattas.malaSenapotiId,
+        mahaChakraSenapotiId: namahattas.mahaChakraSenapotiId,
+        chakraSenapotiId: namahattas.chakraSenapotiId,
+        upaChakraSenapotiId: namahattas.upaChakraSenapotiId,
+        secretaryId: namahattas.secretaryId,
+        presidentId: namahattas.presidentId,
+        accountantId: namahattas.accountantId,
+        districtSupervisorId: namahattas.districtSupervisorId,
+        status: namahattas.status,
+        registrationNo: namahattas.registrationNo,
+        registrationDate: namahattas.registrationDate,
+        createdAt: namahattas.createdAt,
+        updatedAt: namahattas.updatedAt,
+        devoteeCount: count(namahattas.id),
         // Include address information in main query to avoid N+1
         addressCountry: addresses.country,
         addressState: addresses.stateNameEnglish,
@@ -650,7 +650,7 @@ export class DatabaseStorage implements IStorage {
         addressSubDistrict: addresses.subdistrictNameEnglish,
         addressVillage: addresses.villageNameEnglish,
         addressPostalCode: addresses.pincode,
-        addressLandmark: namhattaAddresses.landmark,
+        addressLandmark: namahattaAddresses.landmark,
         // Include devotee names for leadership positions for backward compatibility
         malaSenapotiName: sql`mala_devotee.name`,
         mahaChakraSenapotiName: sql`maha_chakra_devotee.name`,
@@ -659,108 +659,108 @@ export class DatabaseStorage implements IStorage {
         secretaryName: sql`secretary_devotee.name`,
         presidentName: sql`president_devotee.name`,
         accountantName: sql`accountant_devotee.name`
-      }).from(namhattas)
-        .leftJoin(namhattaAddresses, eq(namhattas.id, namhattaAddresses.namhattaId))
-        .leftJoin(addresses, eq(namhattaAddresses.addressId, addresses.id))
-        .leftJoin(sql`${devotees} as mala_devotee`, eq(namhattas.malaSenapotiId, sql`mala_devotee.id`))
-        .leftJoin(sql`${devotees} as maha_chakra_devotee`, eq(namhattas.mahaChakraSenapotiId, sql`maha_chakra_devotee.id`))
-        .leftJoin(sql`${devotees} as chakra_devotee`, eq(namhattas.chakraSenapotiId, sql`chakra_devotee.id`))
-        .leftJoin(sql`${devotees} as upa_chakra_devotee`, eq(namhattas.upaChakraSenapotiId, sql`upa_chakra_devotee.id`))
-        .leftJoin(sql`${devotees} as secretary_devotee`, eq(namhattas.secretaryId, sql`secretary_devotee.id`))
-        .leftJoin(sql`${devotees} as president_devotee`, eq(namhattas.presidentId, sql`president_devotee.id`))
-        .leftJoin(sql`${devotees} as accountant_devotee`, eq(namhattas.accountantId, sql`accountant_devotee.id`))
+      }).from(namahattas)
+        .leftJoin(namahattaAddresses, eq(namahattas.id, namahattaAddresses.namahattaId))
+        .leftJoin(addresses, eq(namahattaAddresses.addressId, addresses.id))
+        .leftJoin(sql`${devotees} as mala_devotee`, eq(namahattas.malaSenapotiId, sql`mala_devotee.id`))
+        .leftJoin(sql`${devotees} as maha_chakra_devotee`, eq(namahattas.mahaChakraSenapotiId, sql`maha_chakra_devotee.id`))
+        .leftJoin(sql`${devotees} as chakra_devotee`, eq(namahattas.chakraSenapotiId, sql`chakra_devotee.id`))
+        .leftJoin(sql`${devotees} as upa_chakra_devotee`, eq(namahattas.upaChakraSenapotiId, sql`upa_chakra_devotee.id`))
+        .leftJoin(sql`${devotees} as secretary_devotee`, eq(namahattas.secretaryId, sql`secretary_devotee.id`))
+        .leftJoin(sql`${devotees} as president_devotee`, eq(namahattas.presidentId, sql`president_devotee.id`))
+        .leftJoin(sql`${devotees} as accountant_devotee`, eq(namahattas.accountantId, sql`accountant_devotee.id`))
         .where(whereClause)
-        .groupBy(namhattas.id, addresses.id, namhattaAddresses.id, sql`mala_devotee.name`, sql`maha_chakra_devotee.name`, sql`chakra_devotee.name`, sql`upa_chakra_devotee.name`, sql`secretary_devotee.name`, sql`president_devotee.name`, sql`accountant_devotee.name`)
+        .groupBy(namahattas.id, addresses.id, namahattaAddresses.id, sql`mala_devotee.name`, sql`maha_chakra_devotee.name`, sql`chakra_devotee.name`, sql`upa_chakra_devotee.name`, sql`secretary_devotee.name`, sql`president_devotee.name`, sql`accountant_devotee.name`)
         .limit(size)
         .offset(offset)
         .orderBy(orderBy),
-      db.select({ count: count() }).from(namhattas).where(whereClause)
+      db.select({ count: count() }).from(namahattas).where(whereClause)
     ]);
 
     // Transform the data to include address as nested object and leadership names
-    const namhattasWithAddresses = data.map((namhatta) => ({
-      id: namhatta.id,
-      code: namhatta.code,
-      name: namhatta.name,
-      meetingDay: namhatta.meetingDay,
-      meetingTime: namhatta.meetingTime,
+    const namahattasWithAddresses = data.map((namahatta) => ({
+      id: namahatta.id,
+      code: namahatta.code,
+      name: namahatta.name,
+      meetingDay: namahatta.meetingDay,
+      meetingTime: namahatta.meetingTime,
       // Include both FK IDs and names for backward compatibility
-      malaSenapotiId: namhatta.malaSenapotiId,
-      malaSenapoti: namhatta.malaSenapotiName || null,
-      mahaChakraSenapotiId: namhatta.mahaChakraSenapotiId,
-      mahaChakraSenapoti: namhatta.mahaChakraSenapotiName || null,
-      chakraSenapotiId: namhatta.chakraSenapotiId,
-      chakraSenapoti: namhatta.chakraSenapotiName || null,
-      upaChakraSenapotiId: namhatta.upaChakraSenapotiId,
-      upaChakraSenapoti: namhatta.upaChakraSenapotiName || null,
-      secretaryId: namhatta.secretaryId,
-      secretary: namhatta.secretaryName || null,
-      presidentId: namhatta.presidentId,
-      president: namhatta.presidentName || null,
-      accountantId: namhatta.accountantId,
-      accountant: namhatta.accountantName || null,
-      districtSupervisorId: namhatta.districtSupervisorId,
-      status: namhatta.status,
-      registrationNo: namhatta.registrationNo || undefined,
-      registrationDate: namhatta.registrationDate || undefined,
-      createdAt: namhatta.createdAt,
-      updatedAt: namhatta.updatedAt,
-      devoteeCount: namhatta.devoteeCount,
-      address: namhatta.addressCountry ? {
-        country: namhatta.addressCountry,
-        state: namhatta.addressState,
-        district: namhatta.addressDistrict,
-        subDistrict: namhatta.addressSubDistrict,
-        village: namhatta.addressVillage,
-        postalCode: namhatta.addressPostalCode,
-        landmark: namhatta.addressLandmark
+      malaSenapotiId: namahatta.malaSenapotiId,
+      malaSenapoti: namahatta.malaSenapotiName || null,
+      mahaChakraSenapotiId: namahatta.mahaChakraSenapotiId,
+      mahaChakraSenapoti: namahatta.mahaChakraSenapotiName || null,
+      chakraSenapotiId: namahatta.chakraSenapotiId,
+      chakraSenapoti: namahatta.chakraSenapotiName || null,
+      upaChakraSenapotiId: namahatta.upaChakraSenapotiId,
+      upaChakraSenapoti: namahatta.upaChakraSenapotiName || null,
+      secretaryId: namahatta.secretaryId,
+      secretary: namahatta.secretaryName || null,
+      presidentId: namahatta.presidentId,
+      president: namahatta.presidentName || null,
+      accountantId: namahatta.accountantId,
+      accountant: namahatta.accountantName || null,
+      districtSupervisorId: namahatta.districtSupervisorId,
+      status: namahatta.status,
+      registrationNo: namahatta.registrationNo || undefined,
+      registrationDate: namahatta.registrationDate || undefined,
+      createdAt: namahatta.createdAt,
+      updatedAt: namahatta.updatedAt,
+      devoteeCount: namahatta.devoteeCount,
+      address: namahatta.addressCountry ? {
+        country: namahatta.addressCountry,
+        state: namahatta.addressState,
+        district: namahatta.addressDistrict,
+        subDistrict: namahatta.addressSubDistrict,
+        village: namahatta.addressVillage,
+        postalCode: namahatta.addressPostalCode,
+        landmark: namahatta.addressLandmark
       } : null
-    })) as Namhatta[];
+    })) as Namahatta[];
 
     return {
-      data: namhattasWithAddresses,
+      data: namahattasWithAddresses,
       total: totalResult[0].count
     };
   }
 
-  async getNamhatta(id: number): Promise<Namhatta | undefined> {
+  async getNamahatta(id: number): Promise<Namahatta | undefined> {
     const result = await db.select({
-      id: namhattas.id,
-      code: namhattas.code,
-      name: namhattas.name,
-      meetingDay: namhattas.meetingDay,
-      meetingTime: namhattas.meetingTime,
-      malaSenapotiId: namhattas.malaSenapotiId,
-      mahaChakraSenapotiId: namhattas.mahaChakraSenapotiId,
-      chakraSenapotiId: namhattas.chakraSenapotiId,
-      upaChakraSenapotiId: namhattas.upaChakraSenapotiId,
-      secretaryId: namhattas.secretaryId,
-      presidentId: namhattas.presidentId,
-      accountantId: namhattas.accountantId,
-      districtSupervisorId: namhattas.districtSupervisorId,
-      status: namhattas.status,
-      registrationNo: namhattas.registrationNo,
-      registrationDate: namhattas.registrationDate,
-      createdAt: namhattas.createdAt,
-      updatedAt: namhattas.updatedAt
-    }).from(namhattas)
-      .where(eq(namhattas.id, id))
+      id: namahattas.id,
+      code: namahattas.code,
+      name: namahattas.name,
+      meetingDay: namahattas.meetingDay,
+      meetingTime: namahattas.meetingTime,
+      malaSenapotiId: namahattas.malaSenapotiId,
+      mahaChakraSenapotiId: namahattas.mahaChakraSenapotiId,
+      chakraSenapotiId: namahattas.chakraSenapotiId,
+      upaChakraSenapotiId: namahattas.upaChakraSenapotiId,
+      secretaryId: namahattas.secretaryId,
+      presidentId: namahattas.presidentId,
+      accountantId: namahattas.accountantId,
+      districtSupervisorId: namahattas.districtSupervisorId,
+      status: namahattas.status,
+      registrationNo: namahattas.registrationNo,
+      registrationDate: namahattas.registrationDate,
+      createdAt: namahattas.createdAt,
+      updatedAt: namahattas.updatedAt
+    }).from(namahattas)
+      .where(eq(namahattas.id, id))
       .limit(1);
     
     if (!result[0]) return undefined;
     
-    const namhattaData = result[0];
+    const namahattaData = result[0];
     
     // Fetch full devotee objects for leadership roles
     // Filter out null, undefined, and 0 values
     const devoteeIds = [
-      namhattaData.malaSenapotiId,
-      namhattaData.mahaChakraSenapotiId,
-      namhattaData.chakraSenapotiId,
-      namhattaData.upaChakraSenapotiId,
-      namhattaData.secretaryId,
-      namhattaData.presidentId,
-      namhattaData.accountantId
+      namahattaData.malaSenapotiId,
+      namahattaData.mahaChakraSenapotiId,
+      namahattaData.chakraSenapotiId,
+      namahattaData.upaChakraSenapotiId,
+      namahattaData.secretaryId,
+      namahattaData.presidentId,
+      namahattaData.accountantId
     ].filter((id): id is number => id !== null && id !== undefined && id > 0);
     
     const devoteeObjects = devoteeIds.length > 0 ? await db
@@ -770,7 +770,7 @@ export class DatabaseStorage implements IStorage {
     : [];
     
     // Create a map for quick lookup - use Number() to ensure consistent key types
-    // Database may return IDs as strings, but namhatta FK IDs are numbers
+    // Database may return IDs as strings, but namahatta FK IDs are numbers
     const devoteeMap = new Map(devoteeObjects.map(d => [Number(d.id), d]));
     
     // Helper function to safely get devotee from map (handles type coercion)
@@ -778,64 +778,64 @@ export class DatabaseStorage implements IStorage {
     
     // Fetch address information from normalized tables
     const addressResults = await db.select({
-      id: namhattaAddresses.id,
-      namhattaId: namhattaAddresses.namhattaId,
-      addressId: namhattaAddresses.addressId,
-      landmark: namhattaAddresses.landmark,
+      id: namahattaAddresses.id,
+      namahattaId: namahattaAddresses.namahattaId,
+      addressId: namahattaAddresses.addressId,
+      landmark: namahattaAddresses.landmark,
       country: addresses.country,
       state: addresses.stateNameEnglish,
       district: addresses.districtNameEnglish,
       subDistrict: addresses.subdistrictNameEnglish,
       village: addresses.villageNameEnglish,
       postalCode: addresses.pincode
-    }).from(namhattaAddresses)
-      .innerJoin(addresses, eq(namhattaAddresses.addressId, addresses.id))
-      .where(eq(namhattaAddresses.namhattaId, id))
+    }).from(namahattaAddresses)
+      .innerJoin(addresses, eq(namahattaAddresses.addressId, addresses.id))
+      .where(eq(namahattaAddresses.namahattaId, id))
       .limit(1);
     
     // Helper function to get display name (prefers spiritual name, fallback to legal name)
     const getDisplayName = (devotee: any) => devotee ? (devotee.name || devotee.legalName) : null;
     
     // Transform the data to include both FK IDs, full devotee objects, and name fields for backward compatibility
-    let namhatta = {
-      id: namhattaData.id,
-      code: namhattaData.code,
-      name: namhattaData.name,
-      meetingDay: namhattaData.meetingDay,
-      meetingTime: namhattaData.meetingTime,
+    let namahatta = {
+      id: namahattaData.id,
+      code: namahattaData.code,
+      name: namahattaData.name,
+      meetingDay: namahattaData.meetingDay,
+      meetingTime: namahattaData.meetingTime,
       // Include FK IDs, full devotee objects, and name fields for backward compatibility
-      malaSenapotiId: namhattaData.malaSenapotiId,
-      malaSenapoti: getDevotee(namhattaData.malaSenapotiId) || null,
-      malaSenapotiName: getDisplayName(getDevotee(namhattaData.malaSenapotiId)),
-      mahaChakraSenapotiId: namhattaData.mahaChakraSenapotiId,
-      mahaChakraSenapoti: getDevotee(namhattaData.mahaChakraSenapotiId) || null,
-      mahaChakraSenapotiName: getDisplayName(getDevotee(namhattaData.mahaChakraSenapotiId)),
-      chakraSenapotiId: namhattaData.chakraSenapotiId,
-      chakraSenapoti: getDevotee(namhattaData.chakraSenapotiId) || null,
-      chakraSenapotiName: getDisplayName(getDevotee(namhattaData.chakraSenapotiId)),
-      upaChakraSenapotiId: namhattaData.upaChakraSenapotiId,
-      upaChakraSenapoti: getDevotee(namhattaData.upaChakraSenapotiId) || null,
-      upaChakraSenapotiName: getDisplayName(getDevotee(namhattaData.upaChakraSenapotiId)),
-      secretaryId: namhattaData.secretaryId,
-      secretary: getDevotee(namhattaData.secretaryId) || null,
-      secretaryName: getDisplayName(getDevotee(namhattaData.secretaryId)),
-      presidentId: namhattaData.presidentId,
-      president: getDevotee(namhattaData.presidentId) || null,
-      presidentName: getDisplayName(getDevotee(namhattaData.presidentId)),
-      accountantId: namhattaData.accountantId,
-      accountant: getDevotee(namhattaData.accountantId) || null,
-      accountantName: getDisplayName(getDevotee(namhattaData.accountantId)),
-      districtSupervisorId: namhattaData.districtSupervisorId,
-      status: namhattaData.status,
-      registrationNo: namhattaData.registrationNo,
-      registrationDate: namhattaData.registrationDate,
-      createdAt: namhattaData.createdAt,
-      updatedAt: namhattaData.updatedAt
+      malaSenapotiId: namahattaData.malaSenapotiId,
+      malaSenapoti: getDevotee(namahattaData.malaSenapotiId) || null,
+      malaSenapotiName: getDisplayName(getDevotee(namahattaData.malaSenapotiId)),
+      mahaChakraSenapotiId: namahattaData.mahaChakraSenapotiId,
+      mahaChakraSenapoti: getDevotee(namahattaData.mahaChakraSenapotiId) || null,
+      mahaChakraSenapotiName: getDisplayName(getDevotee(namahattaData.mahaChakraSenapotiId)),
+      chakraSenapotiId: namahattaData.chakraSenapotiId,
+      chakraSenapoti: getDevotee(namahattaData.chakraSenapotiId) || null,
+      chakraSenapotiName: getDisplayName(getDevotee(namahattaData.chakraSenapotiId)),
+      upaChakraSenapotiId: namahattaData.upaChakraSenapotiId,
+      upaChakraSenapoti: getDevotee(namahattaData.upaChakraSenapotiId) || null,
+      upaChakraSenapotiName: getDisplayName(getDevotee(namahattaData.upaChakraSenapotiId)),
+      secretaryId: namahattaData.secretaryId,
+      secretary: getDevotee(namahattaData.secretaryId) || null,
+      secretaryName: getDisplayName(getDevotee(namahattaData.secretaryId)),
+      presidentId: namahattaData.presidentId,
+      president: getDevotee(namahattaData.presidentId) || null,
+      presidentName: getDisplayName(getDevotee(namahattaData.presidentId)),
+      accountantId: namahattaData.accountantId,
+      accountant: getDevotee(namahattaData.accountantId) || null,
+      accountantName: getDisplayName(getDevotee(namahattaData.accountantId)),
+      districtSupervisorId: namahattaData.districtSupervisorId,
+      status: namahattaData.status,
+      registrationNo: namahattaData.registrationNo,
+      registrationDate: namahattaData.registrationDate,
+      createdAt: namahattaData.createdAt,
+      updatedAt: namahattaData.updatedAt
     } as any;
     
-    // Add address information to the namhatta object
+    // Add address information to the namahatta object
     if (addressResults[0]) {
-      namhatta.address = {
+      namahatta.address = {
         country: addressResults[0].country,
         state: addressResults[0].state,
         district: addressResults[0].district,
@@ -846,19 +846,19 @@ export class DatabaseStorage implements IStorage {
       };
     }
     
-    return namhatta;
+    return namahatta;
   }
 
-  async checkNamhattaCodeExists(code: string): Promise<boolean> {
+  async checkNamahattaCodeExists(code: string): Promise<boolean> {
     const result = await db.select({
-      id: namhattas.id
-    }).from(namhattas).where(eq(namhattas.code, code)).limit(1);
+      id: namahattas.id
+    }).from(namahattas).where(eq(namahattas.code, code)).limit(1);
     return result.length > 0;
   }
 
   // Helper function to convert devotee IDs to names for database storage
-  private async mapDevoteeIdsToNames(namhattaData: any): Promise<any> {
-    const mappedData = { ...namhattaData };
+  private async mapDevoteeIdsToNames(namahattaData: any): Promise<any> {
+    const mappedData = { ...namahattaData };
     
     // Define mapping between ID fields and name fields
     const idFieldMappings = [
@@ -898,8 +898,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Helper function to convert devotee names to IDs for form editing
-  private async enrichNamhattaWithDevoteeIds(namhatta: any): Promise<any> {
-    const enrichedData = { ...namhatta };
+  private async enrichNamahattaWithDevoteeIds(namahatta: any): Promise<any> {
+    const enrichedData = { ...namahatta };
     
     // Define mapping between name fields and ID fields
     const nameFieldMappings = [
@@ -938,13 +938,13 @@ export class DatabaseStorage implements IStorage {
     return enrichedData;
   }
 
-  async createNamhatta(namhattaData: any): Promise<Namhatta> {
+  async createNamahatta(namahattaData: any): Promise<Namahatta> {
     // Extract address information from the request data
-    const { address, landmark, ...inputData } = namhattaData;
+    const { address, landmark, ...inputData } = namahattaData;
     
     // Validate required field
     if (!inputData.districtSupervisorId) {
-      throw new Error('districtSupervisorId is required for namhatta creation');
+      throw new Error('districtSupervisorId is required for namahatta creation');
     }
     
     // Store original devotee IDs before mapping to names
@@ -958,38 +958,38 @@ export class DatabaseStorage implements IStorage {
       accountantId: inputData.accountantId
     };
     
-    console.log('Creating namhatta with devotee IDs:', originalDevoteeIds);
+    console.log('Creating namahatta with devotee IDs:', originalDevoteeIds);
     console.log('districtSupervisorId:', inputData.districtSupervisorId);
     
     // Use the input data directly since database schema expects ID fields, not names
-    const namhattaDetails = inputData;
+    const namahattaDetails = inputData;
     
     // Check if code already exists (CRITICAL: prevents partial write issues)
-    if (namhattaDetails.code) {
-      console.log(`🔍 Checking for existing namhatta with code: '${namhattaDetails.code}'`);
-      const codeExists = await this.checkNamhattaCodeExists(namhattaDetails.code);
+    if (namahattaDetails.code) {
+      console.log(`🔍 Checking for existing namahatta with code: '${namahattaDetails.code}'`);
+      const codeExists = await this.checkNamahattaCodeExists(namahattaDetails.code);
       if (codeExists) {
-        console.log(`❌ Found existing namhatta with code '${namhattaDetails.code}' - this is likely from a previous partial write`);
-        throw new Error(`Namhatta code '${namhattaDetails.code}' already exists. Please choose a unique code.`);
+        console.log(`❌ Found existing namahatta with code '${namahattaDetails.code}' - this is likely from a previous partial write`);
+        throw new Error(`Namahatta code '${namahattaDetails.code}' already exists. Please choose a unique code.`);
       }
-      console.log(`✅ Code '${namhattaDetails.code}' is available`);
+      console.log(`✅ Code '${namahattaDetails.code}' is available`);
     }
     
     // Handle operations sequentially without transactions (neon-http doesn't support transactions)
     try {
-      // Debug: Log what's being inserted into namhatta table
-      console.log('namhattaDetails being inserted into database:', namhattaDetails);
-      console.log('namhattaDetails type and structure:', typeof namhattaDetails, Object.keys(namhattaDetails || {}));
+      // Debug: Log what's being inserted into namahatta table
+      console.log('namahattaDetails being inserted into database:', namahattaDetails);
+      console.log('namahattaDetails type and structure:', typeof namahattaDetails, Object.keys(namahattaDetails || {}));
       
-      // Create the namhatta record first
-      console.log('📝 Step 1: Creating namhatta record...');
-      const result = await db.insert(namhattas).values(namhattaDetails).returning();
+      // Create the namahatta record first
+      console.log('📝 Step 1: Creating namahatta record...');
+      const result = await db.insert(namahattas).values(namahattaDetails).returning();
       console.log('✅ Step 1 complete - Database insert result:', result);
-      const namhatta = result[0];
-      console.log('✅ Created namhatta record with ID:', namhatta?.id);
+      const namahatta = result[0];
+      console.log('✅ Created namahatta record with ID:', namahatta?.id);
       
-      if (!namhatta) {
-        throw new Error('Failed to create namhatta record');
+      if (!namahatta) {
+        throw new Error('Failed to create namahatta record');
       }
     
       // If address information is provided, store it in normalized tables
@@ -1006,44 +1006,44 @@ export class DatabaseStorage implements IStorage {
         });
         console.log('📍 Step 2a: Found/created address with ID:', addressId);
         
-        // Link namhatta to address with landmark
-        await db.insert(namhattaAddresses).values({
-          namhattaId: namhatta.id,
+        // Link namahatta to address with landmark
+        await db.insert(namahattaAddresses).values({
+          namahattaId: namahatta.id,
           addressId: addressId,
           landmark: landmark || address.landmark
         });
-        console.log('✅ Step 2 complete - Linked namhatta to address');
+        console.log('✅ Step 2 complete - Linked namahatta to address');
       } else {
         console.log('⏭️ Step 2: Skipped (no address information provided)');
       }
       
-      // Update devotees assigned to leadership positions to link them to this namhatta
-      const devoteeUpdates: Array<{ devoteeId: number; updates: { namhattaId: number; leadershipRole: string; updatedAt: Date } }> = [];
+      // Update devotees assigned to leadership positions to link them to this namahatta
+      const devoteeUpdates: Array<{ devoteeId: number; updates: { namahattaId: number; leadershipRole: string; updatedAt: Date } }> = [];
       
       // Helper function to add devotee update if ID exists
-      // Only update devotee table if they're not already assigned to another namhatta
+      // Only update devotee table if they're not already assigned to another namahatta
       const addDevoteeUpdate = async (devoteeId: number | null, leadershipRole: string) => {
         if (devoteeId) {
-          // Check if devotee is already assigned to another namhatta
-          const existingDevotee = await db.select({ namhattaId: devotees.namhattaId })
+          // Check if devotee is already assigned to another namahatta
+          const existingDevotee = await db.select({ namahattaId: devotees.namahattaId })
             .from(devotees)
             .where(eq(devotees.id, devoteeId))
             .limit(1);
           
-          // Only add update if devotee is not already assigned to another namhatta
-          if (existingDevotee.length === 0 || !existingDevotee[0].namhattaId) {
+          // Only add update if devotee is not already assigned to another namahatta
+          if (existingDevotee.length === 0 || !existingDevotee[0].namahattaId) {
             devoteeUpdates.push({
               devoteeId,
               updates: {
-                namhattaId: namhatta.id,
+                namahattaId: namahatta.id,
                 leadershipRole,
                 updatedAt: new Date()
               }
             });
           } else {
-            console.log(`🔒 Devotee ${devoteeId} already assigned to namhatta ${existingDevotee[0].namhattaId}, skipping devotee table update`);
+            console.log(`🔒 Devotee ${devoteeId} already assigned to namahatta ${existingDevotee[0].namahattaId}, skipping devotee table update`);
           }
-          // Note: The namhatta table itself will always have the role assignment
+          // Note: The namahatta table itself will always have the role assignment
           // regardless of whether the devotee is assigned or not
         }
       };
@@ -1063,12 +1063,12 @@ export class DatabaseStorage implements IStorage {
       
       for (let i = 0; i < devoteeUpdates.length; i++) {
         const update = devoteeUpdates[i];
-        console.log(`👥 Step 3.${i+1}: Updating devotee ${update.devoteeId} with role ${update.updates.leadershipRole} for namhatta ${update.updates.namhattaId}`);
+        console.log(`👥 Step 3.${i+1}: Updating devotee ${update.devoteeId} with role ${update.updates.leadershipRole} for namahatta ${update.updates.namahattaId}`);
         try {
           const result = await db.update(devotees)
             .set(update.updates)
             .where(eq(devotees.id, update.devoteeId))
-            .returning({ id: devotees.id, leadershipRole: devotees.leadershipRole, namhattaId: devotees.namhattaId });
+            .returning({ id: devotees.id, leadershipRole: devotees.leadershipRole, namahattaId: devotees.namahattaId });
           console.log(`✅ Step 3.${i+1} complete - Update result:`, result);
         } catch (updateError: any) {
           console.error(`❌ Step 3.${i+1} failed - Error updating devotee ${update.devoteeId}:`, updateError.message);
@@ -1077,32 +1077,32 @@ export class DatabaseStorage implements IStorage {
       }
       console.log('✅ Step 3 complete - All devotee role assignments processed');
       
-      // Convert null to undefined for registrationNo and registrationDate to match Namhatta type
+      // Convert null to undefined for registrationNo and registrationDate to match Namahatta type
       return {
-        ...namhatta,
-        registrationNo: namhatta.registrationNo || null,
-        registrationDate: namhatta.registrationDate || null
-      } as Namhatta;
+        ...namahatta,
+        registrationNo: namahatta.registrationNo || null,
+        registrationDate: namahatta.registrationDate || null
+      } as Namahatta;
     } catch (error: any) {
-      console.error('Error in namhatta creation:', error.message, error.stack);
+      console.error('Error in namahatta creation:', error.message, error.stack);
         // Handle database unique constraint violation
         if (error.message && error.message.includes('unique constraint') && error.message.includes('code')) {
-          throw new Error(`Namhatta code '${namhattaDetails.code}' already exists. Please choose a unique code.`);
+          throw new Error(`Namahatta code '${namahattaDetails.code}' already exists. Please choose a unique code.`);
         }
         throw error;
       }
   }
 
-  async updateNamhatta(id: number, namhattaData: any): Promise<Namhatta> {
+  async updateNamahatta(id: number, namahattaData: any): Promise<Namahatta> {
     // Extract address information from the request data
-    const { address, landmark, ...inputData } = namhattaData;
+    const { address, landmark, ...inputData } = namahattaData;
     
     // Use the input data directly since database schema expects ID fields, not names
-    const namhattaDetails = inputData;
+    const namahattaDetails = inputData;
     
-    // Update the namhatta record first
-    const result = await db.update(namhattas).set(namhattaDetails).where(eq(namhattas.id, id)).returning();
-    const namhatta = result[0];
+    // Update the namahatta record first
+    const result = await db.update(namahattas).set(namahattaDetails).where(eq(namahattas.id, id)).returning();
+    const namahatta = result[0];
     
     // If address information is provided, update it in normalized tables
     if (address && (address.country || address.state || address.district || address.subDistrict || address.village || address.postalCode)) {
@@ -1117,52 +1117,52 @@ export class DatabaseStorage implements IStorage {
       });
       
       // Delete existing address link and insert new one
-      await db.delete(namhattaAddresses).where(eq(namhattaAddresses.namhattaId, id));
-      await db.insert(namhattaAddresses).values({
-        namhattaId: id,
+      await db.delete(namahattaAddresses).where(eq(namahattaAddresses.namahattaId, id));
+      await db.insert(namahattaAddresses).values({
+        namahattaId: id,
         addressId: addressId,
         landmark: landmark || address.landmark
       });
       
-      console.log(`Updated namhatta ${id} with new address ID ${addressId} and landmark: ${landmark || address.landmark}`);
+      console.log(`Updated namahatta ${id} with new address ID ${addressId} and landmark: ${landmark || address.landmark}`);
     }
     
-    // Convert null to undefined for registrationNo and registrationDate to match Namhatta type
+    // Convert null to undefined for registrationNo and registrationDate to match Namahatta type
     return {
-      ...namhatta,
-      registrationNo: namhatta.registrationNo || null,
-      registrationDate: namhatta.registrationDate || undefined
-    } as Namhatta;
+      ...namahatta,
+      registrationNo: namahatta.registrationNo || null,
+      registrationDate: namahatta.registrationDate || undefined
+    } as Namahatta;
   }
 
-  async approveNamhatta(id: number, registrationNo: string, registrationDate: string): Promise<void> {
-    await db.update(namhattas).set({ 
+  async approveNamahatta(id: number, registrationNo: string, registrationDate: string): Promise<void> {
+    await db.update(namahattas).set({ 
       status: "APPROVED", 
       registrationNo,
       registrationDate 
-    }).where(eq(namhattas.id, id));
+    }).where(eq(namahattas.id, id));
   }
 
   async checkRegistrationNoExists(registrationNo: string): Promise<boolean> {
     const result = await db.select({ count: count() })
-      .from(namhattas)
-      .where(eq(namhattas.registrationNo, registrationNo));
+      .from(namahattas)
+      .where(eq(namahattas.registrationNo, registrationNo));
     return Number(result[0].count) > 0;
   }
 
-  async rejectNamhatta(id: number, reason?: string): Promise<void> {
-    await db.update(namhattas).set({ status: "REJECTED" }).where(eq(namhattas.id, id));
+  async rejectNamahatta(id: number, reason?: string): Promise<void> {
+    await db.update(namahattas).set({ status: "REJECTED" }).where(eq(namahattas.id, id));
   }
 
-  async getNamhattaUpdates(id: number): Promise<NamhattaUpdate[]> {
-    return await db.select().from(namhattaUpdates).where(eq(namhattaUpdates.namhattaId, id)).orderBy(desc(namhattaUpdates.date));
+  async getNamahattaUpdates(id: number): Promise<NamahattaUpdate[]> {
+    return await db.select().from(namahattaUpdates).where(eq(namahattaUpdates.namahattaId, id)).orderBy(desc(namahattaUpdates.date));
   }
 
-  async getNamhattaDevoteeStatusCount(id: number): Promise<Record<string, number>> {
+  async getNamahattaDevoteeStatusCount(id: number): Promise<Record<string, number>> {
     const devoteesByStatus = await db.select({
       statusId: devotees.devotionalStatusId,
       count: count()
-    }).from(devotees).where(eq(devotees.namhattaId, id)).groupBy(devotees.devotionalStatusId);
+    }).from(devotees).where(eq(devotees.namahattaId, id)).groupBy(devotees.devotionalStatusId);
 
     const statusCounts: Record<string, number> = {};
     for (const item of devoteesByStatus) {
@@ -1177,12 +1177,12 @@ export class DatabaseStorage implements IStorage {
     return statusCounts;
   }
 
-  async getNamhattaStatusHistory(id: number, page = 1, size = 10): Promise<{ data: StatusHistory[], total: number }> {
+  async getNamahattaStatusHistory(id: number, page = 1, size = 10): Promise<{ data: StatusHistory[], total: number }> {
     const offset = (page - 1) * size;
     
-    // Get devotees for this namhatta first
-    const namhattaDevotees = await db.select({ id: devotees.id }).from(devotees).where(eq(devotees.namhattaId, id));
-    const devoteeIds = namhattaDevotees.map(d => d.id);
+    // Get devotees for this namahatta first
+    const namahattaDevotees = await db.select({ id: devotees.id }).from(devotees).where(eq(devotees.namahattaId, id));
+    const devoteeIds = namahattaDevotees.map(d => d.id);
     
     if (devoteeIds.length === 0) {
       return { data: [], total: 0 };
@@ -1280,33 +1280,33 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Updates
-  async createNamhattaUpdate(update: InsertNamhattaUpdate): Promise<NamhattaUpdate> {
-    const result = await db.insert(namhattaUpdates).values(update as any).returning();
+  async createNamahattaUpdate(update: InsertNamahattaUpdate): Promise<NamahattaUpdate> {
+    const result = await db.insert(namahattaUpdates).values(update as any).returning();
     return result[0];
   }
 
-  async getAllUpdates(): Promise<Array<NamhattaUpdate & { namhattaName: string }>> {
+  async getAllUpdates(): Promise<Array<NamahattaUpdate & { namahattaName: string }>> {
     const result = await db.select({
-      id: namhattaUpdates.id,
-      namhattaId: namhattaUpdates.namhattaId,
-      programType: namhattaUpdates.programType,
-      date: namhattaUpdates.date,
-      attendance: namhattaUpdates.attendance,
-      prasadDistribution: namhattaUpdates.prasadDistribution,
-      nagarKirtan: namhattaUpdates.nagarKirtan,
-      bookDistribution: namhattaUpdates.bookDistribution,
-      chanting: namhattaUpdates.chanting,
-      arati: namhattaUpdates.arati,
-      bhagwatPath: namhattaUpdates.bhagwatPath,
-      imageUrls: namhattaUpdates.imageUrls,
-      facebookLink: namhattaUpdates.facebookLink,
-      youtubeLink: namhattaUpdates.youtubeLink,
-      specialAttraction: namhattaUpdates.specialAttraction,
-      createdAt: namhattaUpdates.createdAt,
-      namhattaName: namhattas.name
-    }).from(namhattaUpdates)
-      .innerJoin(namhattas, eq(namhattaUpdates.namhattaId, namhattas.id))
-      .orderBy(desc(namhattaUpdates.date));
+      id: namahattaUpdates.id,
+      namahattaId: namahattaUpdates.namahattaId,
+      programType: namahattaUpdates.programType,
+      date: namahattaUpdates.date,
+      attendance: namahattaUpdates.attendance,
+      prasadDistribution: namahattaUpdates.prasadDistribution,
+      nagarKirtan: namahattaUpdates.nagarKirtan,
+      bookDistribution: namahattaUpdates.bookDistribution,
+      chanting: namahattaUpdates.chanting,
+      arati: namahattaUpdates.arati,
+      bhagwatPath: namahattaUpdates.bhagwatPath,
+      imageUrls: namahattaUpdates.imageUrls,
+      facebookLink: namahattaUpdates.facebookLink,
+      youtubeLink: namahattaUpdates.youtubeLink,
+      specialAttraction: namahattaUpdates.specialAttraction,
+      createdAt: namahattaUpdates.createdAt,
+      namahattaName: namahattas.name
+    }).from(namahattaUpdates)
+      .innerJoin(namahattas, eq(namahattaUpdates.namahattaId, namahattas.id))
+      .orderBy(desc(namahattaUpdates.date));
     
     return result;
   }
@@ -1369,27 +1369,27 @@ export class DatabaseStorage implements IStorage {
 
   async getDashboardSummary(): Promise<{
     totalDevotees: number;
-    totalNamhattas: number;
+    totalNamahattas: number;
     recentUpdates: Array<{
-      namhattaId: number;
-      namhattaName: string;
+      namahattaId: number;
+      namahattaName: string;
       programType: string;
       date: string;
       attendance: number;
     }>;
   }> {
-    const [devoteeCount, namhattaCount, updates] = await Promise.all([
+    const [devoteeCount, namahattaCount, updates] = await Promise.all([
       db.select({ count: count() }).from(devotees),
-      db.select({ count: count() }).from(namhattas),
-      db.select().from(namhattaUpdates).orderBy(desc(namhattaUpdates.date)).limit(5)
+      db.select({ count: count() }).from(namahattas),
+      db.select().from(namahattaUpdates).orderBy(desc(namahattaUpdates.date)).limit(5)
     ]);
 
     const recentUpdates = [];
     for (const update of updates) {
-      const namhatta = await db.select().from(namhattas).where(eq(namhattas.id, update.namhattaId)).limit(1);
+      const namahatta = await db.select().from(namahattas).where(eq(namahattas.id, update.namahattaId)).limit(1);
       recentUpdates.push({
-        namhattaId: update.namhattaId,
-        namhattaName: namhatta[0]?.name || "Unknown",
+        namahattaId: update.namahattaId,
+        namahattaName: namahatta[0]?.name || "Unknown",
         programType: update.programType,
         date: update.date,
         attendance: update.attendance
@@ -1398,7 +1398,7 @@ export class DatabaseStorage implements IStorage {
 
     return {
       totalDevotees: devoteeCount[0].count,
-      totalNamhattas: namhattaCount[0].count,
+      totalNamahattas: namahattaCount[0].count,
       recentUpdates
     };
   }
@@ -1651,9 +1651,9 @@ export class DatabaseStorage implements IStorage {
     });
   }
 
-  async createNamhattaAddress(namhattaId: number, addressId: number, landmark?: string): Promise<void> {
-    await db.insert(namhattaAddresses).values({
-      namhattaId,
+  async createNamahattaAddress(namahattaId: number, addressId: number, landmark?: string): Promise<void> {
+    await db.insert(namahattaAddresses).values({
+      namahattaId,
       addressId,
       landmark
     });
@@ -1697,7 +1697,7 @@ export class DatabaseStorage implements IStorage {
     }));
   }
 
-  async getNamhattaAddress(namhattaId: number): Promise<{
+  async getNamahattaAddress(namahattaId: number): Promise<{
     id: number;
     landmark?: string;
     country?: string;
@@ -1708,17 +1708,17 @@ export class DatabaseStorage implements IStorage {
     postalCode?: string;
   } | undefined> {
     const result = await db.select({
-      id: namhattaAddresses.id,
-      landmark: namhattaAddresses.landmark,
+      id: namahattaAddresses.id,
+      landmark: namahattaAddresses.landmark,
       country: addresses.country,
       state: addresses.stateNameEnglish,
       district: addresses.districtNameEnglish,
       subDistrict: addresses.subdistrictNameEnglish,
       village: addresses.villageNameEnglish,
       postalCode: addresses.pincode
-    }).from(namhattaAddresses)
-      .innerJoin(addresses, eq(namhattaAddresses.addressId, addresses.id))
-      .where(eq(namhattaAddresses.namhattaId, namhattaId))
+    }).from(namahattaAddresses)
+      .innerJoin(addresses, eq(namahattaAddresses.addressId, addresses.id))
+      .where(eq(namahattaAddresses.namahattaId, namahattaId))
       .limit(1);
 
     return result[0] ? {
@@ -1734,16 +1734,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Map data methods - Updated to use normalized address tables
-  async getNamhattaCountsByCountry(): Promise<Array<{ country: string; count: number }>> {
+  async getNamahattaCountsByCountry(): Promise<Array<{ country: string; count: number }>> {
     const results = await db.select({
       country: addresses.country,
       count: count()
-    }).from(namhattaAddresses)
-      .innerJoin(addresses, eq(namhattaAddresses.addressId, addresses.id))
-      .innerJoin(namhattas, eq(namhattaAddresses.namhattaId, namhattas.id))
+    }).from(namahattaAddresses)
+      .innerJoin(addresses, eq(namahattaAddresses.addressId, addresses.id))
+      .innerJoin(namahattas, eq(namahattaAddresses.namahattaId, namahattas.id))
       .where(and(
         sql`${addresses.country} IS NOT NULL`,
-        ne(namhattas.status, 'Rejected')
+        ne(namahattas.status, 'Rejected')
       ))
       .groupBy(addresses.country);
 
@@ -1753,10 +1753,10 @@ export class DatabaseStorage implements IStorage {
     }));
   }
 
-  async getNamhattaCountsByState(country?: string): Promise<Array<{ state: string; country: string; count: number }>> {
+  async getNamahattaCountsByState(country?: string): Promise<Array<{ state: string; country: string; count: number }>> {
     let whereConditions = [
       sql`${addresses.stateNameEnglish} IS NOT NULL`,
-      ne(namhattas.status, 'Rejected')
+      ne(namahattas.status, 'Rejected')
     ];
     
     if (country) {
@@ -1767,9 +1767,9 @@ export class DatabaseStorage implements IStorage {
       state: addresses.stateNameEnglish,
       country: addresses.country,
       count: count()
-    }).from(namhattaAddresses)
-      .innerJoin(addresses, eq(namhattaAddresses.addressId, addresses.id))
-      .innerJoin(namhattas, eq(namhattaAddresses.namhattaId, namhattas.id))
+    }).from(namahattaAddresses)
+      .innerJoin(addresses, eq(namahattaAddresses.addressId, addresses.id))
+      .innerJoin(namahattas, eq(namahattaAddresses.namahattaId, namahattas.id))
       .where(and(...whereConditions))
       .groupBy(addresses.stateNameEnglish, addresses.country);
 
@@ -1780,10 +1780,10 @@ export class DatabaseStorage implements IStorage {
     }));
   }
 
-  async getNamhattaCountsByDistrict(state?: string): Promise<Array<{ district: string; state: string; country: string; count: number }>> {
-    // Include ALL namhattas from state level, even if district data is missing
+  async getNamahattaCountsByDistrict(state?: string): Promise<Array<{ district: string; state: string; country: string; count: number }>> {
+    // Include ALL namahattas from state level, even if district data is missing
     let whereConditions = [
-      ne(namhattas.status, 'Rejected')
+      ne(namahattas.status, 'Rejected')
     ];
     
     if (state) {
@@ -1795,9 +1795,9 @@ export class DatabaseStorage implements IStorage {
       state: sql`COALESCE(${addresses.stateNameEnglish}, 'Unknown State')`.as('state'),
       country: sql`COALESCE(${addresses.country}, 'Unknown Country')`.as('country'),
       count: count()
-    }).from(namhattaAddresses)
-      .innerJoin(addresses, eq(namhattaAddresses.addressId, addresses.id))
-      .innerJoin(namhattas, eq(namhattaAddresses.namhattaId, namhattas.id))
+    }).from(namahattaAddresses)
+      .innerJoin(addresses, eq(namahattaAddresses.addressId, addresses.id))
+      .innerJoin(namahattas, eq(namahattaAddresses.namahattaId, namahattas.id))
       .where(and(...whereConditions))
       .groupBy(
         sql`COALESCE(${addresses.districtNameEnglish}, 'Unknown District')`, 
@@ -1813,10 +1813,10 @@ export class DatabaseStorage implements IStorage {
     }));
   }
 
-  async getNamhattaCountsBySubDistrict(district?: string): Promise<Array<{ subDistrict: string; district: string; state: string; country: string; count: number }>> {
-    // Include ALL namhattas from district level, even if sub-district data is missing
+  async getNamahattaCountsBySubDistrict(district?: string): Promise<Array<{ subDistrict: string; district: string; state: string; country: string; count: number }>> {
+    // Include ALL namahattas from district level, even if sub-district data is missing
     let whereConditions = [
-      ne(namhattas.status, 'Rejected')
+      ne(namahattas.status, 'Rejected')
     ];
     
     if (district) {
@@ -1829,9 +1829,9 @@ export class DatabaseStorage implements IStorage {
       state: sql`COALESCE(${addresses.stateNameEnglish}, 'Unknown State')`.as('state'),
       country: sql`COALESCE(${addresses.country}, 'Unknown Country')`.as('country'),
       count: count()
-    }).from(namhattaAddresses)
-      .innerJoin(addresses, eq(namhattaAddresses.addressId, addresses.id))
-      .innerJoin(namhattas, eq(namhattaAddresses.namhattaId, namhattas.id))
+    }).from(namahattaAddresses)
+      .innerJoin(addresses, eq(namahattaAddresses.addressId, addresses.id))
+      .innerJoin(namahattas, eq(namahattaAddresses.namahattaId, namahattas.id))
       .where(and(...whereConditions))
       .groupBy(
         sql`COALESCE(${addresses.subdistrictNameEnglish}, 'Unknown Sub-District')`,
@@ -1849,10 +1849,10 @@ export class DatabaseStorage implements IStorage {
     }));
   }
 
-  async getNamhattaCountsByVillage(subDistrict?: string): Promise<Array<{ village: string; subDistrict: string; district: string; state: string; country: string; count: number }>> {
-    // Include ALL namhattas from sub-district level, even if village data is missing
+  async getNamahattaCountsByVillage(subDistrict?: string): Promise<Array<{ village: string; subDistrict: string; district: string; state: string; country: string; count: number }>> {
+    // Include ALL namahattas from sub-district level, even if village data is missing
     let whereConditions = [
-      ne(namhattas.status, 'Rejected')
+      ne(namahattas.status, 'Rejected')
     ];
     
     if (subDistrict) {
@@ -1866,9 +1866,9 @@ export class DatabaseStorage implements IStorage {
       state: sql`COALESCE(${addresses.stateNameEnglish}, 'Unknown State')`.as('state'),
       country: sql`COALESCE(${addresses.country}, 'Unknown Country')`.as('country'),
       count: count()
-    }).from(namhattaAddresses)
-      .innerJoin(addresses, eq(namhattaAddresses.addressId, addresses.id))
-      .innerJoin(namhattas, eq(namhattaAddresses.namhattaId, namhattas.id))
+    }).from(namahattaAddresses)
+      .innerJoin(addresses, eq(namahattaAddresses.addressId, addresses.id))
+      .innerJoin(namahattas, eq(namahattaAddresses.namahattaId, namahattas.id))
       .where(and(...whereConditions))
       .groupBy(
         sql`COALESCE(${addresses.villageNameEnglish}, 'Unknown Village')`,
@@ -2019,22 +2019,22 @@ export class DatabaseStorage implements IStorage {
     states: Array<{
       name: string;
       country: string;
-      namhattaCount: number;
+      namahattaCount: number;
       devoteeCount: number;
       districts: Array<{
         name: string;
         state: string;
-        namhattaCount: number;
+        namahattaCount: number;
         devoteeCount: number;
         subDistricts: Array<{
           name: string;
           district: string;
-          namhattaCount: number;
+          namahattaCount: number;
           devoteeCount: number;
           villages: Array<{
             name: string;
             subDistrict: string;
-            namhattaCount: number;
+            namahattaCount: number;
             devoteeCount: number;
           }>;
         }>;
@@ -2047,17 +2047,17 @@ export class DatabaseStorage implements IStorage {
       districtFilter = inArray(addresses.districtNameEnglish, filters.allowedDistricts);
     }
 
-    // Get namhatta counts by state
-    const namhattaStateResults = await db.select({
+    // Get namahatta counts by state
+    const namahattaStateResults = await db.select({
       state: addresses.stateNameEnglish,
       country: addresses.country,
       count: count()
-    }).from(namhattaAddresses)
-      .innerJoin(addresses, eq(namhattaAddresses.addressId, addresses.id))
-      .innerJoin(namhattas, eq(namhattaAddresses.namhattaId, namhattas.id))
+    }).from(namahattaAddresses)
+      .innerJoin(addresses, eq(namahattaAddresses.addressId, addresses.id))
+      .innerJoin(namahattas, eq(namahattaAddresses.namahattaId, namahattas.id))
       .where(and(
         sql`${addresses.stateNameEnglish} IS NOT NULL`,
-        ne(namhattas.status, 'Rejected'),
+        ne(namahattas.status, 'Rejected'),
         districtFilter
       ))
       .groupBy(addresses.stateNameEnglish, addresses.country);
@@ -2079,19 +2079,19 @@ export class DatabaseStorage implements IStorage {
     // Create state-level data structure
     const stateMap = new Map<string, any>();
     
-    // Process namhatta counts
-    namhattaStateResults.forEach(result => {
+    // Process namahatta counts
+    namahattaStateResults.forEach(result => {
       const stateKey = `${result.state}_${result.country}`;
       if (!stateMap.has(stateKey)) {
         stateMap.set(stateKey, {
           name: result.state || 'Unknown',
           country: result.country || 'Unknown',
-          namhattaCount: 0,
+          namahattaCount: 0,
           devoteeCount: 0,
           districts: []
         });
       }
-      stateMap.get(stateKey).namhattaCount = result.count;
+      stateMap.get(stateKey).namahattaCount = result.count;
     });
 
     // Process devotee counts
@@ -2101,7 +2101,7 @@ export class DatabaseStorage implements IStorage {
         stateMap.set(stateKey, {
           name: result.state || 'Unknown',
           country: result.country || 'Unknown',
-          namhattaCount: 0,
+          namahattaCount: 0,
           devoteeCount: 0,
           districts: []
         });
@@ -2129,16 +2129,16 @@ export class DatabaseStorage implements IStorage {
       );
     }
 
-    // Get namhatta counts by district
-    const namhattaDistrictResults = await db.select({
+    // Get namahatta counts by district
+    const namahattaDistrictResults = await db.select({
       district: sql`COALESCE(${addresses.districtNameEnglish}, 'Unknown District')`.as('district'),
       count: count()
-    }).from(namhattaAddresses)
-      .innerJoin(addresses, eq(namhattaAddresses.addressId, addresses.id))
-      .innerJoin(namhattas, eq(namhattaAddresses.namhattaId, namhattas.id))
+    }).from(namahattaAddresses)
+      .innerJoin(addresses, eq(namahattaAddresses.addressId, addresses.id))
+      .innerJoin(namahattas, eq(namahattaAddresses.namahattaId, namahattas.id))
       .where(and(
         districtFilter,
-        ne(namhattas.status, 'Rejected')
+        ne(namahattas.status, 'Rejected')
       ))
       .groupBy(sql`COALESCE(${addresses.districtNameEnglish}, 'Unknown District')`);
 
@@ -2155,12 +2155,12 @@ export class DatabaseStorage implements IStorage {
     // Combine district data
     const districtMap = new Map<string, any>();
     
-    namhattaDistrictResults.forEach(result => {
+    namahattaDistrictResults.forEach(result => {
       const district = result.district as string;
       districtMap.set(district, {
         name: district,
         state: stateName,
-        namhattaCount: result.count,
+        namahattaCount: result.count,
         devoteeCount: 0,
         subDistricts: []
       });
@@ -2172,7 +2172,7 @@ export class DatabaseStorage implements IStorage {
         districtMap.set(district, {
           name: district,
           state: stateName,
-          namhattaCount: 0,
+          namahattaCount: 0,
           devoteeCount: result.count,
           subDistricts: []
         });
@@ -2203,14 +2203,14 @@ export class DatabaseStorage implements IStorage {
       );
     }
 
-    // Get namhatta counts by sub-district
-    const namhattaSubDistrictResults = await db.select({
+    // Get namahatta counts by sub-district
+    const namahattaSubDistrictResults = await db.select({
       subDistrict: sql`COALESCE(${addresses.subdistrictNameEnglish}, 'Unknown Sub-District')`.as('subDistrict'),
       count: count()
-    }).from(namhattaAddresses)
-      .innerJoin(addresses, eq(namhattaAddresses.addressId, addresses.id))
-      .innerJoin(namhattas, eq(namhattaAddresses.namhattaId, namhattas.id))
-      .where(and(whereConditions, ne(namhattas.status, 'Rejected')))
+    }).from(namahattaAddresses)
+      .innerJoin(addresses, eq(namahattaAddresses.addressId, addresses.id))
+      .innerJoin(namahattas, eq(namahattaAddresses.namahattaId, namahattas.id))
+      .where(and(whereConditions, ne(namahattas.status, 'Rejected')))
       .groupBy(sql`COALESCE(${addresses.subdistrictNameEnglish}, 'Unknown Sub-District')`);
 
     // Get devotee counts by sub-district
@@ -2226,12 +2226,12 @@ export class DatabaseStorage implements IStorage {
     // Combine sub-district data
     const subDistrictMap = new Map<string, any>();
     
-    namhattaSubDistrictResults.forEach(result => {
+    namahattaSubDistrictResults.forEach(result => {
       const subDistrict = result.subDistrict as string;
       subDistrictMap.set(subDistrict, {
         name: subDistrict,
         district: districtName,
-        namhattaCount: result.count,
+        namahattaCount: result.count,
         devoteeCount: 0,
         villages: []
       });
@@ -2243,7 +2243,7 @@ export class DatabaseStorage implements IStorage {
         subDistrictMap.set(subDistrict, {
           name: subDistrict,
           district: districtName,
-          namhattaCount: 0,
+          namahattaCount: 0,
           devoteeCount: result.count,
           villages: []
         });
@@ -2275,14 +2275,14 @@ export class DatabaseStorage implements IStorage {
       );
     }
 
-    // Get namhatta counts by village
-    const namhattaVillageResults = await db.select({
+    // Get namahatta counts by village
+    const namahattaVillageResults = await db.select({
       village: sql`COALESCE(${addresses.villageNameEnglish}, 'Unknown Village')`.as('village'),
       count: count()
-    }).from(namhattaAddresses)
-      .innerJoin(addresses, eq(namhattaAddresses.addressId, addresses.id))
-      .innerJoin(namhattas, eq(namhattaAddresses.namhattaId, namhattas.id))
-      .where(and(whereConditions, ne(namhattas.status, 'Rejected')))
+    }).from(namahattaAddresses)
+      .innerJoin(addresses, eq(namahattaAddresses.addressId, addresses.id))
+      .innerJoin(namahattas, eq(namahattaAddresses.namahattaId, namahattas.id))
+      .where(and(whereConditions, ne(namahattas.status, 'Rejected')))
       .groupBy(sql`COALESCE(${addresses.villageNameEnglish}, 'Unknown Village')`);
 
     // Get devotee counts by village
@@ -2298,12 +2298,12 @@ export class DatabaseStorage implements IStorage {
     // Combine village data
     const villageMap = new Map<string, any>();
     
-    namhattaVillageResults.forEach(result => {
+    namahattaVillageResults.forEach(result => {
       const village = result.village as string;
       villageMap.set(village, {
         name: village,
         subDistrict: subDistrictName,
-        namhattaCount: result.count,
+        namahattaCount: result.count,
         devoteeCount: 0
       });
     });
@@ -2314,7 +2314,7 @@ export class DatabaseStorage implements IStorage {
         villageMap.set(village, {
           name: village,
           subDistrict: subDistrictName,
-          namhattaCount: 0,
+          namahattaCount: 0,
           devoteeCount: result.count
         });
       } else {
@@ -2698,17 +2698,17 @@ export class DatabaseStorage implements IStorage {
       // Get all devotee IDs that are currently assigned as Secretary, President, or Accountant
       const assignedDevoteeIdsResult = await db
         .select({
-          secretaryId: namhattas.secretaryId,
-          presidentId: namhattas.presidentId,
-          accountantId: namhattas.accountantId
+          secretaryId: namahattas.secretaryId,
+          presidentId: namahattas.presidentId,
+          accountantId: namahattas.accountantId
         })
-        .from(namhattas);
+        .from(namahattas);
 
       const assignedDevoteeIds = new Set<number>();
-      assignedDevoteeIdsResult.forEach(namhatta => {
-        if (namhatta.secretaryId) assignedDevoteeIds.add(namhatta.secretaryId);
-        if (namhatta.presidentId) assignedDevoteeIds.add(namhatta.presidentId);
-        if (namhatta.accountantId) assignedDevoteeIds.add(namhatta.accountantId);
+      assignedDevoteeIdsResult.forEach(namahatta => {
+        if (namahatta.secretaryId) assignedDevoteeIds.add(namahatta.secretaryId);
+        if (namahatta.presidentId) assignedDevoteeIds.add(namahatta.presidentId);
+        if (namahatta.accountantId) assignedDevoteeIds.add(namahatta.accountantId);
       });
 
       // Filter devotees who are available for officer positions
@@ -2719,8 +2719,8 @@ export class DatabaseStorage implements IStorage {
         .select()
         .from(devotees)
         .where(and(
-          // Not assigned to any namhatta as a regular member (namhattaId should be null)
-          isNull(devotees.namhattaId),
+          // Not assigned to any namahatta as a regular member (namahattaId should be null)
+          isNull(devotees.namahattaId),
           // Don't have any senapoti leadership roles
           or(
             isNull(devotees.leadershipRole),
@@ -2740,14 +2740,14 @@ export class DatabaseStorage implements IStorage {
   async getAvailableDevoteesForSenapotiRoles(): Promise<Devotee[]> {
     try {
       // Get all devotees who are available for senapoti role assignment
-      // This includes all devotees who are not currently assigned as regular members to any namhatta
+      // This includes all devotees who are not currently assigned as regular members to any namahatta
       const availableDevoteesResult = await db
         .select()
         .from(devotees)
         .where(
-          // Not assigned to any namhatta as a regular member (namhattaId should be null)
-          // This allows for leadership role assignments across namhattas
-          isNull(devotees.namhattaId)
+          // Not assigned to any namahatta as a regular member (namahattaId should be null)
+          // This allows for leadership role assignments across namahattas
+          isNull(devotees.namahattaId)
         )
         .orderBy(asc(devotees.legalName));
 
@@ -3166,7 +3166,7 @@ export class DatabaseStorage implements IStorage {
   async getAllStatesWithCounts(filters?: { allowedDistricts?: string[] }): Promise<Array<{
     name: string;
     country: string;
-    namhattaCount: number;
+    namahattaCount: number;
     devoteeCount: number;
   }>> {
     // Build the where condition for states query
@@ -3185,23 +3185,23 @@ export class DatabaseStorage implements IStorage {
       .from(addresses)
       .where(statesWhereCondition);
 
-      // Build namhatta counts where condition
-    const namhattaConditions = [
+      // Build namahatta counts where condition
+    const namahattaConditions = [
       isNotNull(addresses.stateNameEnglish),
-      ne(namhattas.status, 'Rejected'),
+      ne(namahattas.status, 'Rejected'),
       filters?.allowedDistricts && filters.allowedDistricts.length > 0 ? inArray(addresses.districtNameEnglish, filters.allowedDistricts) : undefined
     ].filter(Boolean) as any[];
-    const namhattaWhereCondition = and(...namhattaConditions);
+    const namahattaWhereCondition = and(...namahattaConditions);
 
-    // Get namhatta counts by state
-    const namhattaCounts = await db.select({
+    // Get namahatta counts by state
+    const namahattaCounts = await db.select({
       state: addresses.stateNameEnglish,
       country: addresses.country,
       count: count()
-    }).from(namhattaAddresses)
-      .innerJoin(addresses, eq(namhattaAddresses.addressId, addresses.id))
-      .innerJoin(namhattas, eq(namhattaAddresses.namhattaId, namhattas.id))
-      .where(namhattaWhereCondition)
+    }).from(namahattaAddresses)
+      .innerJoin(addresses, eq(namahattaAddresses.addressId, addresses.id))
+      .innerJoin(namahattas, eq(namahattaAddresses.namahattaId, namahattas.id))
+      .where(namahattaWhereCondition)
       .groupBy(addresses.stateNameEnglish, addresses.country);
 
     // Build devotee counts where condition
@@ -3223,12 +3223,12 @@ export class DatabaseStorage implements IStorage {
       .groupBy(addresses.stateNameEnglish, addresses.country);
 
     // Create maps for quick lookup
-    const namhattaMap = new Map<string, number>();
+    const namahattaMap = new Map<string, number>();
     const devoteeMap = new Map<string, number>();
 
-    namhattaCounts.forEach(result => {
+    namahattaCounts.forEach(result => {
       const key = `${result.state}_${result.country}`;
-      namhattaMap.set(key, result.count);
+      namahattaMap.set(key, result.count);
     });
 
     devoteeCounts.forEach(result => {
@@ -3242,7 +3242,7 @@ export class DatabaseStorage implements IStorage {
       return {
         name: state.state || 'Unknown',
         country: state.country || 'Unknown',
-        namhattaCount: namhattaMap.get(key) || 0,
+        namahattaCount: namahattaMap.get(key) || 0,
         devoteeCount: devoteeMap.get(key) || 0
       };
     }).sort((a, b) => a.name.localeCompare(b.name));
@@ -3251,7 +3251,7 @@ export class DatabaseStorage implements IStorage {
   async getAllDistrictsWithCounts(state: string, filters?: { allowedDistricts?: string[] }): Promise<Array<{
     name: string;
     state: string;
-    namhattaCount: number;
+    namahattaCount: number;
     devoteeCount: number;
   }>> {
     // Build where condition for districts query
@@ -3271,23 +3271,23 @@ export class DatabaseStorage implements IStorage {
       .from(addresses)
       .where(districtQueryWhere);
 
-    // Build namhatta counts where condition for districts
-    const namhattaDistrictConditions = [
+    // Build namahatta counts where condition for districts
+    const namahattaDistrictConditions = [
       eq(addresses.stateNameEnglish, state),
       isNotNull(addresses.districtNameEnglish),
-      ne(namhattas.status, 'Rejected'),
+      ne(namahattas.status, 'Rejected'),
       filters?.allowedDistricts && filters.allowedDistricts.length > 0 ? inArray(addresses.districtNameEnglish, filters.allowedDistricts) : undefined
     ].filter(Boolean) as any[];
-    const namhattaDistrictWhere = and(...namhattaDistrictConditions);
+    const namahattaDistrictWhere = and(...namahattaDistrictConditions);
 
-    // Get namhatta counts by district
-    const namhattaCounts = await db.select({
+    // Get namahatta counts by district
+    const namahattaCounts = await db.select({
       district: addresses.districtNameEnglish,
       count: count()
-    }).from(namhattaAddresses)
-      .innerJoin(addresses, eq(namhattaAddresses.addressId, addresses.id))
-      .innerJoin(namhattas, eq(namhattaAddresses.namhattaId, namhattas.id))
-      .where(namhattaDistrictWhere)
+    }).from(namahattaAddresses)
+      .innerJoin(addresses, eq(namahattaAddresses.addressId, addresses.id))
+      .innerJoin(namahattas, eq(namahattaAddresses.namahattaId, namahattas.id))
+      .where(namahattaDistrictWhere)
       .groupBy(addresses.districtNameEnglish);
 
     // Build devotee counts where condition for districts
@@ -3309,11 +3309,11 @@ export class DatabaseStorage implements IStorage {
       .groupBy(addresses.districtNameEnglish);
 
     // Create maps for quick lookup
-    const namhattaMap = new Map<string, number>();
+    const namahattaMap = new Map<string, number>();
     const devoteeMap = new Map<string, number>();
 
-    namhattaCounts.forEach(result => {
-      namhattaMap.set(result.district!, result.count);
+    namahattaCounts.forEach(result => {
+      namahattaMap.set(result.district!, result.count);
     });
 
     devoteeCounts.forEach(result => {
@@ -3324,7 +3324,7 @@ export class DatabaseStorage implements IStorage {
     return allDistricts.map(district => ({
       name: district.district || 'Unknown',
       state: district.state || 'Unknown',
-      namhattaCount: namhattaMap.get(district.district!) || 0,
+      namahattaCount: namahattaMap.get(district.district!) || 0,
       devoteeCount: devoteeMap.get(district.district!) || 0
     })).sort((a, b) => a.name.localeCompare(b.name));
   }
@@ -3332,7 +3332,7 @@ export class DatabaseStorage implements IStorage {
   async getAllSubDistrictsWithCounts(state: string, district: string, filters?: { allowedDistricts?: string[] }): Promise<Array<{
     name: string;
     district: string;
-    namhattaCount: number;
+    namahattaCount: number;
     devoteeCount: number;
   }>> {
     // Check if we have access to this district
@@ -3353,18 +3353,18 @@ export class DatabaseStorage implements IStorage {
         isNotNull(addresses.subdistrictNameEnglish)
       ));
 
-    // Get namhatta counts by sub-district
-    const namhattaCounts = await db.select({
+    // Get namahatta counts by sub-district
+    const namahattaCounts = await db.select({
       subDistrict: addresses.subdistrictNameEnglish,
       count: count()
-    }).from(namhattaAddresses)
-      .innerJoin(addresses, eq(namhattaAddresses.addressId, addresses.id))
-      .innerJoin(namhattas, eq(namhattaAddresses.namhattaId, namhattas.id))
+    }).from(namahattaAddresses)
+      .innerJoin(addresses, eq(namahattaAddresses.addressId, addresses.id))
+      .innerJoin(namahattas, eq(namahattaAddresses.namahattaId, namahattas.id))
       .where(and(
         eq(addresses.stateNameEnglish, state),
         eq(addresses.districtNameEnglish, district),
         isNotNull(addresses.subdistrictNameEnglish),
-        ne(namhattas.status, 'Rejected')
+        ne(namahattas.status, 'Rejected')
       ))
       .groupBy(addresses.subdistrictNameEnglish);
 
@@ -3383,11 +3383,11 @@ export class DatabaseStorage implements IStorage {
       .groupBy(addresses.subdistrictNameEnglish);
 
     // Create maps for quick lookup
-    const namhattaMap = new Map<string, number>();
+    const namahattaMap = new Map<string, number>();
     const devoteeMap = new Map<string, number>();
 
-    namhattaCounts.forEach(result => {
-      namhattaMap.set(result.subDistrict!, result.count);
+    namahattaCounts.forEach(result => {
+      namahattaMap.set(result.subDistrict!, result.count);
     });
 
     devoteeCounts.forEach(result => {
@@ -3398,7 +3398,7 @@ export class DatabaseStorage implements IStorage {
     return allSubDistricts.map(subDistrict => ({
       name: subDistrict.subDistrict || 'Unknown',
       district: subDistrict.district || 'Unknown',
-      namhattaCount: namhattaMap.get(subDistrict.subDistrict!) || 0,
+      namahattaCount: namahattaMap.get(subDistrict.subDistrict!) || 0,
       devoteeCount: devoteeMap.get(subDistrict.subDistrict!) || 0
     })).sort((a, b) => a.name.localeCompare(b.name));
   }
@@ -3406,7 +3406,7 @@ export class DatabaseStorage implements IStorage {
   async getAllVillagesWithCounts(state: string, district: string, subDistrict: string, filters?: { allowedDistricts?: string[] }): Promise<Array<{
     name: string;
     subDistrict: string;
-    namhattaCount: number;
+    namahattaCount: number;
     devoteeCount: number;
   }>> {
     // Check if we have access to this district
@@ -3428,19 +3428,19 @@ export class DatabaseStorage implements IStorage {
         isNotNull(addresses.villageNameEnglish)
       ));
 
-    // Get namhatta counts by village
-    const namhattaCounts = await db.select({
+    // Get namahatta counts by village
+    const namahattaCounts = await db.select({
       village: addresses.villageNameEnglish,
       count: count()
-    }).from(namhattaAddresses)
-      .innerJoin(addresses, eq(namhattaAddresses.addressId, addresses.id))
-      .innerJoin(namhattas, eq(namhattaAddresses.namhattaId, namhattas.id))
+    }).from(namahattaAddresses)
+      .innerJoin(addresses, eq(namahattaAddresses.addressId, addresses.id))
+      .innerJoin(namahattas, eq(namahattaAddresses.namahattaId, namahattas.id))
       .where(and(
         eq(addresses.stateNameEnglish, state),
         eq(addresses.districtNameEnglish, district),
         eq(addresses.subdistrictNameEnglish, subDistrict),
         isNotNull(addresses.villageNameEnglish),
-        ne(namhattas.status, 'Rejected')
+        ne(namahattas.status, 'Rejected')
       ))
       .groupBy(addresses.villageNameEnglish);
 
@@ -3460,11 +3460,11 @@ export class DatabaseStorage implements IStorage {
       .groupBy(addresses.villageNameEnglish);
 
     // Create maps for quick lookup
-    const namhattaMap = new Map<string, number>();
+    const namahattaMap = new Map<string, number>();
     const devoteeMap = new Map<string, number>();
 
-    namhattaCounts.forEach(result => {
-      namhattaMap.set(result.village!, result.count);
+    namahattaCounts.forEach(result => {
+      namahattaMap.set(result.village!, result.count);
     });
 
     devoteeCounts.forEach(result => {
@@ -3475,7 +3475,7 @@ export class DatabaseStorage implements IStorage {
     return allVillages.map(village => ({
       name: village.village || 'Unknown',
       subDistrict: village.subDistrict || 'Unknown',
-      namhattaCount: namhattaMap.get(village.village!) || 0,
+      namahattaCount: namahattaMap.get(village.village!) || 0,
       devoteeCount: devoteeMap.get(village.village!) || 0
     })).sort((a, b) => a.name.localeCompare(b.name));
   }
@@ -3760,13 +3760,13 @@ export class DatabaseStorage implements IStorage {
         whereConditions.push(not(inArray(devotees.id, data.excludeDevoteeIds)));
       }
 
-      // Get potential supervisors in the same district by their namhatta location
+      // Get potential supervisors in the same district by their namahatta location
       const otherSupervisors = await db
         .select()
         .from(devotees)
-        .innerJoin(namhattas, eq(devotees.namhattaId, namhattas.id))
-        .innerJoin(namhattaAddresses, eq(namhattas.id, namhattaAddresses.namhattaId))
-        .innerJoin(addresses, eq(namhattaAddresses.addressId, addresses.id))
+        .innerJoin(namahattas, eq(devotees.namahattaId, namahattas.id))
+        .innerJoin(namahattaAddresses, eq(namahattas.id, namahattaAddresses.namahattaId))
+        .innerJoin(addresses, eq(namahattaAddresses.addressId, addresses.id))
         .where(
           and(
             ...whereConditions,

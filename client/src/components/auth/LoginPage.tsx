@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { AlertCircle, Eye, EyeOff, Users, Crown } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/contexts/AuthContext';
-import namhattaLogo from "@assets/namhatta_logo_1757690747029.png";
+import namahattaLogo from "@assets/namhatta_logo_1757690747029.png";
 
 export default function LoginPage() {
   const [, setLocation] = useLocation();
@@ -61,11 +61,11 @@ export default function LoginPage() {
       <Card className="w-full max-w-md mx-4 relative z-10 glass-card border-white/20">
         <CardHeader className="text-center">
           <div className="relative mx-auto mb-4">
-            {/* Namhatta Logo */}
+            {/* Namahatta Logo */}
             <div className="w-28 h-28 flex items-center justify-center">
               <img 
-                src={namhattaLogo} 
-                alt="Namhatta Logo" 
+                src={namahattaLogo} 
+                alt="Namahatta Logo" 
                 className="w-28 h-28 object-contain drop-shadow-lg"
                 loading="eager"
                 decoding="async"
@@ -80,7 +80,7 @@ export default function LoginPage() {
             </div>
           </div>
           <CardTitle className="text-3xl font-bold bg-gradient-to-r from-orange-600 via-amber-600 to-yellow-600 bg-clip-text text-transparent mb-2">
-            Namhatta Management
+            Namahatta Management
           </CardTitle>
           <CardDescription className="text-slate-600 dark:text-slate-300 text-base">
             Spiritual Center Management System

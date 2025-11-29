@@ -32,7 +32,7 @@ CREATE TABLE "devotees" (
 	"blood_group" text,
 	"marital_status" text,
 	"devotional_status_id" integer,
-	"namhatta_id" integer,
+	"namahatta_id" integer,
 	"gurudev_harinam" integer,
 	"gurudev_pancharatrik" integer,
 	"harinam_initiation_gurudev" text,
@@ -65,17 +65,17 @@ CREATE TABLE "leaders" (
 	"created_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
-CREATE TABLE "namhatta_addresses" (
+CREATE TABLE "namahatta_addresses" (
 	"id" serial PRIMARY KEY NOT NULL,
-	"namhatta_id" integer NOT NULL,
+	"namahatta_id" integer NOT NULL,
 	"address_id" integer NOT NULL,
 	"landmark" text,
 	"created_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
-CREATE TABLE "namhatta_updates" (
+CREATE TABLE "namahatta_updates" (
 	"id" serial PRIMARY KEY NOT NULL,
-	"namhatta_id" integer NOT NULL,
+	"namahatta_id" integer NOT NULL,
 	"program_type" text NOT NULL,
 	"date" text NOT NULL,
 	"attendance" integer NOT NULL,
@@ -92,7 +92,7 @@ CREATE TABLE "namhatta_updates" (
 	"created_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
-CREATE TABLE "namhattas" (
+CREATE TABLE "namahattas" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"code" text NOT NULL,
 	"name" text NOT NULL,
@@ -106,7 +106,7 @@ CREATE TABLE "namhattas" (
 	"status" text DEFAULT 'PENDING_APPROVAL' NOT NULL,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
-	CONSTRAINT "namhattas_code_unique" UNIQUE("code")
+	CONSTRAINT "namahattas_code_unique" UNIQUE("code")
 );
 --> statement-breakpoint
 CREATE TABLE "shraddhakutirs" (

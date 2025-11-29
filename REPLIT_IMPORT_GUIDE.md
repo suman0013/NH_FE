@@ -1,8 +1,8 @@
-# Namhatta Management System - Replit Import Guide
+# Namahatta Management System - Replit Import Guide
 
 ## Quick Import Instructions
 
-This guide ensures smooth and fast imports of the Namhatta Management System into any Replit account without requiring additional configuration.
+This guide ensures smooth and fast imports of the Namahatta Management System into any Replit account without requiring additional configuration.
 
 ## Pre-configured Settings
 
@@ -41,7 +41,7 @@ All necessary environment variables are configured automatically during setup. T
 
 ### Core Features
 - ✅ Devotee Management System
-- ✅ Namhatta (Center) Management
+- ✅ Namahatta (Center) Management
 - ✅ Hierarchical Leadership Structure
 - ✅ Devotional Status Tracking
 - ✅ Address Management with Geographic Data
@@ -59,7 +59,7 @@ All necessary environment variables are configured automatically during setup. T
 
 ### Pre-loaded Data
 - 250+ Devotees with complete profiles
-- 100+ Namhattas across India
+- 100+ Namahattas across India
 - Geographic data for all Indian states/districts
 - Hierarchical leadership structure
 - Demo users with different roles

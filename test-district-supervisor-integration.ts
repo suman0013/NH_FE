@@ -169,12 +169,12 @@ class IntegrationTester {
       },
       {
         name: 'District Supervisor Required',
-        formData: { name: 'Test Namhatta', district: 'Bankura', districtSupervisorId: null },
+        formData: { name: 'Test Namahatta', district: 'Bankura', districtSupervisorId: null },
         shouldPass: false
       },
       {
         name: 'Valid Form Data',
-        formData: { name: 'Test Namhatta', district: 'Bankura', districtSupervisorId: 1 },
+        formData: { name: 'Test Namahatta', district: 'Bankura', districtSupervisorId: 1 },
         shouldPass: true
       }
     ];
@@ -269,7 +269,7 @@ class IntegrationTester {
   }
 
   private simulateFormValidation(formData: any): boolean {
-    // Simulate the form validation logic from NamhattaForm
+    // Simulate the form validation logic from NamahattaForm
     if (!formData.name || formData.name.trim().length === 0) {
       return false;
     }

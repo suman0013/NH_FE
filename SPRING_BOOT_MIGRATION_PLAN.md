@@ -1,7 +1,7 @@
-# Spring Boot Migration Plan for Namhatta Management System
+# Spring Boot Migration Plan for Namahatta Management System
 
 ## Overview
-This document provides a detailed, task-based migration plan to move the Namhatta Management System backend from Node.js/Express to Spring Boot while maintaining 100% functionality and API compatibility. The migration uses the **same PostgreSQL database** with no schema changes required.
+This document provides a detailed, task-based migration plan to move the Namahatta Management System backend from Node.js/Express to Spring Boot while maintaining 100% functionality and API compatibility. The migration uses the **same PostgreSQL database** with no schema changes required.
 
 ## Why Spring Boot Migration?
 
@@ -34,13 +34,13 @@ This document provides a detailed, task-based migration plan to move the Namhatt
 Since we're using the **same database**, no Flyway migrations are needed. The Spring Boot application will connect to your existing PostgreSQL database and use the current schema:
 
 1. **devotees** - Personal information, spiritual status, courses
-2. **namhattas** - Spiritual centers with organizational details  
+2. **namahattas** - Spiritual centers with organizational details  
 3. **devotional_statuses** - Hierarchical spiritual levels
 4. **shraddhakutirs** - Regional spiritual administrative units
 5. **leaders** - Hierarchical leadership structure
 6. **addresses** - Normalized address data
 7. **devotee_addresses** - Junction table for devotee addresses
-8. **namhatta_addresses** - Junction table for namhatta addresses
+8. **namahatta_addresses** - Junction table for namahatta addresses
 9. **users** - Authentication users with roles
 10. **user_districts** - Many-to-many user-district mapping
 11. **user_sessions** - Single login enforcement
@@ -50,7 +50,7 @@ Since we're using the **same database**, no Flyway migrations are needed. The Sp
 All endpoints will maintain exact same behavior:
 - `/api/auth/*` - Authentication system (login, logout, verify)
 - `/api/devotees/*` - Devotee CRUD operations
-- `/api/namhattas/*` - Namhatta CRUD operations
+- `/api/namahattas/*` - Namahatta CRUD operations
 - `/api/statuses/*` - Status management
 - `/api/hierarchy/*` - Leadership hierarchy
 - `/api/geography/*` - Location data (countries, states, districts)
@@ -64,7 +64,7 @@ All endpoints will maintain exact same behavior:
 **Status**: ☐ Not Started | ☐ In Progress | ☐ Completed
 
 **Sub-tasks:**
-- [ ] Create new Replit Java project named "namhatta-springboot"
+- [ ] Create new Replit Java project named "namahatta-springboot"
 - [ ] Set up Maven project structure with Spring Boot parent
 - [ ] Configure `pom.xml` with all required dependencies
 - [ ] Create basic application structure in Replit
@@ -73,8 +73,8 @@ All endpoints will maintain exact same behavior:
 **Files to create:**
 ```
 pom.xml                           <- Maven configuration
-src/main/java/com/namhatta/
-├── NamhattaApplication.java     <- Main application class
+src/main/java/com/namahatta/
+├── NamahattaApplication.java     <- Main application class
 └── config/
     └── DatabaseConfig.java      <- Database connection
 src/main/resources/
@@ -179,7 +179,7 @@ src/main/resources/
 ```yaml
 spring:
   application:
-    name: namhatta-management-system
+    name: namahatta-management-system
     
   datasource:
     url: ${DATABASE_URL}
@@ -211,7 +211,7 @@ session:
 
 **Validation Criteria:**
 - [ ] Application connects to PostgreSQL successfully
-- [ ] Can query existing tables (devotees, namhattas, users)
+- [ ] Can query existing tables (devotees, namahattas, users)
 - [ ] Connection pool configured properly
 - [ ] Environment variables loaded correctly
 
@@ -232,7 +232,7 @@ session:
 `.replit`:
 ```toml
 run = "mvn spring-boot:run"
-entrypoint = "src/main/java/com/namhatta/NamhattaApplication.java"
+entrypoint = "src/main/java/com/namahatta/NamahattaApplication.java"
 
 [languages.java]
 pattern = "**/*.java"
@@ -268,7 +268,7 @@ run = ["mvn", "clean", "package", "-DskipTests", "&&", "java", "-jar", "target/*
 **Sub-tasks:**
 - [ ] Create `User.java` entity for authentication
 - [ ] Create `Devotee.java` entity with all fields
-- [ ] Create `Namhatta.java` entity with all fields
+- [ ] Create `Namahatta.java` entity with all fields
 - [ ] Create `DevotionalStatus.java` entity
 - [ ] Create `Shraddhakutir.java` entity
 - [ ] Create `Leader.java` entity
@@ -360,8 +360,8 @@ public class Devotee {
     private DevotionalStatus devotionalStatus;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "namhatta_id")
-    private Namhatta namhatta;
+    @JoinColumn(name = "namahatta_id")
+    private Namahatta namahatta;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shraddhakutir_id")
@@ -406,7 +406,7 @@ public class Devotee {
 **Validation Criteria:**
 - [ ] All entities compile without errors
 - [ ] Can retrieve existing data from each table
-- [ ] Relationships work correctly (devotee -> namhatta, devotee -> status)
+- [ ] Relationships work correctly (devotee -> namahatta, devotee -> status)
 - [ ] JSON fields (devotional_courses) map correctly
 
 ---
@@ -417,7 +417,7 @@ public class Devotee {
 **Sub-tasks:**
 - [ ] Create `Address.java` entity for normalized addresses
 - [ ] Create `DevoteeAddress.java` junction entity
-- [ ] Create `NamhattaAddress.java` junction entity
+- [ ] Create `NamahattaAddress.java` junction entity
 - [ ] Test address relationships
 - [ ] Verify landmark data handling
 
@@ -455,7 +455,7 @@ public class Address {
     private List<DevoteeAddress> devoteeAddresses = new ArrayList<>();
     
     @OneToMany(mappedBy = "address", cascade = CascadeType.ALL)
-    private List<NamhattaAddress> namhattaAddresses = new ArrayList<>();
+    private List<NamahattaAddress> namahattaAddresses = new ArrayList<>();
     
     // Getters, setters
 }
@@ -490,7 +490,7 @@ public class DevoteeAddress {
 
 **Validation Criteria:**
 - [ ] Can retrieve devotee with all addresses
-- [ ] Can retrieve namhatta with address and landmark
+- [ ] Can retrieve namahatta with address and landmark
 - [ ] Junction table relationships work correctly
 - [ ] Address filtering by district works for supervisors
 
@@ -502,7 +502,7 @@ public class DevoteeAddress {
 **Sub-tasks:**
 - [ ] Create `UserRepository.java` with authentication queries
 - [ ] Create `DevoteeRepository.java` with filtering methods
-- [ ] Create `NamhattaRepository.java` with district filtering
+- [ ] Create `NamahattaRepository.java` with district filtering
 - [ ] Create `AddressRepository.java` for geographic queries
 - [ ] Test all repository methods with existing data
 
@@ -511,8 +511,8 @@ public class DevoteeAddress {
 @Repository
 public interface DevoteeRepository extends JpaRepository<Devotee, Long> {
     
-    // Find devotees by namhatta
-    List<Devotee> findByNamhattaId(Long namhattaId);
+    // Find devotees by namahatta
+    List<Devotee> findByNamahattaId(Long namahattaId);
     
     // Count devotees by status
     @Query("SELECT COUNT(d) FROM Devotee d WHERE d.devotionalStatus.id = :statusId")
@@ -537,16 +537,16 @@ public interface DevoteeRepository extends JpaRepository<Devotee, Long> {
 }
 ```
 
-**Key Repository: NamhattaRepository.java**
+**Key Repository: NamahattaRepository.java**
 ```java
 @Repository  
-public interface NamhattaRepository extends JpaRepository<Namhatta, Long> {
+public interface NamahattaRepository extends JpaRepository<Namahatta, Long> {
     
     // Check if code exists (for uniqueness validation)
     boolean existsByCode(String code);
     
     // Complex filtering for district supervisors
-    @Query("SELECT DISTINCT n FROM Namhatta n " +
+    @Query("SELECT DISTINCT n FROM Namahatta n " +
            "LEFT JOIN n.addresses na " +
            "LEFT JOIN na.address a " +
            "WHERE (:allowedDistricts IS NULL OR a.districtNameEnglish IN :allowedDistricts) " +
@@ -554,15 +554,15 @@ public interface NamhattaRepository extends JpaRepository<Namhatta, Long> {
            "AND (:search IS NULL OR " +
            "     LOWER(n.name) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "     LOWER(n.code) LIKE LOWER(CONCAT('%', :search, '%')))")
-    Page<Namhatta> findFilteredNamhattas(
+    Page<Namahatta> findFilteredNamahattas(
         @Param("allowedDistricts") List<String> allowedDistricts,
         @Param("status") String status,
         @Param("search") String search,
         Pageable pageable
     );
     
-    // Get namhattas with devotee count
-    @Query("SELECT n, COUNT(d) as devoteeCount FROM Namhatta n " +
+    // Get namahattas with devotee count
+    @Query("SELECT n, COUNT(d) as devoteeCount FROM Namahatta n " +
            "LEFT JOIN n.devotees d " +
            "WHERE n.id = :id " +
            "GROUP BY n")
@@ -612,8 +612,8 @@ public class Devotee {
     private DevotionalStatus devotionalStatus;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "namhatta_id")
-    private Namhatta namhatta;
+    @JoinColumn(name = "namahatta_id")
+    private Namahatta namahatta;
     
     @OneToMany(mappedBy = "devotee", cascade = CascadeType.ALL)
     private List<DevoteeAddress> addresses;
@@ -661,7 +661,7 @@ public interface DevoteeRepository extends JpaRepository<Devotee, Long> {
         Pageable pageable
     );
     
-    List<Devotee> findByNamhattaId(Long namhattaId);
+    List<Devotee> findByNamahattaId(Long namahattaId);
     
     @Query("SELECT COUNT(d) FROM Devotee d WHERE d.devotionalStatus.id = :statusId")
     long countByStatusId(Long statusId);
@@ -702,10 +702,10 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/api/devotees/**").hasAnyRole("ADMIN", "OFFICE")
                 .requestMatchers(HttpMethod.DELETE, "/api/devotees/**").hasRole("ADMIN")
                 
-                .requestMatchers(HttpMethod.GET, "/api/namhattas/**").hasAnyRole("ADMIN", "OFFICE", "DISTRICT_SUPERVISOR")
-                .requestMatchers(HttpMethod.POST, "/api/namhattas/**").hasAnyRole("ADMIN", "OFFICE")
-                .requestMatchers(HttpMethod.PUT, "/api/namhattas/**").hasAnyRole("ADMIN", "OFFICE")
-                .requestMatchers(HttpMethod.DELETE, "/api/namhattas/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/namahattas/**").hasAnyRole("ADMIN", "OFFICE", "DISTRICT_SUPERVISOR")
+                .requestMatchers(HttpMethod.POST, "/api/namahattas/**").hasAnyRole("ADMIN", "OFFICE")
+                .requestMatchers(HttpMethod.PUT, "/api/namahattas/**").hasAnyRole("ADMIN", "OFFICE")
+                .requestMatchers(HttpMethod.DELETE, "/api/namahattas/**").hasRole("ADMIN")
                 
                 .requestMatchers("/api/dashboard/**").hasAnyRole("ADMIN", "OFFICE", "DISTRICT_SUPERVISOR")
                 .requestMatchers("/api/hierarchy/**").hasAnyRole("ADMIN", "OFFICE", "DISTRICT_SUPERVISOR")
@@ -981,7 +981,7 @@ public class AuthService {
 
 **Sub-tasks:**
 - [ ] Create `DevoteeService.java` with all CRUD operations
-- [ ] Create `NamhattaService.java` with filtering logic
+- [ ] Create `NamahattaService.java` with filtering logic
 - [ ] Create `GeographicService.java` for location data
 - [ ] Create `DashboardService.java` for statistics
 - [ ] Implement district-based filtering for supervisors
@@ -1001,7 +1001,7 @@ public class DevoteeService {
     private AddressService addressService;
     
     @Autowired
-    private NamhattaRepository namhattaRepository;
+    private NamahattaRepository namahattaRepository;
     
     @Autowired
     private DevotionalStatusRepository statusRepository;
@@ -1032,8 +1032,8 @@ public class DevoteeService {
         return devotees.map(this::convertToDto);
     }
     
-    public List<DevoteeDto> getDevoteesByNamhatta(Long namhattaId, List<String> allowedDistricts) {
-        List<Devotee> devotees = devoteeRepository.findByNamhattaId(namhattaId);
+    public List<DevoteeDto> getDevoteesByNamahatta(Long namahattaId, List<String> allowedDistricts) {
+        List<Devotee> devotees = devoteeRepository.findByNamahattaId(namahattaId);
         
         // Filter by allowed districts for supervisors
         if (allowedDistricts != null && !allowedDistricts.isEmpty()) {
@@ -1049,10 +1049,10 @@ public class DevoteeService {
     
     @PreAuthorize("hasRole('ADMIN') or hasRole('OFFICE')")
     public DevoteeDto createDevotee(CreateDevoteeDto dto) {
-        // Validate namhatta exists and user has access
-        if (dto.getNamhattaId() != null) {
-            Namhatta namhatta = namhattaRepository.findById(dto.getNamhattaId())
-                .orElseThrow(() -> new EntityNotFoundException("Namhatta not found"));
+        // Validate namahatta exists and user has access
+        if (dto.getNamahattaId() != null) {
+            Namahatta namahatta = namahattaRepository.findById(dto.getNamahattaId())
+                .orElseThrow(() -> new EntityNotFoundException("Namahatta not found"));
         }
         
         // Create devotee entity
@@ -1372,7 +1372,7 @@ public class AuthController {
 - [ ] Create `DevoteeController.java` with all CRUD endpoints
 - [ ] Implement filtering, sorting, and pagination
 - [ ] Add district-based access control
-- [ ] Create devotee-specific endpoints for namhattas
+- [ ] Create devotee-specific endpoints for namahattas
 - [ ] Test all endpoints with existing data
 
 `DevoteeController.java`:
@@ -1487,18 +1487,18 @@ public class DevoteeController {
 
 ---
 
-### Task 5.3: Namhatta Controller
+### Task 5.3: Namahatta Controller
 **Status**: ☐ Not Started | ☐ In Progress | ☐ Completed
 
 **Sub-tasks:**
-- [ ] Create `NamhattaController.java` with all endpoints
-- [ ] Implement namhatta-specific devotee endpoints
+- [ ] Create `NamahattaController.java` with all endpoints
+- [ ] Implement namahatta-specific devotee endpoints
 - [ ] Add address update functionality
 - [ ] Create update management endpoints
-- [ ] Test with existing namhatta data
+- [ ] Test with existing namahatta data
 
 **Validation Criteria:**
-- [ ] All namhatta endpoints work correctly
+- [ ] All namahatta endpoints work correctly
 - [ ] Address updates work properly
 - [ ] Devotee assignment/management works
 - [ ] District filtering applied for supervisors
@@ -1649,7 +1649,7 @@ This comprehensive migration plan provides granular, checklistable tasks that ca
 # application.yml
 spring:
   application:
-    name: namhatta-management-system
+    name: namahatta-management-system
   
   datasource:
     url: ${DATABASE_URL}
@@ -1679,7 +1679,7 @@ server:
   
 logging:
   level:
-    com.namhatta: DEBUG
+    com.namahatta: DEBUG
     org.springframework.security: DEBUG
 ```
 
@@ -1694,7 +1694,7 @@ class DevoteeServiceTest {
     
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15")
-            .withDatabaseName("namhatta_test")
+            .withDatabaseName("namahatta_test")
             .withUsername("test")
             .withPassword("test");
     
@@ -1730,7 +1730,7 @@ class AuthControllerIntegrationTest {
 FROM openjdk:17-jdk-slim
 
 WORKDIR /app
-COPY target/namhatta-management-system-1.0.jar app.jar
+COPY target/namahatta-management-system-1.0.jar app.jar
 
 EXPOSE 5000
 ENTRYPOINT ["java", "-jar", "app.jar"]
@@ -1740,7 +1740,7 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 ```bash
 # .replit
 run = "mvn spring-boot:run"
-entrypoint = "src/main/java/com/namhatta/NamhattaApplication.java"
+entrypoint = "src/main/java/com/namahatta/NamahattaApplication.java"
 
 [languages.java]
 pattern = "**/*.java"
@@ -1749,7 +1749,7 @@ pattern = "**/*.java"
 channel = "stable-22_11"
 
 [deployment]
-run = ["mvn", "clean", "package", "-DskipTests", "&&", "java", "-jar", "target/namhatta-management-system-1.0.jar"]
+run = ["mvn", "clean", "package", "-DskipTests", "&&", "java", "-jar", "target/namahatta-management-system-1.0.jar"]
 ```
 
 ## Migration Execution Plan
@@ -1758,7 +1758,7 @@ run = ["mvn", "clean", "package", "-DskipTests", "&&", "java", "-jar", "target/n
 - **Day 1-2**: Project setup, dependencies, basic configuration
 - **Day 3-4**: Entity mapping, repository layer
 - **Day 5-6**: Security configuration, JWT implementation
-- **Day 7**: Service layer for core entities (Devotee, Namhatta)
+- **Day 7**: Service layer for core entities (Devotee, Namahatta)
 
 ### Week 2: Feature Completion
 - **Day 8-9**: Complete all service implementations
@@ -1880,4 +1880,4 @@ run = ["mvn", "clean", "package", "-DskipTests", "&&", "java", "-jar", "target/n
 </dependencies>
 ```
 
-This comprehensive plan provides a structured approach to migrating your Namhatta Management System to Spring Boot while maintaining all existing functionality and ensuring a smooth transition.
+This comprehensive plan provides a structured approach to migrating your Namahatta Management System to Spring Boot while maintaining all existing functionality and ensuring a smooth transition.

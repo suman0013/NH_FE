@@ -102,19 +102,19 @@ Upa Chakra Senapoti (reports to Chakra Senapoti)
 #### Subtask 4.1: Promotion Logic - Status: COMPLETED
 - Implement complete promotion workflow
 - Handle subordinate transfer before role change
-- Update reporting chains and Namhatta assignments
+- Update reporting chains and Namahatta assignments
 - Validate hierarchy progression rules
 
 #### Subtask 4.2: Demotion Logic - Status: COMPLETED
 - Implement complete demotion workflow
 - Transfer all subordinates to appropriate supervisors
 - Find and assign new supervisor within district hierarchy
-- Update all affected Namhatta records
+- Update all affected Namahatta records
 
 #### Subtask 4.3: Role Removal Logic - Status: COMPLETED
 - Implement complete role stripping workflow
 - Transfer all subordinates to appropriate alternatives
-- Clear all Namhatta leadership assignments
+- Clear all Namahatta leadership assignments
 - Set devotee role and reporting fields to null
 
 ---

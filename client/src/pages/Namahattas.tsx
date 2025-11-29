@@ -13,16 +13,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AdvancedPagination } from "@/components/ui/advanced-pagination";
 import { Users, Calendar, Search, Plus, MapPin, User, Grid3X3, List } from "lucide-react";
 import { Link } from "wouter";
-import NamhattaForm from "@/components/forms/NamhattaForm";
-import type { Namhatta } from "@/lib/types";
-import namhattaLogo from "@assets/namhatta_logo_1757673165218.png";
+import NamahattaForm from "@/components/forms/NamahattaForm";
+import type { Namahatta } from "@/lib/types";
+import namahattaLogo from "@assets/namhatta_logo_1757673165218.png";
 
-export default function Namhattas() {
+export default function Namahattas() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(12);
   const [searchTerm, setSearchTerm] = useState("");
   const [showForm, setShowForm] = useState(false);
-  const [editingNamhatta, setEditingNamhatta] = useState<Namhatta | undefined>();
+  const [editingNamahatta, setEditingNamahatta] = useState<Namahatta | undefined>();
   const [filters, setFilters] = useState({
     country: "",
     state: "",
@@ -35,22 +35,22 @@ export default function Namhattas() {
   const [sortBy, setSortBy] = useState("name");
   const [sortOrder, setSortOrder] = useState("asc");
   const [viewMode, setViewMode] = useState<'grid' | 'list'>(() => {
-    const saved = sessionStorage.getItem('namhattas-view-mode');
+    const saved = sessionStorage.getItem('namahattas-view-mode');
     return (saved as 'grid' | 'list') || 'grid';
   });
 
-  const { data: namhattas, isLoading } = useQuery({
-    queryKey: ["/api/namhattas", page, pageSize, searchTerm, filters, sortBy, sortOrder],
-    queryFn: () => api.getNamhattas(page, pageSize, { ...filters, search: searchTerm, sortBy, sortOrder }),
+  const { data: namahattas, isLoading } = useQuery({
+    queryKey: ["/api/namahattas", page, pageSize, searchTerm, filters, sortBy, sortOrder],
+    queryFn: () => api.getNamahattas(page, pageSize, { ...filters, search: searchTerm, sortBy, sortOrder }),
   });
 
-  const handleCreateNamhatta = () => {
-    setEditingNamhatta(undefined);
+  const handleCreateNamahatta = () => {
+    setEditingNamahatta(undefined);
     setShowForm(true);
   };
 
-  const handleEditNamhatta = (namhatta: Namhatta) => {
-    setEditingNamhatta(namhatta);
+  const handleEditNamahatta = (namahatta: Namahatta) => {
+    setEditingNamahatta(namahatta);
     setShowForm(true);
   };
 
@@ -104,7 +104,7 @@ export default function Namhattas() {
   };
 
   if (isLoading) {
-    return <NamhattasSkeleton />;
+    return <NamahattasSkeleton />;
   }
 
   return (
@@ -112,12 +112,12 @@ export default function Namhattas() {
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-1 md:space-y-0">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Namhattas Management</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">Manage and monitor all Namhatta centers</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Namahattas Management</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">Manage and monitor all Namahatta centers</p>
         </div>
         <Button className="gradient-button" onClick={() => setShowForm(true)}>
           <Plus className="mr-2 h-4 w-4" />
-          Create New Namhatta
+          Create New Namahatta
         </Button>
       </div>
 
@@ -131,7 +131,7 @@ export default function Namhattas() {
               setSearchTerm(value);
               setPage(1);
             }}
-            placeholder="Search namhattas by name, code, location, or leaders..."
+            placeholder="Search namahattas by name, code, location, or leaders..."
             debounceMs={500}
           />
 
@@ -223,7 +223,7 @@ export default function Namhattas() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="text-sm text-gray-600 dark:text-gray-400">
-                {namhattas?.total ? `Showing ${namhattas.total} namhattas` : 'No namhattas found'}
+                {namahattas?.total ? `Showing ${namahattas.total} namahattas` : 'No namahattas found'}
               </div>
               <div className="flex items-center gap-1 border border-gray-200 dark:border-gray-700 rounded-lg p-1">
                 <Button
@@ -231,7 +231,7 @@ export default function Namhattas() {
                   size="sm"
                   onClick={() => {
                     setViewMode('grid');
-                    sessionStorage.setItem('namhattas-view-mode', 'grid');
+                    sessionStorage.setItem('namahattas-view-mode', 'grid');
                   }}
                   className="h-8 px-3"
                   data-testid="button-grid-view"
@@ -243,7 +243,7 @@ export default function Namhattas() {
                   size="sm"
                   onClick={() => {
                     setViewMode('list');
-                    sessionStorage.setItem('namhattas-view-mode', 'list');
+                    sessionStorage.setItem('namahattas-view-mode', 'list');
                   }}
                   className="h-8 px-3"
                   data-testid="button-list-view"
@@ -283,51 +283,51 @@ export default function Namhattas() {
         </CardContent>
       </Card>
 
-      {/* Namhattas Grid/List */}
+      {/* Namahattas Grid/List */}
       <div className={viewMode === 'grid' 
         ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 relative z-10"
         : "grid grid-cols-1 md:grid-cols-2 gap-3 relative z-10"
       }>
-        {namhattas?.data?.map((namhatta) => (
-          <NamhattaCard key={namhatta.id} namhatta={namhatta} viewMode={viewMode} />
+        {namahattas?.data?.map((namahatta) => (
+          <NamahattaCard key={namahatta.id} namahatta={namahatta} viewMode={viewMode} />
         ))}
       </div>
 
       {/* Pagination */}
-      {namhattas && namhattas.total > 0 && (
+      {namahattas && namahattas.total > 0 && (
         <AdvancedPagination
           currentPage={page}
-          totalPages={Math.ceil(namhattas.total / pageSize)}
+          totalPages={Math.ceil(namahattas.total / pageSize)}
           pageSize={pageSize}
-          totalItems={namhattas.total}
+          totalItems={namahattas.total}
           onPageChange={setPage}
           onPageSizeChange={(size) => {
             setPageSize(size);
             setPage(1);
           }}
-          showingFrom={Math.min(((page - 1) * pageSize) + 1, namhattas.total)}
-          showingTo={Math.min(page * pageSize, namhattas.total)}
+          showingFrom={Math.min(((page - 1) * pageSize) + 1, namahattas.total)}
+          showingTo={Math.min(page * pageSize, namahattas.total)}
         />
       )}
 
       {/* Form Modal */}
-      <NamhattaForm
-        isOpen={showForm || !!editingNamhatta}
-        namhatta={editingNamhatta}
+      <NamahattaForm
+        isOpen={showForm || !!editingNamahatta}
+        namahatta={editingNamahatta}
         onClose={() => {
           setShowForm(false);
-          setEditingNamhatta(undefined);
+          setEditingNamahatta(undefined);
         }}
         onSuccess={() => {
           setShowForm(false);
-          setEditingNamhatta(undefined);
+          setEditingNamahatta(undefined);
         }}
       />
     </div>
   );
 }
 
-function NamhattaCard({ namhatta, viewMode = 'grid' }: { namhatta: Namhatta; viewMode?: 'grid' | 'list' }) {
+function NamahattaCard({ namahatta, viewMode = 'grid' }: { namahatta: Namahatta; viewMode?: 'grid' | 'list' }) {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "APPROVED":
@@ -348,13 +348,13 @@ function NamhattaCard({ namhatta, viewMode = 'grid' }: { namhatta: Namhatta; vie
   if (viewMode === 'list') {
     // List View - Minimal Details
     return (
-      <Link href={`/namhattas/${namhatta.id}`} data-testid={`link-namhatta-${namhatta.id}`}>
+      <Link href={`/namahattas/${namahatta.id}`} data-testid={`link-namahatta-${namahatta.id}`}>
         <Card className="glass-card hover-lift group cursor-pointer">
           <CardContent className="p-3">
             <div className="flex items-center space-x-3">
               <img 
-                src={namhattaLogo} 
-                alt="Namhatta Logo" 
+                src={namahattaLogo} 
+                alt="Namahatta Logo" 
                 className="h-16 w-16 object-contain flex-shrink-0"
               />
               
@@ -362,17 +362,17 @@ function NamhattaCard({ namhatta, viewMode = 'grid' }: { namhatta: Namhatta; vie
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-200 truncate">
-                      {namhatta.name}
+                      {namahatta.name}
                     </h3>
-                    {namhatta.address && (
+                    {namahatta.address && (
                       <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
                         <MapPin className="inline h-3 w-3 mr-1" />
-                        {namhatta.address.district || namhatta.address.state}
+                        {namahatta.address.district || namahatta.address.state}
                       </p>
                     )}
                   </div>
                   
-                  {getStatusBadge(namhatta.status)}
+                  {getStatusBadge(namahatta.status)}
                 </div>
               </div>
             </div>
@@ -385,31 +385,31 @@ function NamhattaCard({ namhatta, viewMode = 'grid' }: { namhatta: Namhatta; vie
   // Grid View (default)
   return (
     <div className="h-[220px]">
-      <Link href={`/namhattas/${namhatta.id}`} data-testid={`link-namhatta-${namhatta.id}`}>
+      <Link href={`/namahattas/${namahatta.id}`} data-testid={`link-namahatta-${namahatta.id}`}>
         <Card className="glass-card hover-lift group cursor-pointer h-full">
           <CardContent className="p-2 h-full flex flex-col">
             <div className="flex items-center justify-between">
               <img 
-                src={namhattaLogo} 
-                alt="Namhatta Logo" 
+                src={namahattaLogo} 
+                alt="Namahatta Logo" 
                 className="h-20 w-20 object-contain"
               />
-              {getStatusBadge(namhatta.status)}
+              {getStatusBadge(namahatta.status)}
             </div>
             
             <h3 className="font-bold text-lg text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-200">
-              {namhatta.name}
+              {namahatta.name}
             </h3>
             
             <div className="flex-grow">
-              {namhatta.address && (
+              {namahatta.address && (
                 <div className="flex items-center text-gray-600 dark:text-gray-400 text-sm mb-1">
                   <MapPin className="mr-1 h-3 w-3 flex-shrink-0" />
                   <span className="line-clamp-2">
                     {[
-                      namhatta.address.village,
-                      namhatta.address.district,
-                      namhatta.address.state
+                      namahatta.address.village,
+                      namahatta.address.district,
+                      namahatta.address.state
                     ].filter(Boolean).join(", ")}
                   </span>
                 </div>
@@ -418,21 +418,21 @@ function NamhattaCard({ namhatta, viewMode = 'grid' }: { namhatta: Namhatta; vie
               <div className="space-y-2 text-sm text-gray-500 dark:text-gray-400 mb-4">
                 <div className="flex items-center">
                   <Users className="mr-2 h-3 w-3" />
-                  <span>{namhatta.devoteeCount || 0} devotees</span>
+                  <span>{namahatta.devoteeCount || 0} devotees</span>
                 </div>
-                {namhatta.secretary && (
+                {namahatta.secretary && (
                   <div className="flex items-center">
                     <User className="mr-2 h-3 w-3" />
-                    <span>Secretary: {namhatta.secretary}</span>
+                    <span>Secretary: {namahatta.secretary}</span>
                   </div>
                 )}
-                {(namhatta.meetingDay || namhatta.meetingTime) && (
+                {(namahatta.meetingDay || namahatta.meetingTime) && (
                   <div className="flex items-center">
                     <Calendar className="mr-2 h-3 w-3" />
                     <span>
-                      {namhatta.meetingDay && namhatta.meetingTime 
-                        ? `${namhatta.meetingDay} at ${namhatta.meetingTime}`
-                        : namhatta.meetingDay || namhatta.meetingTime}
+                      {namahatta.meetingDay && namahatta.meetingTime 
+                        ? `${namahatta.meetingDay} at ${namahatta.meetingTime}`
+                        : namahatta.meetingDay || namahatta.meetingTime}
                     </span>
                   </div>
                 )}
@@ -445,7 +445,7 @@ function NamhattaCard({ namhatta, viewMode = 'grid' }: { namhatta: Namhatta; vie
   );
 }
 
-function NamhattasSkeleton() {
+function NamahattasSkeleton() {
   return (
     <div className="space-y-6">
       {/* Page Header Skeleton */}
@@ -469,7 +469,7 @@ function NamhattasSkeleton() {
         </CardContent>
       </Card>
 
-      {/* Namhattas Grid Skeleton */}
+      {/* Namahattas Grid Skeleton */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {Array.from({ length: 9 }).map((_, i) => (
           <Card key={i} className="glass-card">

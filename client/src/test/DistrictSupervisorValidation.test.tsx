@@ -3,13 +3,13 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { insertNamhattaSchema } from '@shared/schema';
+import { insertNamahattaSchema } from '@shared/schema';
 
 // Component that tests just the validation logic
 const ValidationTestComponent = ({ user, onSubmit }: any) => {
   const form = useForm({
-    resolver: zodResolver(insertNamhattaSchema.extend({
-      districtSupervisorId: insertNamhattaSchema.shape.districtSupervisorId.refine(
+    resolver: zodResolver(insertNamahattaSchema.extend({
+      districtSupervisorId: insertNamahattaSchema.shape.districtSupervisorId.refine(
         (val) => val > 0,
         { message: "District supervisor is required" }
       )
@@ -99,7 +99,7 @@ describe('District Supervisor Validation Tests', () => {
 
       // Fill other required fields but leave supervisor empty
       fireEvent.change(screen.getByTestId('code-input'), { target: { value: 'NAM001' } });
-      fireEvent.change(screen.getByTestId('name-input'), { target: { value: 'Test Namhatta' } });
+      fireEvent.change(screen.getByTestId('name-input'), { target: { value: 'Test Namahatta' } });
       fireEvent.change(screen.getByTestId('secretary-input'), { target: { value: 'Test Secretary' } });
       
       // Try to submit without supervisor
@@ -118,7 +118,7 @@ describe('District Supervisor Validation Tests', () => {
 
       // Fill all fields with invalid supervisor ID
       fireEvent.change(screen.getByTestId('code-input'), { target: { value: 'NAM001' } });
-      fireEvent.change(screen.getByTestId('name-input'), { target: { value: 'Test Namhatta' } });
+      fireEvent.change(screen.getByTestId('name-input'), { target: { value: 'Test Namahatta' } });
       fireEvent.change(screen.getByTestId('secretary-input'), { target: { value: 'Test Secretary' } });
       fireEvent.change(screen.getByTestId('supervisor-input'), { target: { value: '0' } });
 
@@ -137,7 +137,7 @@ describe('District Supervisor Validation Tests', () => {
 
       // Fill all fields with valid data
       fireEvent.change(screen.getByTestId('code-input'), { target: { value: 'NAM001' } });
-      fireEvent.change(screen.getByTestId('name-input'), { target: { value: 'Test Namhatta' } });
+      fireEvent.change(screen.getByTestId('name-input'), { target: { value: 'Test Namahatta' } });
       fireEvent.change(screen.getByTestId('secretary-input'), { target: { value: 'Test Secretary' } });
       fireEvent.change(screen.getByTestId('supervisor-input'), { target: { value: '1' } });
 
@@ -147,7 +147,7 @@ describe('District Supervisor Validation Tests', () => {
         expect(onSubmit).toHaveBeenCalledWith(
           expect.objectContaining({
             code: 'NAM001',
-            name: 'Test Namhatta',
+            name: 'Test Namahatta',
             secretary: 'Test Secretary',
             districtSupervisorId: 1
           }),
@@ -222,10 +222,10 @@ describe('District Supervisor Validation Tests', () => {
       expect(getAutoAssignedSupervisor(adminUser)).toBe(null);
     });
 
-    it('should validate district supervisor can only create namhattas in their district', () => {
-      const canCreateInDistrict = (user: any, namhattaDistrict: string) => {
+    it('should validate district supervisor can only create namahattas in their district', () => {
+      const canCreateInDistrict = (user: any, namahattaDistrict: string) => {
         if (user.role === 'DISTRICT_SUPERVISOR') {
-          return user.location?.district === namhattaDistrict;
+          return user.location?.district === namahattaDistrict;
         }
         return true; // Admin/Office can create in any district
       };

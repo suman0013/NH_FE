@@ -29,7 +29,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { Check, X, MapPin, Users, Calendar, Clock, AlertCircle } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
-import type { Namhatta } from "@/lib/types";
+import type { Namahatta } from "@/lib/types";
 
 // Registration form schema
 const registrationSchema = z.object({
@@ -39,11 +39,11 @@ const registrationSchema = z.object({
 
 type RegistrationData = z.infer<typeof registrationSchema>;
 
-interface NamhattaApprovalCardProps {
-  namhatta: Namhatta;
+interface NamahattaApprovalCardProps {
+  namahatta: Namahatta;
 }
 
-export default function NamhattaApprovalCard({ namhatta }: NamhattaApprovalCardProps) {
+export default function NamahattaApprovalCard({ namahatta }: NamahattaApprovalCardProps) {
   const [showApprovalDialog, setShowApprovalDialog] = useState(false);
   const [showRejectionDialog, setShowRejectionDialog] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
@@ -72,7 +72,7 @@ export default function NamhattaApprovalCard({ namhatta }: NamhattaApprovalCardP
     }
     
     try {
-      const response = await fetch(`/api/namhattas/check-registration/${regNo}`);
+      const response = await fetch(`/api/namahattas/check-registration/${regNo}`);
       const { exists } = await response.json();
       
       if (exists) {
@@ -102,7 +102,7 @@ export default function NamhattaApprovalCard({ namhatta }: NamhattaApprovalCardP
   const approveMutation = useMutation({
     mutationFn: (data: RegistrationData) => apiRequest(
       "POST",
-      `/api/namhattas/${namhatta.id}/approve`,
+      `/api/namahattas/${namahatta.id}/approve`,
       {
         registrationNo: data.registrationNo,
         registrationDate: data.registrationDate,
@@ -110,10 +110,10 @@ export default function NamhattaApprovalCard({ namhatta }: NamhattaApprovalCardP
     ),
     onSuccess: () => {
       toast({
-        title: "Namhatta Approved",
-        description: `${namhatta.name} has been successfully approved with registration details.`,
+        title: "Namahatta Approved",
+        description: `${namahatta.name} has been successfully approved with registration details.`,
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/namhattas"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/namahattas"] });
       setShowApprovalDialog(false);
       form.reset();
       setRegistrationCheckError("");
@@ -121,7 +121,7 @@ export default function NamhattaApprovalCard({ namhatta }: NamhattaApprovalCardP
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to approve namhatta. Please try again.",
+        description: "Failed to approve namahatta. Please try again.",
         variant: "destructive",
       });
     },
@@ -130,22 +130,22 @@ export default function NamhattaApprovalCard({ namhatta }: NamhattaApprovalCardP
   const rejectMutation = useMutation({
     mutationFn: (reason: string) => apiRequest(
       "POST",
-      `/api/namhattas/${namhatta.id}/reject`,
+      `/api/namahattas/${namahatta.id}/reject`,
       { reason }
     ),
     onSuccess: () => {
       toast({
-        title: "Namhatta Rejected",
-        description: `${namhatta.name} has been rejected.`,
+        title: "Namahatta Rejected",
+        description: `${namahatta.name} has been rejected.`,
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/namhattas"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/namahattas"] });
       setShowRejectionDialog(false);
       setRejectionReason("");
     },
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to reject namhatta. Please try again.",
+        description: "Failed to reject namahatta. Please try again.",
         variant: "destructive",
       });
     },
@@ -172,29 +172,29 @@ export default function NamhattaApprovalCard({ namhatta }: NamhattaApprovalCardP
       <Card className="glass-card">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg font-semibold">{namhatta.name}</CardTitle>
-            {getStatusBadge(namhatta.status)}
+            <CardTitle className="text-lg font-semibold">{namahatta.name}</CardTitle>
+            {getStatusBadge(namahatta.status)}
           </div>
-          <p className="text-sm text-gray-600 dark:text-gray-400">Code: {namhatta.code}</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Code: {namahatta.code}</p>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Location */}
           <div className="flex items-start space-x-2">
             <MapPin className="h-4 w-4 text-gray-500 mt-0.5" />
             <div className="text-sm">
-              <p>{namhatta.address?.village}, {namhatta.address?.district}</p>
+              <p>{namahatta.address?.village}, {namahatta.address?.district}</p>
               <p className="text-gray-600 dark:text-gray-400">
-                {namhatta.address?.state}, {namhatta.address?.country}
+                {namahatta.address?.state}, {namahatta.address?.country}
               </p>
             </div>
           </div>
 
           {/* Meeting Schedule */}
-          {(namhatta.meetingDay || namhatta.meetingTime) && (
+          {(namahatta.meetingDay || namahatta.meetingTime) && (
             <div className="flex items-center space-x-2">
               <Calendar className="h-4 w-4 text-gray-500" />
               <span className="text-sm">
-                {namhatta.meetingDay} {namhatta.meetingTime && `at ${namhatta.meetingTime}`}
+                {namahatta.meetingDay} {namahatta.meetingTime && `at ${namahatta.meetingTime}`}
               </span>
             </div>
           )}
@@ -206,17 +206,17 @@ export default function NamhattaApprovalCard({ namhatta }: NamhattaApprovalCardP
               <span className="text-sm font-medium">Leadership</span>
             </div>
             <div className="ml-6 space-y-1 text-xs">
-              {namhatta.malaSenapoti && (
-                <p><span className="font-medium">Mala Senapoti:</span> {namhatta.malaSenapoti}</p>
+              {namahatta.malaSenapoti && (
+                <p><span className="font-medium">Mala Senapoti:</span> {namahatta.malaSenapoti}</p>
               )}
-              {namhatta.mahaChakraSenapoti && (
-                <p><span className="font-medium">Maha Chakra Senapoti:</span> {namhatta.mahaChakraSenapoti}</p>
+              {namahatta.mahaChakraSenapoti && (
+                <p><span className="font-medium">Maha Chakra Senapoti:</span> {namahatta.mahaChakraSenapoti}</p>
               )}
-              {namhatta.chakraSenapoti && (
-                <p><span className="font-medium">Chakra Senapoti:</span> {namhatta.chakraSenapoti}</p>
+              {namahatta.chakraSenapoti && (
+                <p><span className="font-medium">Chakra Senapoti:</span> {namahatta.chakraSenapoti}</p>
               )}
-              {namhatta.secretary && (
-                <p><span className="font-medium">Secretary:</span> {namhatta.secretary}</p>
+              {namahatta.secretary && (
+                <p><span className="font-medium">Secretary:</span> {namahatta.secretary}</p>
               )}
             </div>
           </div>
@@ -225,11 +225,11 @@ export default function NamhattaApprovalCard({ namhatta }: NamhattaApprovalCardP
           <div className="space-y-1">
             <div className="flex items-center space-x-2 text-xs text-gray-600 dark:text-gray-400">
               <Clock className="h-4 w-4" />
-              <span>Applied: {new Date(namhatta.createdAt).toLocaleDateString()}</span>
+              <span>Applied: {new Date(namahatta.createdAt).toLocaleDateString()}</span>
             </div>
             
             {/* Official Registration Details (shown only if approved and has registration details) */}
-            {namhatta.status === "APPROVED" && namhatta.registrationNo && (
+            {namahatta.status === "APPROVED" && namahatta.registrationNo && (
               <div className="bg-emerald-50 dark:bg-emerald-900/20 p-3 rounded-lg border border-emerald-200 dark:border-emerald-800">
                 <div className="space-y-1">
                   <div className="flex items-center space-x-2 text-xs">
@@ -237,9 +237,9 @@ export default function NamhattaApprovalCard({ namhatta }: NamhattaApprovalCardP
                     <span className="font-medium text-emerald-800 dark:text-emerald-300">Official Registration</span>
                   </div>
                   <div className="ml-6 space-y-1 text-xs">
-                    <p><span className="font-medium">Registration No:</span> <span className="font-mono bg-white dark:bg-gray-800 px-2 py-1 rounded">{namhatta.registrationNo}</span></p>
-                    {namhatta.registrationDate && (
-                      <p><span className="font-medium">Registration Date:</span> {new Date(namhatta.registrationDate).toLocaleDateString()}</p>
+                    <p><span className="font-medium">Registration No:</span> <span className="font-mono bg-white dark:bg-gray-800 px-2 py-1 rounded">{namahatta.registrationNo}</span></p>
+                    {namahatta.registrationDate && (
+                      <p><span className="font-medium">Registration Date:</span> {new Date(namahatta.registrationDate).toLocaleDateString()}</p>
                     )}
                   </div>
                 </div>
@@ -248,7 +248,7 @@ export default function NamhattaApprovalCard({ namhatta }: NamhattaApprovalCardP
           </div>
 
           {/* Action Buttons - Only show for ADMIN and OFFICE users */}
-          {namhatta.status === "PENDING_APPROVAL" && canApprove && (
+          {namahatta.status === "PENDING_APPROVAL" && canApprove && (
             <div className="flex space-x-2 pt-4">
               <Button 
                 className="flex-1 bg-green-600 hover:bg-green-700 text-white"
@@ -276,9 +276,9 @@ export default function NamhattaApprovalCard({ namhatta }: NamhattaApprovalCardP
       <Dialog open={showApprovalDialog} onOpenChange={setShowApprovalDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Approve Namhatta - Registration Details</DialogTitle>
+            <DialogTitle>Approve Namahatta - Registration Details</DialogTitle>
             <DialogDescription>
-              Please provide official registration details to approve "{namhatta.name}". This will activate the namhatta and allow it to operate officially.
+              Please provide official registration details to approve "{namahatta.name}". This will activate the namahatta and allow it to operate officially.
             </DialogDescription>
           </DialogHeader>
           
@@ -368,7 +368,7 @@ export default function NamhattaApprovalCard({ namhatta }: NamhattaApprovalCardP
                   disabled={approveMutation.isPending || !!registrationCheckError}
                   data-testid="button-confirm-approval"
                 >
-                  {approveMutation.isPending ? "Approving..." : "Approve Namhatta"}
+                  {approveMutation.isPending ? "Approving..." : "Approve Namahatta"}
                 </Button>
               </DialogFooter>
             </form>
@@ -380,9 +380,9 @@ export default function NamhattaApprovalCard({ namhatta }: NamhattaApprovalCardP
       <Dialog open={showRejectionDialog} onOpenChange={setShowRejectionDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Reject Namhatta</DialogTitle>
+            <DialogTitle>Reject Namahatta</DialogTitle>
             <DialogDescription>
-              Please provide a reason for rejecting "{namhatta.name}". This will help the applicant understand what needs to be improved.
+              Please provide a reason for rejecting "{namahatta.name}". This will help the applicant understand what needs to be improved.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">

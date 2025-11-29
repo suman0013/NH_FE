@@ -17,9 +17,9 @@ import { format } from "date-fns";
 import { useState } from "react";
 import UpdateDetailModal from "./UpdateDetailModal";
 
-interface NamhattaUpdate {
+interface NamahattaUpdate {
   id: number;
-  namhattaId: number;
+  namahattaId: number;
   programType: string;
   date: string;
   attendance: number;
@@ -36,17 +36,17 @@ interface NamhattaUpdate {
   createdAt: string;
 }
 
-interface NamhattaUpdateCardProps {
-  update: NamhattaUpdate;
-  showNamhattaName?: boolean;
-  namhattaName?: string;
+interface NamahattaUpdateCardProps {
+  update: NamahattaUpdate;
+  showNamahattaName?: boolean;
+  namahattaName?: string;
 }
 
-export default function NamhattaUpdateCard({ 
+export default function NamahattaUpdateCard({ 
   update, 
-  showNamhattaName = false, 
-  namhattaName 
-}: NamhattaUpdateCardProps) {
+  showNamahattaName = false, 
+  namahattaName 
+}: NamahattaUpdateCardProps) {
   const [showDetailModal, setShowDetailModal] = useState(false);
   
   const activities = [
@@ -58,7 +58,7 @@ export default function NamhattaUpdateCard({
   ];
 
   const activeActivities = activities.filter(activity => 
-    update[activity.key as keyof NamhattaUpdate] === true
+    update[activity.key as keyof NamahattaUpdate] === true
   );
 
   const handleCardClick = () => {
@@ -93,8 +93,8 @@ export default function NamhattaUpdateCard({
                 <h3 className="font-semibold text-lg text-gray-900 dark:text-white">
                   {update.programType}
                 </h3>
-                {showNamhattaName && namhattaName && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{namhattaName}</p>
+                {showNamahattaName && namahattaName && (
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{namahattaName}</p>
                 )}
                 <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
                   <Calendar className="mr-1 h-4 w-4" />
@@ -178,7 +178,7 @@ export default function NamhattaUpdateCard({
       {/* Update Detail Modal */}
       <UpdateDetailModal
         update={update}
-        namhattaName={namhattaName}
+        namahattaName={namahattaName}
         isOpen={showDetailModal}
         onClose={() => setShowDetailModal(false)}
       />

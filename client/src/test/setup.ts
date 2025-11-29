@@ -125,11 +125,11 @@ global.testData = {
     { id: 2, name: 'HG Chaitanya Das', role: 'DISTRICT_SUPERVISOR', location: { district: 'Nadia' } },
     { id: 3, name: 'HG Radha Krishna Das', role: 'DISTRICT_SUPERVISOR', location: { district: 'Kolkata' } },
   ],
-  namhattas: [
+  namahattas: [
     {
       id: 1,
       code: 'NAM001',
-      name: 'Test Namhatta 1',
+      name: 'Test Namahatta 1',
       secretary: 'Test Secretary 1',
       districtSupervisorId: 1,
       address: { country: 'India', state: 'West Bengal', district: 'Bankura' },
@@ -138,7 +138,7 @@ global.testData = {
     {
       id: 2,
       code: 'NAM002',
-      name: 'Test Namhatta 2',
+      name: 'Test Namahatta 2',
       secretary: 'Test Secretary 2',
       districtSupervisorId: 2,
       address: { country: 'India', state: 'West Bengal', district: 'Nadia' },

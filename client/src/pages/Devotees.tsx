@@ -271,7 +271,7 @@ export default function Devotees() {
             <p className="text-gray-600 dark:text-gray-400">
               {searchTerm || Object.values(filters).some(Boolean)
                 ? "Try adjusting your search criteria or filters."
-                : "Devotees can be added from the Namhatta page."
+                : "Devotees can be added from the Namahatta page."
               }
             </p>
           </CardContent>

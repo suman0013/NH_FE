@@ -100,7 +100,7 @@ const USER_TYPE_CONFIG: Record<UserType, { label: string; description: string; i
   },
   'DISTRICT_SUPERVISOR': {
     label: 'District Supervisor',
-    description: 'Supervisors managing namhattas in their districts',
+    description: 'Supervisors managing namahattas in their districts',
     icon: <MapPin className="h-5 w-5" />,
     color: 'from-green-500 to-emerald-600'
   },
@@ -124,7 +124,7 @@ const USER_TYPE_CONFIG: Record<UserType, { label: string; description: string; i
   },
   'UPA_CHAKRA_SENAPOTI': {
     label: 'Upachakra Senapoti',
-    description: 'Local senapatis supporting namhatta activities',
+    description: 'Local senapatis supporting namahatta activities',
     icon: <Users className="h-5 w-5" />,
     color: 'from-rose-500 to-red-600'
   }
@@ -613,7 +613,7 @@ export default function AdminSupervisorRegistration() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="user@namhatta.org" {...field} data-testid="input-email" />
+                      <Input type="email" placeholder="user@namahatta.org" {...field} data-testid="input-email" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

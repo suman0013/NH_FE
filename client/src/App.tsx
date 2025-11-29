@@ -10,15 +10,15 @@ import NotFound from "@/pages/not-found";
 import AppLayout from "@/components/layout/AppLayout";
 import ScrollToTop from "@/components/ScrollToTop";
 import Dashboard from "@/pages/Dashboard";
-import Namhattas from "@/pages/Namhattas";
-import NamhattaDetail from "@/pages/NamhattaDetail";
+import Namahattas from "@/pages/Namahattas";
+import NamahattaDetail from "@/pages/NamahattaDetail";
 import Devotees from "@/pages/Devotees";
 import DevoteeDetail from "@/pages/DevoteeDetail";
 import { logApiConfig } from "@/lib/api-config";
 
 import Statuses from "@/pages/Statuses";
 import Shraddhakutirs from "@/pages/Shraddhakutirs";
-import NamhattaApprovals from "@/pages/NamhattaApprovals";
+import NamahattaApprovals from "@/pages/NamahattaApprovals";
 import Updates from "@/pages/Updates";
 import Health from "@/pages/Health";
 import About from "@/pages/About";
@@ -33,11 +33,11 @@ function Router() {
     <Switch>
       <Route path="/" component={Dashboard} />
       <Route path="/dashboard" component={Dashboard} />
-      <Route path="/namhattas" component={Namhattas} />
-      <Route path="/namhattas/:id" component={NamhattaDetail} />
+      <Route path="/namahattas" component={Namahattas} />
+      <Route path="/namahattas/:id" component={NamahattaDetail} />
       <Route path="/devotees" component={Devotees} />
       <Route path="/devotees/:id" component={DevoteeDetail} />
-      <Route path="/approvals" component={NamhattaApprovals} />
+      <Route path="/approvals" component={NamahattaApprovals} />
       <Route path="/statuses" component={Statuses} />
       <Route path="/shraddhakutirs" component={Shraddhakutirs} />
       <Route path="/updates" component={Updates} />
@@ -59,7 +59,7 @@ function App() {
   
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="light" storageKey="namhatta-ui-theme">
+      <ThemeProvider defaultTheme="light" storageKey="namahatta-ui-theme">
         <AuthProvider>
           <TooltipProvider>
             <Toaster />

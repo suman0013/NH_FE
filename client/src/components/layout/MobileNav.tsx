@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 
 const mobileNavItems = [
   { href: "/dashboard", label: "Dashboard", icon: Layout },
-  { href: "/namhattas", label: "Namhattas", icon: Home },
+  { href: "/namahattas", label: "Namahattas", icon: Home },
   { href: "/devotees", label: "Devotees", icon: Users },
   { href: "/map", label: "Map", icon: Map },
   { href: "/more", label: "More", icon: MoreHorizontal },

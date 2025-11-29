@@ -15,7 +15,7 @@ vi.mocked(useQuery).mockImplementation(({ queryKey }) => {
     return {
       data: {
         totalDevotees: 250,
-        totalNamhattas: 100,
+        totalNamahattas: 100,
         recentUpdates: []
       },
       isLoading: false,
@@ -49,7 +49,7 @@ describe('App Integration', () => {
     await waitFor(() => {
       expect(screen.getByText('Dashboard')).toBeInTheDocument()
       expect(screen.getByText('Total Devotees')).toBeInTheDocument()
-      expect(screen.getByText('Total Namhattas')).toBeInTheDocument()
+      expect(screen.getByText('Total Namahattas')).toBeInTheDocument()
     })
   })
 
@@ -85,7 +85,7 @@ describe('App Integration', () => {
     
     expect(screen.getByText('Dashboard')).toBeInTheDocument()
     expect(screen.getByText('Devotees')).toBeInTheDocument()
-    expect(screen.getByText('Namhattas')).toBeInTheDocument()
+    expect(screen.getByText('Namahattas')).toBeInTheDocument()
     expect(screen.getByText('Updates')).toBeInTheDocument()
     expect(screen.getByText('Map')).toBeInTheDocument()
     expect(screen.getByText('Hierarchy')).toBeInTheDocument()

@@ -50,30 +50,30 @@ async function importFromCSV() {
     }
     console.log(`✓ Imported ${shraddhakutirRecords.length} shraddhakutirs`);
 
-    // 3. Import Namhattas
-    console.log('Importing namhattas...');
-    const namhattaRecords: any[] = [];
+    // 3. Import Namahattas
+    console.log('Importing namahattas...');
+    const namahattaRecords: any[] = [];
     await new Promise<void>((resolve, reject) => {
-      createReadStream('./namhattas.csv')
+      createReadStream('./namahattas.csv')
         .pipe(parse({ columns: true, skipEmptyLines: true, trim: true }))
-        .on('data', (row) => namhattaRecords.push(row))
+        .on('data', (row) => namahattaRecords.push(row))
         .on('end', resolve)
         .on('error', reject);
     });
 
-    await sql('TRUNCATE TABLE namhattas RESTART IDENTITY CASCADE');
-    for (const namhatta of namhattaRecords) {
-      if (namhatta.code && namhatta.name) {
-        await sql(`INSERT INTO namhattas (code, name, meeting_day, meeting_time, mala_senapoti, 
+    await sql('TRUNCATE TABLE namahattas RESTART IDENTITY CASCADE');
+    for (const namahatta of namahattaRecords) {
+      if (namahatta.code && namahatta.name) {
+        await sql(`INSERT INTO namahattas (code, name, meeting_day, meeting_time, mala_senapoti, 
                    maha_chakra_senapoti, chakra_senapoti, upa_chakra_senapoti, secretary, status, created_at, updated_at) 
                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
-                  [namhatta.code.trim(), namhatta.name.trim(), namhatta.meetingDay, namhatta.meetingTime,
-                   namhatta.malaSenapoti, namhatta.mahaChakraSenapoti, namhatta.chakraSenapoti,
-                   namhatta.upaChakraSenapoti, namhatta.secretary, namhatta.status || 'APPROVED',
+                  [namahatta.code.trim(), namahatta.name.trim(), namahatta.meetingDay, namahatta.meetingTime,
+                   namahatta.malaSenapoti, namahatta.mahaChakraSenapoti, namahatta.chakraSenapoti,
+                   namahatta.upaChakraSenapoti, namahatta.secretary, namahatta.status || 'APPROVED',
                    new Date(), new Date()]);
       }
     }
-    console.log(`✓ Imported ${namhattaRecords.length} namhattas`);
+    console.log(`✓ Imported ${namahattaRecords.length} namahattas`);
 
     // 4. Import Devotees
     console.log('Importing devotees...');
@@ -90,14 +90,14 @@ async function importFromCSV() {
     for (const devotee of devoteeRecords) {
       if (devotee.legalName) {
         await sql(`INSERT INTO devotees (legal_name, name, dob, email, phone, father_name, mother_name, 
-                   husband_name, gender, blood_group, marital_status, devotional_status_id, namhatta_id,
+                   husband_name, gender, blood_group, marital_status, devotional_status_id, namahatta_id,
                    initiated_name, harinam_date, education, occupation, additional_comments, created_at, updated_at)
                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)`,
                   [devotee.legalName?.trim(), devotee.name?.trim(), devotee.dob, devotee.email?.trim(), devotee.phone?.trim(),
                    devotee.fatherName?.trim(), devotee.motherName?.trim(), devotee.husbandName?.trim(), devotee.gender?.trim(),
                    devotee.bloodGroup?.trim(), devotee.maritalStatus?.trim(), 
                    devotee.devotionalStatusId ? parseInt(devotee.devotionalStatusId) : null,
-                   devotee.namhattaId ? parseInt(devotee.namhattaId) : null,
+                   devotee.namahattaId ? parseInt(devotee.namahattaId) : null,
                    devotee.initiatedName?.trim(), devotee.harinamDate, devotee.education?.trim(), 
                    devotee.occupation?.trim(), devotee.additionalComments?.trim(), new Date(), new Date()]);
       }

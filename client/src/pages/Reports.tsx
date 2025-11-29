@@ -9,27 +9,27 @@ import { ChevronDown, ChevronRight, MapPin, Users, Home, BarChart3, RefreshCw, L
 
 // Helper function to get card background color based on counts
 // Standardized coloring:
-// - Lightest red: No namhatta AND no devotee
-// - Lightest blue: Has namhatta but no devotee
-// - Lightest yellow: Has devotee but no namhatta
-// - Lightest green: Has both namhatta and devotee
-function getCardBackground(namhattaCount: number, devoteeCount: number): string {
-  const hasNamhatta = namhattaCount > 0;
+// - Lightest red: No namahatta AND no devotee
+// - Lightest blue: Has namahatta but no devotee
+// - Lightest yellow: Has devotee but no namahatta
+// - Lightest green: Has both namahatta and devotee
+function getCardBackground(namahattaCount: number, devoteeCount: number): string {
+  const hasNamahatta = namahattaCount > 0;
   const hasDevotee = devoteeCount > 0;
 
-  if (!hasNamhatta && !hasDevotee) {
-    // Lightest red - No namhatta AND no devotee
+  if (!hasNamahatta && !hasDevotee) {
+    // Lightest red - No namahatta AND no devotee
     return "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800";
   }
-  if (hasNamhatta && !hasDevotee) {
-    // Lightest blue - Has namhatta but no devotee
+  if (hasNamahatta && !hasDevotee) {
+    // Lightest blue - Has namahatta but no devotee
     return "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800";
   }
-  if (!hasNamhatta && hasDevotee) {
-    // Lightest yellow - Has devotee but no namhatta
+  if (!hasNamahatta && hasDevotee) {
+    // Lightest yellow - Has devotee but no namahatta
     return "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800";
   }
-  // Lightest green - Has both namhatta and devotee
+  // Lightest green - Has both namahatta and devotee
   return "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800";
 }
 import { useAuth } from "@/contexts/AuthContext";
@@ -38,28 +38,28 @@ import { queryClient } from "@/lib/queryClient";
 interface StateData {
   name: string;
   country: string;
-  namhattaCount: number;
+  namahattaCount: number;
   devoteeCount: number;
 }
 
 interface DistrictData {
   name: string;
   state: string;
-  namhattaCount: number;
+  namahattaCount: number;
   devoteeCount: number;
 }
 
 interface SubDistrictData {
   name: string;
   district: string;
-  namhattaCount: number;
+  namahattaCount: number;
   devoteeCount: number;
 }
 
 interface VillageData {
   name: string;
   subDistrict: string;
-  namhattaCount: number;
+  namahattaCount: number;
   devoteeCount: number;
 }
 
@@ -148,7 +148,7 @@ export default function Reports() {
     );
   }
 
-  const totalNamhattas = statesData?.reduce((sum, state) => sum + state.namhattaCount, 0) || 0;
+  const totalNamahattas = statesData?.reduce((sum, state) => sum + state.namahattaCount, 0) || 0;
   const totalDevotees = statesData?.reduce((sum, state) => sum + state.devoteeCount, 0) || 0;
 
   return (
@@ -162,9 +162,9 @@ export default function Reports() {
                 <BarChart3 className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Namhatta Preaching Report</h1>
+                <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Namahatta Preaching Report</h1>
                 <p className="text-slate-600 dark:text-purple-200 text-sm">
-                  Geographic breakdown • {statesData?.length || 0} states • {totalNamhattas} centers • {totalDevotees} devotees
+                  Geographic breakdown • {statesData?.length || 0} states • {totalNamahattas} centers • {totalDevotees} devotees
                   {user?.role === 'DISTRICT_SUPERVISOR' && <span className="ml-2 text-orange-600 dark:text-orange-300">🔒 District-filtered</span>}
                 </p>
               </div>
@@ -230,7 +230,7 @@ function StateCard({
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
-  const cardBg = getCardBackground(state.namhattaCount, state.devoteeCount);
+  const cardBg = getCardBackground(state.namahattaCount, state.devoteeCount);
   
   return (
     <div className={`border-l-4 border-purple-500 ${cardBg} backdrop-blur-sm rounded-r-lg hover:bg-purple-50 dark:hover:bg-slate-800/70 transition-all`}>
@@ -248,7 +248,7 @@ function StateCard({
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
                 <Building2 className="h-3 w-3" />
-                <span className="text-base font-medium">{state.namhattaCount}</span>
+                <span className="text-base font-medium">{state.namahattaCount}</span>
               </div>
               <div className="flex items-center gap-1 text-blue-600 dark:text-blue-400">
                 <Users className="h-3 w-3" />
@@ -309,7 +309,7 @@ function DistrictCard({
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
-  const cardBg = getCardBackground(district.namhattaCount, district.devoteeCount);
+  const cardBg = getCardBackground(district.namahattaCount, district.devoteeCount);
   
   return (
     <div className={`border-l-2 border-green-400 ml-4 my-1 ${cardBg} rounded-r`}>
@@ -326,7 +326,7 @@ function DistrictCard({
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
                 <Building2 className="h-3 w-3" />
-                <span className="text-sm">{district.namhattaCount}</span>
+                <span className="text-sm">{district.namahattaCount}</span>
               </div>
               <div className="flex items-center gap-1 text-blue-600 dark:text-blue-400">
                 <Users className="h-3 w-3" />
@@ -384,7 +384,7 @@ function SubDistrictCard({
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
-  const cardBg = getCardBackground(subDistrict.namhattaCount, subDistrict.devoteeCount);
+  const cardBg = getCardBackground(subDistrict.namahattaCount, subDistrict.devoteeCount);
   
   return (
     <div className={`border-l-2 border-orange-400 ml-4 my-0.5 ${cardBg} rounded-r`}>
@@ -401,7 +401,7 @@ function SubDistrictCard({
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
                 <Home className="h-3 w-3" />
-                <span className="text-sm">{subDistrict.namhattaCount}</span>
+                <span className="text-sm">{subDistrict.namahattaCount}</span>
               </div>
               <div className="flex items-center gap-1 text-blue-600 dark:text-blue-400">
                 <Users className="h-3 w-3" />
@@ -424,7 +424,7 @@ function SubDistrictCard({
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 mt-2">
                 {villagesData?.map((village) => (
                   <div key={`${village.name}_${village.subDistrict}`} 
-                       className={`${getCardBackground(village.namhattaCount, village.devoteeCount)} border rounded-lg p-2 hover:shadow-sm hover:border-yellow-300 dark:hover:border-yellow-600 transition-all`}
+                       className={`${getCardBackground(village.namahattaCount, village.devoteeCount)} border rounded-lg p-2 hover:shadow-sm hover:border-yellow-300 dark:hover:border-yellow-600 transition-all`}
                        data-testid={`village-item-${village.name.toLowerCase().replace(/\s+/g, '-')}`}>
                     <div className="flex items-center gap-1.5 mb-1">
                       <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full flex-shrink-0"></div>
@@ -434,7 +434,7 @@ function SubDistrictCard({
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
                         <Building2 className="h-2 w-2" />
-                        <span className="text-sm">{village.namhattaCount}</span>
+                        <span className="text-sm">{village.namahattaCount}</span>
                       </div>
                       <div className="flex items-center gap-1 text-blue-600 dark:text-blue-400">
                         <Users className="h-2 w-2" />

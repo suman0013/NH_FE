@@ -1,18 +1,18 @@
 openapi: 3.0.3
 info:
-  title: Namhatta Management System API
-  description: OpenAPI specification for Namhatta Management System - complete API documentation for Spring Boot migration compliance
+  title: Namahatta Management System API
+  description: OpenAPI specification for Namahatta Management System - complete API documentation for Spring Boot migration compliance
   version: 1.0.0
   contact:
-    name: Namhatta Management System
-    email: support@namhatta.org
+    name: Namahatta Management System
+    email: support@namahatta.org
 
 servers:
   - url: http://localhost:5000
     description: Development server (Node.js)
   - url: http://localhost:8080
     description: Spring Boot development server
-  - url: https://api.namhatta.org
+  - url: https://api.namahatta.org
     description: Production server
 
 security:
@@ -115,7 +115,7 @@ components:
         spouseName:
           type: string
           example: "Jane Doe"
-        namhattaId:
+        namahattaId:
           type: integer
           example: 1
         devotionalStatusId:
@@ -166,7 +166,7 @@ components:
           format: date-time
           example: "2024-01-20T15:45:00Z"
 
-    Namhatta:
+    Namahatta:
       type: object
       properties:
         id:
@@ -174,7 +174,7 @@ components:
           example: 1
         name:
           type: string
-          example: "ISKCON Kolkata Namhatta"
+          example: "ISKCON Kolkata Namahatta"
         code:
           type: string
           example: "KOL001"
@@ -298,13 +298,13 @@ components:
           type: string
           example: "Kolkata"
 
-    NamhattaUpdate:
+    NamahattaUpdate:
       type: object
       properties:
         id:
           type: integer
           example: 1
-        namhattaId:
+        namahattaId:
           type: integer
           example: 1
         programType:
@@ -352,13 +352,13 @@ components:
               type: integer
               example: 10
 
-    PaginatedNamhattas:
+    PaginatedNamahattas:
       type: object
       properties:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Namhatta'
+            $ref: '#/components/schemas/Namahatta'
         pagination:
           type: object
           properties:
@@ -381,13 +381,13 @@ components:
         totalDevotees:
           type: integer
           example: 253
-        totalNamhattas:
+        totalNamahattas:
           type: integer
           example: 101
         recentUpdates:
           type: array
           items:
-            $ref: '#/components/schemas/NamhattaUpdate'
+            $ref: '#/components/schemas/NamahattaUpdate'
 
     StatusDistribution:
       type: array
@@ -548,13 +548,13 @@ paths:
                 properties:
                   name:
                     type: string
-                    example: "Namhatta Management System"
+                    example: "Namahatta Management System"
                   version:
                     type: string
                     example: "1.0.0"
                   description:
                     type: string
-                    example: "OpenAPI spec for Namhatta web and mobile-compatible system"
+                    example: "OpenAPI spec for Namahatta web and mobile-compatible system"
 
   # Geographic Endpoints
   /api/countries:
@@ -955,12 +955,12 @@ paths:
         '404':
           description: Devotee not found
 
-  # Namhatta Endpoints
-  /api/namhattas:
+  # Namahatta Endpoints
+  /api/namahattas:
     get:
       tags:
-        - Namhattas
-      summary: Get paginated list of namhattas with filtering
+        - Namahattas
+      summary: Get paginated list of namahattas with filtering
       security:
         - cookieAuth: []
       parameters:
@@ -1009,16 +1009,16 @@ paths:
             default: asc
       responses:
         '200':
-          description: Paginated list of namhattas
+          description: Paginated list of namahattas
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedNamhattas'
+                $ref: '#/components/schemas/PaginatedNamahattas'
 
     post:
       tags:
-        - Namhattas
-      summary: Create a new namhatta
+        - Namahattas
+      summary: Create a new namahatta
       security:
         - cookieAuth: []
       requestBody:
@@ -1026,22 +1026,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Namhatta'
+              $ref: '#/components/schemas/Namahatta'
       responses:
         '201':
-          description: Namhatta created successfully
+          description: Namahatta created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Namhatta'
+                $ref: '#/components/schemas/Namahatta'
         '409':
-          description: Namhatta code already exists
+          description: Namahatta code already exists
 
-  /api/namhattas/{id}:
+  /api/namahattas/{id}:
     get:
       tags:
-        - Namhattas
-      summary: Get namhatta by ID
+        - Namahattas
+      summary: Get namahatta by ID
       security:
         - cookieAuth: []
       parameters:
@@ -1052,18 +1052,18 @@ paths:
             type: integer
       responses:
         '200':
-          description: Namhatta details
+          description: Namahatta details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Namhatta'
+                $ref: '#/components/schemas/Namahatta'
         '404':
-          description: Namhatta not found
+          description: Namahatta not found
 
     put:
       tags:
-        - Namhattas
-      summary: Update namhatta
+        - Namahattas
+      summary: Update namahatta
       security:
         - cookieAuth: []
       parameters:
@@ -1077,20 +1077,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Namhatta'
+              $ref: '#/components/schemas/Namahatta'
       responses:
         '200':
-          description: Namhatta updated successfully
+          description: Namahatta updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Namhatta'
+                $ref: '#/components/schemas/Namahatta'
 
-  /api/namhattas/{id}/approve:
+  /api/namahattas/{id}/approve:
     post:
       tags:
-        - Namhattas
-      summary: Approve namhatta
+        - Namahattas
+      summary: Approve namahatta
       security:
         - cookieAuth: []
       parameters:
@@ -1101,15 +1101,15 @@ paths:
             type: integer
       responses:
         '200':
-          description: Namhatta approved successfully
+          description: Namahatta approved successfully
         '404':
-          description: Namhatta not found
+          description: Namahatta not found
 
-  /api/namhattas/{id}/reject:
+  /api/namahattas/{id}/reject:
     post:
       tags:
-        - Namhattas
-      summary: Reject namhatta
+        - Namahattas
+      summary: Reject namahatta
       security:
         - cookieAuth: []
       parameters:
@@ -1130,9 +1130,9 @@ paths:
                   example: "Incomplete documentation"
       responses:
         '200':
-          description: Namhatta rejected successfully
+          description: Namahatta rejected successfully
         '404':
-          description: Namhatta not found
+          description: Namahatta not found
 
   # Status Management
   /api/statuses:
@@ -1196,8 +1196,8 @@ tags:
     description: Dashboard and analytics
   - name: Devotees
     description: Devotee management operations
-  - name: Namhattas
-    description: Namhatta center management
+  - name: Namahattas
+    description: Namahatta center management
   - name: Status Management
     description: Devotional status management
   - name: Shraddhakutirs

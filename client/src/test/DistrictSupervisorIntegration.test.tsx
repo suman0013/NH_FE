@@ -2,17 +2,17 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { MemoryRouter } from 'wouter';
-import Namhattas from '@/pages/Namhattas';
+import Namahattas from '@/pages/Namahattas';
 import { AuthContext } from '@/lib/auth';
 
 // Mock the API service
 vi.mock('@/services/api', () => ({
   api: {
-    getNamhattas: vi.fn(),
+    getNamahattas: vi.fn(),
     getDistrictSupervisors: vi.fn(),
     getUserAddressDefaults: vi.fn(),
-    createNamhatta: vi.fn(),
-    updateNamhatta: vi.fn(),
+    createNamahatta: vi.fn(),
+    updateNamahatta: vi.fn(),
     getCountries: vi.fn(),
     getStates: vi.fn(),
     getDistricts: vi.fn(),
@@ -27,12 +27,12 @@ import { api } from '@/services/api';
 describe('District Supervisor Integration Tests', () => {
   let queryClient: QueryClient;
 
-  const mockNamhattas = {
+  const mockNamahattas = {
     data: [
       {
         id: 1,
         code: 'NAM001',
-        name: 'Test Namhatta',
+        name: 'Test Namahatta',
         secretary: 'Test Secretary',
         districtSupervisorId: 1,
         districtSupervisorName: 'HG Nitai Gauranga Das',
@@ -60,7 +60,7 @@ describe('District Supervisor Integration Tests', () => {
     vi.clearAllMocks();
 
     // Default API mocks
-    vi.mocked(api.getNamhattas).mockResolvedValue(mockNamhattas);
+    vi.mocked(api.getNamahattas).mockResolvedValue(mockNamahattas);
     vi.mocked(api.getCountries).mockResolvedValue([{ name: 'India' }]);
     vi.mocked(api.getStates).mockResolvedValue([{ name: 'West Bengal' }]);
     vi.mocked(api.getDistricts).mockResolvedValue([{ name: 'Bankura' }, { name: 'Nadia' }]);
@@ -74,7 +74,7 @@ describe('District Supervisor Integration Tests', () => {
       <MemoryRouter>
         <QueryClientProvider client={queryClient}>
           <AuthContext.Provider value={{ user, login: vi.fn(), logout: vi.fn(), isLoading: false }}>
-            <Namhattas />
+            <Namahattas />
           </AuthContext.Provider>
         </QueryClientProvider>
       </MemoryRouter>
@@ -87,27 +87,27 @@ describe('District Supervisor Integration Tests', () => {
       
       vi.mocked(api.getUserAddressDefaults).mockResolvedValue({ address: {}, readonly: [] });
       vi.mocked(api.getDistrictSupervisors).mockResolvedValue(mockDistrictSupervisors);
-      vi.mocked(api.createNamhatta).mockResolvedValue({ id: 2, name: 'New Namhatta' });
+      vi.mocked(api.createNamahatta).mockResolvedValue({ id: 2, name: 'New Namahatta' });
 
       renderWithProviders(adminUser);
 
       // Wait for initial load
       await waitFor(() => {
-        expect(screen.getByText('Test Namhatta')).toBeInTheDocument();
+        expect(screen.getByText('Test Namahatta')).toBeInTheDocument();
       });
 
-      // Click "Add New Namhatta" button
-      const addButton = screen.getByRole('button', { name: /add new namhatta/i });
+      // Click "Add New Namahatta" button
+      const addButton = screen.getByRole('button', { name: /add new namahatta/i });
       fireEvent.click(addButton);
 
       // Wait for form to appear
       await waitFor(() => {
-        expect(screen.getByText('Create Namhatta')).toBeInTheDocument();
+        expect(screen.getByText('Create Namahatta')).toBeInTheDocument();
       });
 
       // Fill form step by step
-      fireEvent.change(screen.getByLabelText(/namhatta code/i), { target: { value: 'NAM002' } });
-      fireEvent.change(screen.getByLabelText(/namhatta name/i), { target: { value: 'New Test Namhatta' } });
+      fireEvent.change(screen.getByLabelText(/namahatta code/i), { target: { value: 'NAM002' } });
+      fireEvent.change(screen.getByLabelText(/namahatta name/i), { target: { value: 'New Test Namahatta' } });
       fireEvent.change(screen.getByLabelText(/secretary/i), { target: { value: 'New Secretary' } });
 
       // Fill address to enable supervisor selection
@@ -129,15 +129,15 @@ describe('District Supervisor Integration Tests', () => {
       });
 
       // Submit form
-      const submitButton = screen.getByRole('button', { name: /create namhatta/i });
+      const submitButton = screen.getByRole('button', { name: /create namahatta/i });
       fireEvent.click(submitButton);
 
       // Verify API call
       await waitFor(() => {
-        expect(api.createNamhatta).toHaveBeenCalledWith(
+        expect(api.createNamahatta).toHaveBeenCalledWith(
           expect.objectContaining({
             code: 'NAM002',
-            name: 'New Test Namhatta',
+            name: 'New Test Namahatta',
             secretary: 'New Secretary',
             districtSupervisorId: 1,
             address: expect.objectContaining({
@@ -151,7 +151,7 @@ describe('District Supervisor Integration Tests', () => {
 
       // Form should close and return to list
       await waitFor(() => {
-        expect(screen.queryByText('Create Namhatta')).not.toBeInTheDocument();
+        expect(screen.queryByText('Create Namahatta')).not.toBeInTheDocument();
       });
     });
 
@@ -167,12 +167,12 @@ describe('District Supervisor Integration Tests', () => {
         address: { country: 'India', state: 'West Bengal', district: 'Bankura' },
         readonly: ['country', 'state', 'district']
       });
-      vi.mocked(api.createNamhatta).mockResolvedValue({ id: 2, name: 'Auto Assigned Namhatta' });
+      vi.mocked(api.createNamahatta).mockResolvedValue({ id: 2, name: 'Auto Assigned Namahatta' });
 
       renderWithProviders(districtSupervisorUser);
 
-      // Click "Add New Namhatta" button
-      const addButton = screen.getByRole('button', { name: /add new namhatta/i });
+      // Click "Add New Namahatta" button
+      const addButton = screen.getByRole('button', { name: /add new namahatta/i });
       fireEvent.click(addButton);
 
       // Wait for form and address defaults to load
@@ -189,20 +189,20 @@ describe('District Supervisor Integration Tests', () => {
       expect(screen.getByDisplayValue('Bankura')).toBeDisabled();
 
       // Fill only the required fields (address is pre-filled)
-      fireEvent.change(screen.getByLabelText(/namhatta code/i), { target: { value: 'NAM003' } });
-      fireEvent.change(screen.getByLabelText(/namhatta name/i), { target: { value: 'Auto Assigned Namhatta' } });
+      fireEvent.change(screen.getByLabelText(/namahatta code/i), { target: { value: 'NAM003' } });
+      fireEvent.change(screen.getByLabelText(/namahatta name/i), { target: { value: 'Auto Assigned Namahatta' } });
       fireEvent.change(screen.getByLabelText(/secretary/i), { target: { value: 'Auto Secretary' } });
 
       // Submit form
-      const submitButton = screen.getByRole('button', { name: /create namhatta/i });
+      const submitButton = screen.getByRole('button', { name: /create namahatta/i });
       fireEvent.click(submitButton);
 
       // Verify API call with auto-assigned supervisor
       await waitFor(() => {
-        expect(api.createNamhatta).toHaveBeenCalledWith(
+        expect(api.createNamahatta).toHaveBeenCalledWith(
           expect.objectContaining({
             code: 'NAM003',
-            name: 'Auto Assigned Namhatta',
+            name: 'Auto Assigned Namahatta',
             secretary: 'Auto Secretary',
             districtSupervisorId: 1, // Auto-assigned to the logged-in supervisor
             address: expect.objectContaining({
@@ -226,7 +226,7 @@ describe('District Supervisor Integration Tests', () => {
       renderWithProviders(adminUser);
 
       // Open form
-      const addButton = screen.getByRole('button', { name: /add new namhatta/i });
+      const addButton = screen.getByRole('button', { name: /add new namahatta/i });
       fireEvent.click(addButton);
 
       // Fill address to trigger supervisor loading
@@ -250,7 +250,7 @@ describe('District Supervisor Integration Tests', () => {
       renderWithProviders(adminUser);
 
       // Open form
-      const addButton = screen.getByRole('button', { name: /add new namhatta/i });
+      const addButton = screen.getByRole('button', { name: /add new namahatta/i });
       fireEvent.click(addButton);
 
       // Fill district to trigger supervisor loading
@@ -274,11 +274,11 @@ describe('District Supervisor Integration Tests', () => {
       renderWithProviders(adminUser);
 
       // Open form
-      const addButton = screen.getByRole('button', { name: /add new namhatta/i });
+      const addButton = screen.getByRole('button', { name: /add new namahatta/i });
       fireEvent.click(addButton);
 
       // Try to submit with incomplete data
-      const submitButton = screen.getByRole('button', { name: /create namhatta/i });
+      const submitButton = screen.getByRole('button', { name: /create namahatta/i });
       fireEvent.click(submitButton);
 
       // Should show validation errors
@@ -288,23 +288,23 @@ describe('District Supervisor Integration Tests', () => {
       });
 
       // API should not be called
-      expect(api.createNamhatta).not.toHaveBeenCalled();
+      expect(api.createNamahatta).not.toHaveBeenCalled();
     });
   });
 
   describe('Edit Mode Integration', () => {
-    it('should handle editing existing namhatta with supervisor change', async () => {
+    it('should handle editing existing namahatta with supervisor change', async () => {
       const adminUser = { id: 1, name: 'Admin User', role: 'ADMIN' };
       
       vi.mocked(api.getUserAddressDefaults).mockResolvedValue({ address: {}, readonly: [] });
       vi.mocked(api.getDistrictSupervisors).mockResolvedValue(mockDistrictSupervisors);
-      vi.mocked(api.updateNamhatta).mockResolvedValue({ id: 1, name: 'Updated Namhatta' });
+      vi.mocked(api.updateNamahatta).mockResolvedValue({ id: 1, name: 'Updated Namahatta' });
 
       renderWithProviders(adminUser);
 
-      // Wait for namhattas to load
+      // Wait for namahattas to load
       await waitFor(() => {
-        expect(screen.getByText('Test Namhatta')).toBeInTheDocument();
+        expect(screen.getByText('Test Namahatta')).toBeInTheDocument();
       });
 
       // Click edit button (assuming it exists)
@@ -313,7 +313,7 @@ describe('District Supervisor Integration Tests', () => {
 
       // Wait for form to load with existing data
       await waitFor(() => {
-        expect(screen.getByDisplayValue('Test Namhatta')).toBeInTheDocument();
+        expect(screen.getByDisplayValue('Test Namahatta')).toBeInTheDocument();
       });
 
       // Change district supervisor
@@ -322,12 +322,12 @@ describe('District Supervisor Integration Tests', () => {
       fireEvent.click(screen.getByText('HG Chaitanya Das'));
 
       // Submit changes
-      const submitButton = screen.getByRole('button', { name: /update namhatta/i });
+      const submitButton = screen.getByRole('button', { name: /update namahatta/i });
       fireEvent.click(submitButton);
 
       // Verify update API call
       await waitFor(() => {
-        expect(api.updateNamhatta).toHaveBeenCalledWith(
+        expect(api.updateNamahatta).toHaveBeenCalledWith(
           1,
           expect.objectContaining({
             districtSupervisorId: 2 // Changed supervisor
@@ -349,7 +349,7 @@ describe('District Supervisor Integration Tests', () => {
       renderWithProviders(adminUser);
 
       // Open form
-      const addButton = screen.getByRole('button', { name: /add new namhatta/i });
+      const addButton = screen.getByRole('button', { name: /add new namahatta/i });
       fireEvent.click(addButton);
 
       // Select first district

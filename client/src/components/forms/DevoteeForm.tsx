@@ -21,7 +21,7 @@ interface DevoteeFormProps {
   devotee?: Devotee;
   onClose: () => void;
   onSuccess?: () => void;
-  namhattaId?: number;
+  namahattaId?: number;
 }
 
 interface FormData {
@@ -54,7 +54,7 @@ interface FormData {
   shraddhakutirId: number | undefined;
 }
 
-export default function DevoteeForm({ devotee, onClose, onSuccess, namhattaId }: DevoteeFormProps) {
+export default function DevoteeForm({ devotee, onClose, onSuccess, namahattaId }: DevoteeFormProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const isEditing = !!devotee;
@@ -121,16 +121,16 @@ export default function DevoteeForm({ devotee, onClose, onSuccess, namhattaId }:
   // Mutations
   const createMutation = useMutation({
     mutationFn: (data: Partial<Devotee>) => {
-      if (namhattaId) {
-        return api.createDevoteeForNamhatta(data, namhattaId);
+      if (namahattaId) {
+        return api.createDevoteeForNamahatta(data, namahattaId);
       }
       return api.createDevotee(data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/devotees"] });
-      // If adding to a specific namhatta, also invalidate that namhatta's devotees
-      if (namhattaId) {
-        queryClient.invalidateQueries({ queryKey: ["/api/namhattas", namhattaId.toString(), "devotees"] });
+      // If adding to a specific namahatta, also invalidate that namahatta's devotees
+      if (namahattaId) {
+        queryClient.invalidateQueries({ queryKey: ["/api/namahattas", namahattaId.toString(), "devotees"] });
       }
       toast({
         title: "Success",

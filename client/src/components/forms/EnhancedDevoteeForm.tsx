@@ -29,7 +29,7 @@ interface EnhancedDevoteeFormProps {
   devotee?: Devotee;
   onClose: () => void;
   onSuccess?: (devotee: Devotee) => void;
-  namhattaId?: number;
+  namahattaId?: number;
   // Enhanced props for role assignment
   preAssignedRole?: keyof typeof LEADERSHIP_HIERARCHY | 'SECRETARY' | 'PRESIDENT' | 'ACCOUNTANT';
   reportingToDevoteeId?: number;
@@ -81,7 +81,7 @@ export default function EnhancedDevoteeForm({
   devotee, 
   onClose, 
   onSuccess, 
-  namhattaId,
+  namahattaId,
   preAssignedRole,
   reportingToDevoteeId,
   districtInfo,
@@ -185,15 +185,15 @@ export default function EnhancedDevoteeForm({
         // appointedBy will be set by the backend based on the current user
       };
 
-      if (namhattaId) {
-        return api.createDevoteeForNamhatta(devoteeData, namhattaId);
+      if (namahattaId) {
+        return api.createDevoteeForNamahatta(devoteeData, namahattaId);
       }
       return api.createDevotee(devoteeData);
     },
     onSuccess: (devotee) => {
       queryClient.invalidateQueries({ queryKey: ["/api/devotees"] });
-      if (namhattaId) {
-        queryClient.invalidateQueries({ queryKey: ["/api/namhattas", namhattaId.toString(), "devotees"] });
+      if (namahattaId) {
+        queryClient.invalidateQueries({ queryKey: ["/api/namahattas", namahattaId.toString(), "devotees"] });
       }
       
       toast({
@@ -354,7 +354,7 @@ export default function EnhancedDevoteeForm({
       presentAddress,
       permanentAddress,
       devotionalCourses,
-      namhattaId: namhattaId || undefined
+      namahattaId: namahattaId || undefined
     };
 
     if (isEditing) {
@@ -429,7 +429,7 @@ export default function EnhancedDevoteeForm({
             <div className="flex items-center gap-2">
               <User className="h-5 w-5 text-blue-600" />
               <span className="font-medium text-blue-800 dark:text-blue-200">
-                Creating {preAssignedRole.replace(/_/g, ' ')} for Namhatta
+                Creating {preAssignedRole.replace(/_/g, ' ')} for Namahatta
               </span>
             </div>
             {reportingToDevoteeId && (

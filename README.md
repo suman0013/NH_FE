@@ -1,13 +1,13 @@
-# Namhatta Management System
+# Namahatta Management System
 
-A comprehensive web application for managing Namhatta religious/spiritual organizations, built with React and Express.js.
+A comprehensive web application for managing Namahatta religious/spiritual organizations, built with React and Express.js.
 
 ## Quick Start
 
 1. **Clone and Install**
    ```bash
    git clone <repository-url>
-   cd namhatta-management-system
+   cd namahatta-management-system
    npm install
    ```
 
@@ -47,7 +47,7 @@ If you need to use a different database, update the `DATABASE_URL` in the `.env`
 ## Key Features
 
 - Devotee management with comprehensive profiles
-- Namhatta (spiritual center) administration
+- Namahatta (spiritual center) administration
 - Leadership hierarchy tracking
 - Geographic organization by regions
 - Real-time updates and notifications

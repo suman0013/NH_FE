@@ -9,19 +9,19 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AdvancedPagination } from "@/components/ui/advanced-pagination";
 import { SearchInput } from "@/components/ui/search-input";
 import { ActiveFilters } from "@/components/ui/filter-badge";
-import NamhattaApprovalCard from "@/components/NamhattaApprovalCard";
+import NamahattaApprovalCard from "@/components/NamahattaApprovalCard";
 import { CheckCircle, XCircle, Clock, AlertTriangle } from "lucide-react";
-import type { Namhatta } from "@/lib/types";
+import type { Namahatta } from "@/lib/types";
 
-export default function NamhattaApprovals() {
+export default function NamahattaApprovals() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(12);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
 
-  const { data: namhattas, isLoading } = useQuery({
-    queryKey: ["/api/namhattas", page, pageSize, searchTerm, statusFilter],
-    queryFn: () => api.getNamhattas(page, pageSize, { 
+  const { data: namahattas, isLoading } = useQuery({
+    queryKey: ["/api/namahattas", page, pageSize, searchTerm, statusFilter],
+    queryFn: () => api.getNamahattas(page, pageSize, { 
       search: searchTerm,
       status: statusFilter || undefined
     }),
@@ -35,10 +35,10 @@ export default function NamhattaApprovals() {
   };
 
   const getStatusStats = () => {
-    const total = namhattas?.total || 0;
-    const pending = namhattas?.data?.filter(n => n.status === "PENDING_APPROVAL").length || 0;
-    const approved = namhattas?.data?.filter(n => n.status === "APPROVED").length || 0;
-    const rejected = namhattas?.data?.filter(n => n.status === "REJECTED").length || 0;
+    const total = namahattas?.total || 0;
+    const pending = namahattas?.data?.filter(n => n.status === "PENDING_APPROVAL").length || 0;
+    const approved = namahattas?.data?.filter(n => n.status === "APPROVED").length || 0;
+    const rejected = namahattas?.data?.filter(n => n.status === "REJECTED").length || 0;
     
     return { total, pending, approved, rejected };
   };
@@ -46,7 +46,7 @@ export default function NamhattaApprovals() {
   const stats = getStatusStats();
 
   if (isLoading) {
-    return <NamhattaApprovalsSkeleton />;
+    return <NamahattaApprovalsSkeleton />;
   }
 
   return (
@@ -54,8 +54,8 @@ export default function NamhattaApprovals() {
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Namhatta Approvals</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">Review and manage namhatta registration requests</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Namahatta Approvals</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">Review and manage namahatta registration requests</p>
         </div>
       </div>
 
@@ -68,7 +68,7 @@ export default function NamhattaApprovals() {
                 <CheckCircle className="h-6 w-6 text-white" />
               </div>
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Total Namhattas</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Total Namahattas</p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</p>
               </div>
             </div>
@@ -128,7 +128,7 @@ export default function NamhattaApprovals() {
               setSearchTerm(value);
               setPage(1);
             }}
-            placeholder="Search namhattas by name, code, location, or leaders..."
+            placeholder="Search namahattas by name, code, location, or leaders..."
             debounceMs={500}
           />
 
@@ -165,25 +165,25 @@ export default function NamhattaApprovals() {
         </CardContent>
       </Card>
 
-      {/* Namhattas Grid */}
+      {/* Namahattas Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
-        {namhattas?.data?.map((namhatta) => (
-          <NamhattaApprovalCard key={namhatta.id} namhatta={namhatta} />
+        {namahattas?.data?.map((namahatta) => (
+          <NamahattaApprovalCard key={namahatta.id} namahatta={namahatta} />
         ))}
       </div>
 
       {/* Empty State */}
-      {namhattas?.data?.length === 0 && (
+      {namahattas?.data?.length === 0 && (
         <Card className="glass-card">
           <CardContent className="p-12 text-center">
             <AlertTriangle className="h-16 w-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-              No Namhattas Found
+              No Namahattas Found
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mb-6">
               {searchTerm || statusFilter
                 ? "Try adjusting your search criteria or filters."
-                : "No namhatta registration requests found."
+                : "No namahatta registration requests found."
               }
             </p>
           </CardContent>
@@ -191,26 +191,26 @@ export default function NamhattaApprovals() {
       )}
 
       {/* Pagination */}
-      {namhattas && namhattas.total > 0 && (
+      {namahattas && namahattas.total > 0 && (
         <AdvancedPagination
           currentPage={page}
-          totalPages={Math.ceil(namhattas.total / pageSize)}
+          totalPages={Math.ceil(namahattas.total / pageSize)}
           pageSize={pageSize}
-          totalItems={namhattas.total}
+          totalItems={namahattas.total}
           onPageChange={setPage}
           onPageSizeChange={(size) => {
             setPageSize(size);
             setPage(1);
           }}
-          showingFrom={Math.min(((page - 1) * pageSize) + 1, namhattas.total)}
-          showingTo={Math.min(page * pageSize, namhattas.total)}
+          showingFrom={Math.min(((page - 1) * pageSize) + 1, namahattas.total)}
+          showingTo={Math.min(page * pageSize, namahattas.total)}
         />
       )}
     </div>
   );
 }
 
-function NamhattaApprovalsSkeleton() {
+function NamahattaApprovalsSkeleton() {
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">

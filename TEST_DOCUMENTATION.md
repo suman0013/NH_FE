@@ -1,7 +1,7 @@
 # District Supervisor Assignment - Frontend Testing Documentation
 
 ## Overview
-This document provides comprehensive testing documentation for the District Supervisor Assignment feature implementation in the Namhatta Management System.
+This document provides comprehensive testing documentation for the District Supervisor Assignment feature implementation in the Namahatta Management System.
 
 ## Test Coverage Summary
 
@@ -11,8 +11,8 @@ This document provides comprehensive testing documentation for the District Supe
 
 ### 1. Role-based Assignment Logic Tests
 **Coverage**: Auto-assignment and permission validation
-- ✅ **Auto-assignment for District Supervisors**: Validates that district supervisors are automatically assigned to namhattas in their district
-- ✅ **District Validation**: Ensures district supervisors can only create namhattas within their assigned district
+- ✅ **Auto-assignment for District Supervisors**: Validates that district supervisors are automatically assigned to namahattas in their district
+- ✅ **District Validation**: Ensures district supervisors can only create namahattas within their assigned district
 
 ### 2. Address Pre-filling Logic Tests  
 **Coverage**: Dynamic form behavior based on user roles
@@ -22,7 +22,7 @@ This document provides comprehensive testing documentation for the District Supe
 ### 3. Supervisor Selection Logic Tests
 **Coverage**: District-based supervisor filtering and validation
 - ✅ **District Filtering**: Tests supervisor list filtering by selected district
-- ✅ **Cross-validation**: Ensures selected supervisor belongs to the namhatta's district
+- ✅ **Cross-validation**: Ensures selected supervisor belongs to the namahatta's district
 
 ### 4. Form Validation Logic Tests
 **Coverage**: Required field validation and business rules
@@ -54,13 +54,13 @@ This document provides comprehensive testing documentation for the District Supe
   ✓ District Supervisor Assignment Logic (12)
     ✓ Role-based Assignment Logic (2)
       ✓ should auto-assign supervisor for district supervisor users 2ms
-      ✓ should validate district supervisor can only create namhattas in their district 0ms
+      ✓ should validate district supervisor can only create namahattas in their district 0ms
     ✓ Address Pre-filling Logic (2)
       ✓ should determine readonly fields based on user role 1ms
       ✓ should pre-fill address for district supervisors 0ms
     ✓ Supervisor Selection Logic (2)
       ✓ should filter supervisors by district 1ms
-      ✓ should validate supervisor belongs to namhatta district 0ms
+      ✓ should validate supervisor belongs to namahatta district 0ms
     ✓ Form Validation Logic (2)
       ✓ should validate required fields 1ms
       ✓ should validate district is selected before supervisor 0ms
@@ -140,7 +140,7 @@ Duration  2.00s
 - Address defaults API testing
 
 ### **Frontend Component Integration**
-- NamhattaForm component logic validation
+- NamahattaForm component logic validation
 - Form state management testing
 - UI component behavior verification
 

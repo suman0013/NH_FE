@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
-import NamhattaForm from '@/components/forms/NamhattaForm';
+import NamahattaForm from '@/components/forms/NamahattaForm';
 import { AuthContext } from '@/lib/auth';
 
 // Mock the API service
@@ -9,14 +9,14 @@ vi.mock('@/services/api', () => ({
   api: {
     getDistrictSupervisors: vi.fn(),
     getUserAddressDefaults: vi.fn(),
-    createNamhatta: vi.fn(),
-    updateNamhatta: vi.fn(),
+    createNamahatta: vi.fn(),
+    updateNamahatta: vi.fn(),
   }
 }));
 
 // Mock react-router
 vi.mock('wouter', () => ({
-  useLocation: () => ['/namhattas', vi.fn()],
+  useLocation: () => ['/namahattas', vi.fn()],
 }));
 
 import { api } from '@/services/api';
@@ -53,7 +53,7 @@ describe('District Supervisor Assignment - Frontend Tests', () => {
     return render(
       <QueryClientProvider client={queryClient}>
         <AuthContext.Provider value={{ user, login: vi.fn(), logout: vi.fn(), isLoading: false }}>
-          <NamhattaForm onSuccess={vi.fn()} onCancel={vi.fn()} />
+          <NamahattaForm onSuccess={vi.fn()} onCancel={vi.fn()} />
         </AuthContext.Provider>
       </QueryClientProvider>
     );
@@ -96,7 +96,7 @@ describe('District Supervisor Assignment - Frontend Tests', () => {
 
     it('should validate required fields even with auto-assignment', async () => {
       vi.mocked(api.getUserAddressDefaults).mockResolvedValue(mockAddressDefaults);
-      vi.mocked(api.createNamhatta).mockRejectedValue(new Error('Validation failed'));
+      vi.mocked(api.createNamahatta).mockRejectedValue(new Error('Validation failed'));
 
       renderWithProviders(districtSupervisorUser);
 
@@ -105,7 +105,7 @@ describe('District Supervisor Assignment - Frontend Tests', () => {
       });
 
       // Try to submit without filling required fields
-      const submitButton = screen.getByRole('button', { name: /create namhatta/i });
+      const submitButton = screen.getByRole('button', { name: /create namahatta/i });
       fireEvent.click(submitButton);
 
       await waitFor(() => {
@@ -116,7 +116,7 @@ describe('District Supervisor Assignment - Frontend Tests', () => {
 
     it('should successfully submit form with auto-assigned supervisor', async () => {
       vi.mocked(api.getUserAddressDefaults).mockResolvedValue(mockAddressDefaults);
-      vi.mocked(api.createNamhatta).mockResolvedValue({ id: 1, name: 'Test Namhatta' });
+      vi.mocked(api.createNamahatta).mockResolvedValue({ id: 1, name: 'Test Namahatta' });
 
       renderWithProviders(districtSupervisorUser);
 
@@ -125,19 +125,19 @@ describe('District Supervisor Assignment - Frontend Tests', () => {
       });
 
       // Fill required fields
-      fireEvent.change(screen.getByLabelText(/namhatta code/i), { target: { value: 'NAM001' } });
-      fireEvent.change(screen.getByLabelText(/namhatta name/i), { target: { value: 'Test Namhatta' } });
+      fireEvent.change(screen.getByLabelText(/namahatta code/i), { target: { value: 'NAM001' } });
+      fireEvent.change(screen.getByLabelText(/namahatta name/i), { target: { value: 'Test Namahatta' } });
       fireEvent.change(screen.getByLabelText(/secretary/i), { target: { value: 'Test Secretary' } });
 
       // Submit form
-      const submitButton = screen.getByRole('button', { name: /create namhatta/i });
+      const submitButton = screen.getByRole('button', { name: /create namahatta/i });
       fireEvent.click(submitButton);
 
       await waitFor(() => {
-        expect(api.createNamhatta).toHaveBeenCalledWith(
+        expect(api.createNamahatta).toHaveBeenCalledWith(
           expect.objectContaining({
             code: 'NAM001',
-            name: 'Test Namhatta',
+            name: 'Test Namahatta',
             secretary: 'Test Secretary',
             districtSupervisorId: 1 // Auto-assigned user ID
           })
@@ -232,13 +232,13 @@ describe('District Supervisor Assignment - Frontend Tests', () => {
       });
 
       // Fill required fields but don't select supervisor
-      fireEvent.change(screen.getByLabelText(/namhatta code/i), { target: { value: 'NAM001' } });
-      fireEvent.change(screen.getByLabelText(/namhatta name/i), { target: { value: 'Test Namhatta' } });
+      fireEvent.change(screen.getByLabelText(/namahatta code/i), { target: { value: 'NAM001' } });
+      fireEvent.change(screen.getByLabelText(/namahatta name/i), { target: { value: 'Test Namahatta' } });
       fireEvent.change(screen.getByLabelText(/secretary/i), { target: { value: 'Test Secretary' } });
       fireEvent.change(screen.getByLabelText(/district/i), { target: { value: 'Bankura' } });
 
       // Try to submit without selecting supervisor
-      const submitButton = screen.getByRole('button', { name: /create namhatta/i });
+      const submitButton = screen.getByRole('button', { name: /create namahatta/i });
       fireEvent.click(submitButton);
 
       await waitFor(() => {
@@ -249,7 +249,7 @@ describe('District Supervisor Assignment - Frontend Tests', () => {
     it('should successfully submit with selected supervisor', async () => {
       vi.mocked(api.getUserAddressDefaults).mockResolvedValue({ address: {}, readonly: [] });
       vi.mocked(api.getDistrictSupervisors).mockResolvedValue(mockDistrictSupervisors.filter(s => s.location.district === 'Bankura'));
-      vi.mocked(api.createNamhatta).mockResolvedValue({ id: 1, name: 'Test Namhatta' });
+      vi.mocked(api.createNamahatta).mockResolvedValue({ id: 1, name: 'Test Namahatta' });
 
       renderWithProviders(adminUser);
 
@@ -258,8 +258,8 @@ describe('District Supervisor Assignment - Frontend Tests', () => {
       });
 
       // Fill all required fields
-      fireEvent.change(screen.getByLabelText(/namhatta code/i), { target: { value: 'NAM001' } });
-      fireEvent.change(screen.getByLabelText(/namhatta name/i), { target: { value: 'Test Namhatta' } });
+      fireEvent.change(screen.getByLabelText(/namahatta code/i), { target: { value: 'NAM001' } });
+      fireEvent.change(screen.getByLabelText(/namahatta name/i), { target: { value: 'Test Namahatta' } });
       fireEvent.change(screen.getByLabelText(/secretary/i), { target: { value: 'Test Secretary' } });
       fireEvent.change(screen.getByLabelText(/district/i), { target: { value: 'Bankura' } });
 
@@ -276,11 +276,11 @@ describe('District Supervisor Assignment - Frontend Tests', () => {
       });
 
       // Submit form
-      const submitButton = screen.getByRole('button', { name: /create namhatta/i });
+      const submitButton = screen.getByRole('button', { name: /create namahatta/i });
       fireEvent.click(submitButton);
 
       await waitFor(() => {
-        expect(api.createNamhatta).toHaveBeenCalledWith(
+        expect(api.createNamahatta).toHaveBeenCalledWith(
           expect.objectContaining({
             districtSupervisorId: 1
           })
@@ -336,10 +336,10 @@ describe('District Supervisor Assignment - Frontend Tests', () => {
   });
 
   describe('Edit Mode Tests', () => {
-    const existingNamhatta = {
+    const existingNamahatta = {
       id: 1,
       code: 'NAM001',
-      name: 'Existing Namhatta',
+      name: 'Existing Namahatta',
       secretary: 'Existing Secretary',
       districtSupervisorId: 1,
       address: { country: 'India', state: 'West Bengal', district: 'Bankura' }
@@ -353,7 +353,7 @@ describe('District Supervisor Assignment - Frontend Tests', () => {
       render(
         <QueryClientProvider client={queryClient}>
           <AuthContext.Provider value={{ user: adminUser, login: vi.fn(), logout: vi.fn(), isLoading: false }}>
-            <NamhattaForm namhatta={existingNamhatta} onSuccess={vi.fn()} onCancel={vi.fn()} />
+            <NamahattaForm namahatta={existingNamahatta} onSuccess={vi.fn()} onCancel={vi.fn()} />
           </AuthContext.Provider>
         </QueryClientProvider>
       );
@@ -376,15 +376,15 @@ describe('District Supervisor Assignment - Frontend Tests', () => {
       renderWithProviders(adminUser);
 
       // Fill all fields except district supervisor
-      fireEvent.change(screen.getByLabelText(/namhatta code/i), { target: { value: 'NAM001' } });
-      fireEvent.change(screen.getByLabelText(/namhatta name/i), { target: { value: 'Test Namhatta' } });
+      fireEvent.change(screen.getByLabelText(/namahatta code/i), { target: { value: 'NAM001' } });
+      fireEvent.change(screen.getByLabelText(/namahatta name/i), { target: { value: 'Test Namahatta' } });
       fireEvent.change(screen.getByLabelText(/secretary/i), { target: { value: 'Test Secretary' } });
 
-      const submitButton = screen.getByRole('button', { name: /create namhatta/i });
+      const submitButton = screen.getByRole('button', { name: /create namahatta/i });
       fireEvent.click(submitButton);
 
       // Form should not submit
-      expect(api.createNamhatta).not.toHaveBeenCalled();
+      expect(api.createNamahatta).not.toHaveBeenCalled();
       
       // Should show validation error
       await waitFor(() => {

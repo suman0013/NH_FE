@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
 import { api } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
-import namhattaLogo from "@assets/namhatta_logo_1757690747029.png";
+import namahattaLogo from "@assets/namhatta_logo_1757690747029.png";
 
 interface SidebarProps {
   onClose?: () => void;
@@ -15,7 +15,7 @@ interface SidebarProps {
 
 const navigationItems = [
   { href: "/dashboard", label: "Dashboard", icon: Home, active: true },
-  { href: "/namhattas", label: "Namhattas", icon: Home },
+  { href: "/namahattas", label: "Namahattas", icon: Home },
   { href: "/devotees", label: "Devotees", icon: Users },
   { href: "/updates", label: "Updates", icon: Bell },
   { href: "/map", label: "Map View", icon: MapPin },
@@ -88,14 +88,14 @@ export default function Sidebar({ onClose }: SidebarProps) {
         )}
         <div className="flex items-center space-x-3">
           <img 
-            src={namhattaLogo} 
-            alt="Namhatta Logo" 
+            src={namahattaLogo} 
+            alt="Namahatta Logo" 
             className="w-10 h-10 object-contain drop-shadow-lg"
             loading="eager"
             decoding="async"
           />
           <div>
-            <h1 className="text-xl font-bold gradient-text">Namhatta</h1>
+            <h1 className="text-xl font-bold gradient-text">Namahatta</h1>
             <p className="text-xs text-gray-500 dark:text-gray-400">Management System</p>
           </div>
         </div>

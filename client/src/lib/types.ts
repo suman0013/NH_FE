@@ -1,12 +1,12 @@
 export interface DashboardSummary {
   totalDevotees: number;
-  totalNamhattas: number;
-  recentUpdates: NamhattaUpdateCard[];
+  totalNamahattas: number;
+  recentUpdates: NamahattaUpdateCard[];
 }
 
-export interface NamhattaUpdateCard {
-  namhattaId: number;
-  namhattaName: string;
+export interface NamahattaUpdateCard {
+  namahattaId: number;
+  namahattaName: string;
   programType: string;
   date: string;
   attendance: number;
@@ -46,8 +46,8 @@ export interface DevoteeLeader {
   reportingToDevoteeName?: string;
   appointedDate?: string;
   appointedBy?: number;
-  namhattaId?: number;
-  namhattaName?: string;
+  namahattaId?: number;
+  namahattaName?: string;
   hasSystemAccess?: boolean;
 }
 
@@ -88,7 +88,7 @@ export interface Devotee {
   presentAddress?: Address;
   permanentAddress?: Address;
   devotionalStatusId?: number;
-  namhattaId?: number;
+  namahattaId?: number;
   harinamInitiationGurudevId?: number;
   pancharatrikInitiationGurudevId?: number;
   harinamInitiationGurudev?: string;
@@ -112,7 +112,7 @@ export interface Devotee {
   updatedAt: Date;
 }
 
-export interface Namhatta {
+export interface Namahatta {
   id: number;
   code: string;
   name: string;

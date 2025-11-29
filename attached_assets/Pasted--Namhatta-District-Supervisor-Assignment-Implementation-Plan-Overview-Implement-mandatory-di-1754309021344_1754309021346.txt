@@ -1,10 +1,10 @@
-# Namhatta-District Supervisor Assignment Implementation Plan
+# Namahatta-District Supervisor Assignment Implementation Plan
 
 ## Overview
-Implement mandatory district supervisor assignment for namhattas with role-based address pre-filling and validation.
+Implement mandatory district supervisor assignment for namahattas with role-based address pre-filling and validation.
 
 ## Business Requirements Summary
-1. Each namhatta MUST have a district supervisor
+1. Each namahatta MUST have a district supervisor
 2. District supervisors get pre-filled, locked address fields (Country, State, District)
 3. Admin/Office can select any district and choose from available supervisors
 4. No cross-district assignments allowed
@@ -15,7 +15,7 @@ Implement mandatory district supervisor assignment for namhattas with role-based
 ## Phase 1: Database Schema Updates
 **Status: NOT_STARTED**
 
-### Step 1.1: Update Namhattas Schema
+### Step 1.1: Update Namahattas Schema
 **Status: NOT_STARTED**
 - **File**: `shared/schema.ts`
 - **Action**: Add `districtSupervisorId: integer("district_supervisor_id").notNull()` 
@@ -24,14 +24,14 @@ Implement mandatory district supervisor assignment for namhattas with role-based
 ### Step 1.2: Update Types and Schemas
 **Status: NOT_STARTED**
 - **File**: `shared/schema.ts`
-- **Action**: Update `insertNamhattaSchema` and `Namhatta` type 
+- **Action**: Update `insertNamahattaSchema` and `Namahatta` type 
 - **Dependencies**: Step 1.1
 
 ### Step 1.3: Database Migration
 **Status: NOT_STARTED**
 - **File**: Manual SQL (to be executed by admin)
 - **Action**: Add column with foreign key constraint 
-- **Note**: SQL command: `ALTER TABLE namhattas ADD COLUMN district_supervisor_id INTEGER REFERENCES leaders(id);`
+- **Note**: SQL command: `ALTER TABLE namahattas ADD COLUMN district_supervisor_id INTEGER REFERENCES leaders(id);`
 - **Dependencies**: Step 1.1, 1.2
 
 ---
@@ -51,7 +51,7 @@ Implement mandatory district supervisor assignment for namhattas with role-based
 - **Action**: Add `GET /api/district-supervisors?district={district}`
 - **Dependencies**: Step 2.1
 
-### Step 2.3: Update Namhatta Creation/Update Logic
+### Step 2.3: Update Namahatta Creation/Update Logic
 **Status: NOT_STARTED**
 - **File**: `server/storage-db.ts`
 - **Action**: Add supervisor validation and assignment logic
@@ -68,21 +68,21 @@ Implement mandatory district supervisor assignment for namhattas with role-based
 ## Phase 3: Frontend Form Updates
 **Status: NOT_STARTED**
 
-### Step 3.1: Update Namhatta Form Types
+### Step 3.1: Update Namahatta Form Types
 **Status: NOT_STARTED**
-- **File**: `client/src/components/forms/NamhattaForm.tsx`
+- **File**: `client/src/components/forms/NamahattaForm.tsx`
 - **Action**: Add district supervisor field to FormData interface
 - **Dependencies**: Phase 2 complete
 
 ### Step 3.2: Implement Address Pre-filling Logic
 **Status: NOT_STARTED**
-- **File**: `client/src/components/forms/NamhattaForm.tsx`
+- **File**: `client/src/components/forms/NamahattaForm.tsx`
 - **Action**: Auto-populate and disable fields for district supervisors
 - **Dependencies**: Step 3.1
 
 ### Step 3.3: Add District Supervisor Selection
 **Status: NOT_STARTED**
-- **File**: `client/src/components/forms/NamhattaForm.tsx`
+- **File**: `client/src/components/forms/NamahattaForm.tsx`
 - **Action**: Conditional supervisor dropdown for admin/office users
 - **Dependencies**: Step 3.2
 
@@ -99,7 +99,7 @@ Implement mandatory district supervisor assignment for namhattas with role-based
 
 ### Step 4.1: Frontend Validation
 **Status: NOT_STARTED**
-- **File**: `client/src/components/forms/NamhattaForm.tsx`
+- **File**: `client/src/components/forms/NamahattaForm.tsx`
 - **Action**: Add supervisor existence validation before submission
 - **Dependencies**: Phase 3 complete
 
@@ -128,13 +128,13 @@ Implement mandatory district supervisor assignment for namhattas with role-based
 
 ### Step 5.2: Error Handling & Messages
 **Status: NOT_STARTED**
-- **File**: `client/src/components/forms/NamhattaForm.tsx`
+- **File**: `client/src/components/forms/NamahattaForm.tsx`
 - **Action**: Clear error messages for validation failures
 - **Dependencies**: Step 5.1
 
 ### Step 5.3: Loading States
 **Status: NOT_STARTED**
-- **File**: `client/src/components/forms/NamhattaForm.tsx`
+- **File**: `client/src/components/forms/NamahattaForm.tsx`
 - **Action**: Show loading while fetching supervisors
 - **Dependencies**: Step 5.2
 
@@ -143,10 +143,10 @@ Implement mandatory district supervisor assignment for namhattas with role-based
 ## Phase 6: Testing & Data Migration
 **Status: NOT_STARTED**
 
-### Step 6.1: Migrate Existing Namhattas
+### Step 6.1: Migrate Existing Namahattas
 **Status: NOT_STARTED**
 - **File**: Create migration script
-- **Action**: Assign supervisors to existing namhattas based on district
+- **Action**: Assign supervisors to existing namahattas based on district
 - **Dependencies**: Phase 5 complete
 
 ### Step 6.2: Integration Testing
@@ -196,8 +196,8 @@ const getSupervisorsForDistrict = async (district: string) => {
 ## Success Criteria
 - [ ] District supervisors see pre-filled, locked address fields
 - [ ] Admin/Office can select any district and appropriate supervisors
-- [ ] No namhatta can be created without valid district supervisor
-- [ ] All existing namhattas have assigned supervisors after migration
+- [ ] No namahatta can be created without valid district supervisor
+- [ ] All existing namahattas have assigned supervisors after migration
 
 **Total Steps: 18**
 **Current Phase: 1**

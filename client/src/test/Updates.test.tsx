@@ -7,7 +7,7 @@ import Updates from '@/pages/Updates'
 const mockUpdates = [
   {
     id: 1,
-    namhattaId: 1,
+    namahattaId: 1,
     title: 'Weekly Satsang',
     description: 'Regular weekly spiritual gathering',
     date: '2025-01-15',
@@ -22,14 +22,14 @@ const mockUpdates = [
     arati: true,
     bhagwatPath: false,
     specialAttraction: 'Guest speaker from Mayapur',
-    namhattaName: 'Test Namhatta',
-    namhattaCity: 'Kolkata',
-    namhattaState: 'West Bengal',
+    namahattaName: 'Test Namahatta',
+    namahattaCity: 'Kolkata',
+    namahattaState: 'West Bengal',
     createdAt: '2025-01-01T00:00:00Z'
   },
   {
     id: 2,
-    namhattaId: 2,
+    namahattaId: 2,
     title: 'Janmashtami Celebration',
     description: 'Krishna Janmashtami festival celebration',
     date: '2025-08-16',
@@ -44,9 +44,9 @@ const mockUpdates = [
     arati: true,
     bhagwatPath: true,
     specialAttraction: 'Special drama performance',
-    namhattaName: 'Mumbai Namhatta',
-    namhattaCity: 'Mumbai',
-    namhattaState: 'Maharashtra',
+    namahattaName: 'Mumbai Namahatta',
+    namahattaCity: 'Mumbai',
+    namahattaState: 'Maharashtra',
     createdAt: '2025-01-02T00:00:00Z'
   }
 ]
@@ -54,7 +54,7 @@ const mockUpdates = [
 vi.mocked(useQuery).mockImplementation(({ queryKey }) => {
   const key = queryKey[0] as string
   
-  if (key === '/api/namhatta-updates') {
+  if (key === '/api/namahatta-updates') {
     return {
       data: mockUpdates,
       isLoading: false,
@@ -62,11 +62,11 @@ vi.mocked(useQuery).mockImplementation(({ queryKey }) => {
     }
   }
   
-  if (key === '/api/namhattas') {
+  if (key === '/api/namahattas') {
     return {
       data: [
-        { id: 1, name: 'Test Namhatta' },
-        { id: 2, name: 'Mumbai Namhatta' }
+        { id: 1, name: 'Test Namahatta' },
+        { id: 2, name: 'Mumbai Namahatta' }
       ],
       isLoading: false,
       error: null
@@ -89,8 +89,8 @@ describe('Updates', () => {
     await waitFor(() => {
       expect(screen.getByText('Weekly Satsang')).toBeInTheDocument()
       expect(screen.getByText('Janmashtami Celebration')).toBeInTheDocument()
-      expect(screen.getByText('Test Namhatta')).toBeInTheDocument()
-      expect(screen.getByText('Mumbai Namhatta')).toBeInTheDocument()
+      expect(screen.getByText('Test Namahatta')).toBeInTheDocument()
+      expect(screen.getByText('Mumbai Namahatta')).toBeInTheDocument()
     })
   })
 
@@ -132,15 +132,15 @@ describe('Updates', () => {
     })
   })
 
-  it('should filter updates by namhatta', async () => {
+  it('should filter updates by namahatta', async () => {
     render(<Updates />)
     
     await waitFor(() => {
-      const namhattaFilter = screen.getByLabelText('Filter by Namhatta')
-      fireEvent.click(namhattaFilter)
+      const namahattaFilter = screen.getByLabelText('Filter by Namahatta')
+      fireEvent.click(namahattaFilter)
       
-      const testNamhattaOption = screen.getByText('Test Namhatta')
-      fireEvent.click(testNamhattaOption)
+      const testNamahattaOption = screen.getByText('Test Namahatta')
+      fireEvent.click(testNamahattaOption)
       
       expect(screen.getByText('Weekly Satsang')).toBeInTheDocument()
       expect(screen.queryByText('Janmashtami Celebration')).not.toBeInTheDocument()
@@ -162,7 +162,7 @@ describe('Updates', () => {
     })
   })
 
-  it('should navigate to namhatta detail when clicking on update card', async () => {
+  it('should navigate to namahatta detail when clicking on update card', async () => {
     const mockSetLocation = vi.fn()
     vi.mocked(useLocation).mockReturnValue(['/', mockSetLocation])
     
@@ -172,7 +172,7 @@ describe('Updates', () => {
       const updateCard = screen.getByText('Weekly Satsang').closest('div[class*="cursor-pointer"]')
       if (updateCard) {
         fireEvent.click(updateCard)
-        expect(mockSetLocation).toHaveBeenCalledWith('/namhattas/1')
+        expect(mockSetLocation).toHaveBeenCalledWith('/namahattas/1')
       }
     })
   })

@@ -27,13 +27,13 @@
   --ring: hsl(20, 14.3%, 4.1%);
   --radius: 0.75rem;
   
-  /* Custom Namhatta colors - Enhanced gradients */
-  --namhatta-primary: hsl(239, 84%, 67%);
-  --namhatta-secondary: hsl(292, 84%, 61%);
-  --namhatta-accent: hsl(168, 76%, 42%);
-  --namhatta-success: hsl(142, 76%, 36%);
-  --namhatta-warning: hsl(38, 92%, 50%);
-  --namhatta-error: hsl(0, 84%, 60%);
+  /* Custom Namahatta colors - Enhanced gradients */
+  --namahatta-primary: hsl(239, 84%, 67%);
+  --namahatta-secondary: hsl(292, 84%, 61%);
+  --namahatta-accent: hsl(168, 76%, 42%);
+  --namahatta-success: hsl(142, 76%, 36%);
+  --namahatta-warning: hsl(38, 92%, 50%);
+  --namahatta-error: hsl(0, 84%, 60%);
   
   /* Enhanced Glass effect variables */
   --glass-bg: hsla(0, 0%, 100%, 0.95);

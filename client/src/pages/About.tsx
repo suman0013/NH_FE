@@ -34,7 +34,7 @@ export default function About() {
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">About Namhatta Management System</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">About Namahatta Management System</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
             Learn more about the application, its features, and the team behind it
           </p>
@@ -56,10 +56,10 @@ export default function About() {
             </div>
             <div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                {aboutData?.name || "Namhatta Management System"}
+                {aboutData?.name || "Namahatta Management System"}
               </h2>
               <p className="text-gray-600 dark:text-gray-400">
-                {aboutData?.description || "OpenAPI spec for Namhatta web and mobile-compatible system"}
+                {aboutData?.description || "OpenAPI spec for Namahatta web and mobile-compatible system"}
               </p>
               <div className="flex items-center mt-2">
                 <Badge className="status-badge-active mr-2">
@@ -73,7 +73,7 @@ export default function About() {
           </div>
           
           <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-            The Namhatta Management System is a comprehensive platform designed to manage spiritual centers, 
+            The Namahatta Management System is a comprehensive platform designed to manage spiritual centers, 
             track devotee progress, and organize religious activities. Built with modern web technologies, 
             it provides a seamless experience for administrators, leaders, and devotees alike.
           </p>
@@ -90,7 +90,7 @@ export default function About() {
         />
         
         <FeatureCard
-          title="Namhatta Centers"
+          title="Namahatta Centers"
           description="Manage spiritual centers, locations, and organizational hierarchy"
           icon={Globe}
           gradient="from-emerald-400 to-emerald-600"
@@ -182,7 +182,7 @@ export default function About() {
               <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
                 <li>• His Holiness Jayapataka Swami</li>
                 <li>• All GBC members and Regional Directors</li>
-                <li>• Local Namhatta leaders and senapotis</li>
+                <li>• Local Namahatta leaders and senapotis</li>
                 <li>• The entire devotee community</li>
               </ul>
             </div>

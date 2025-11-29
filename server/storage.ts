@@ -1,4 +1,4 @@
-import { Devotee, InsertDevotee, Namhatta, InsertNamhatta, DevotionalStatus, InsertDevotionalStatus, Shraddhakutir, InsertShraddhakutir, NamhattaUpdate, InsertNamhattaUpdate, Leader, StatusHistory, User, InsertUser, RoleChangeHistory, InsertRoleChangeHistory } from "@shared/schema";
+import { Devotee, InsertDevotee, Namahatta, InsertNamahatta, DevotionalStatus, InsertDevotionalStatus, Shraddhakutir, InsertShraddhakutir, NamahattaUpdate, InsertNamahattaUpdate, Leader, StatusHistory, User, InsertUser, RoleChangeHistory, InsertRoleChangeHistory } from "@shared/schema";
 import { IStorage } from "./storage-fresh";
 
 // Import Gurudev type
@@ -7,10 +7,10 @@ import { Gurudev, InsertGurudev } from "@shared/schema";
 // Memory storage implementation for the migration
 export class MemStorage implements IStorage {
   private devotees: Devotee[] = [];
-  private namhattas: Namhatta[] = [];
+  private namahattas: Namahatta[] = [];
   private devotionalStatuses: DevotionalStatus[] = [];
   private shraddhakutirs: Shraddhakutir[] = [];
-  private namhattaUpdates: NamhattaUpdate[] = [];
+  private namahattaUpdates: NamahattaUpdate[] = [];
   private leaders: Leader[] = [];
   private statusHistory: StatusHistory[] = [];
   private gurudevs: Gurudev[] = [];
@@ -120,7 +120,7 @@ export class MemStorage implements IStorage {
       bloodGroup: devotee.bloodGroup || null,
       maritalStatus: devotee.maritalStatus || null,
       devotionalStatusId: devotee.devotionalStatusId || null,
-      namhattaId: devotee.namhattaId || null,
+      namahattaId: devotee.namahattaId || null,
       harinamInitiationGurudevId: devotee.harinamInitiationGurudevId || null,
       pancharatrikInitiationGurudevId: devotee.pancharatrikInitiationGurudevId || null,
       initiatedName: devotee.initiatedName || null,
@@ -144,8 +144,8 @@ export class MemStorage implements IStorage {
     return newDevotee;
   }
 
-  async createDevoteeForNamhatta(devotee: InsertDevotee, namhattaId: number): Promise<Devotee> {
-    return this.createDevotee({ ...devotee, namhattaId });
+  async createDevoteeForNamahatta(devotee: InsertDevotee, namahattaId: number): Promise<Devotee> {
+    return this.createDevotee({ ...devotee, namahattaId });
   }
 
   async updateDevotee(id: number, devotee: Partial<InsertDevotee>): Promise<Devotee> {
@@ -167,7 +167,7 @@ export class MemStorage implements IStorage {
       bloodGroup: devotee.bloodGroup !== undefined ? devotee.bloodGroup : existing.bloodGroup,
       maritalStatus: devotee.maritalStatus !== undefined ? devotee.maritalStatus : existing.maritalStatus,
       devotionalStatusId: devotee.devotionalStatusId !== undefined ? devotee.devotionalStatusId : existing.devotionalStatusId,
-      namhattaId: devotee.namhattaId !== undefined ? devotee.namhattaId : existing.namhattaId,
+      namahattaId: devotee.namahattaId !== undefined ? devotee.namahattaId : existing.namahattaId,
       harinamInitiationGurudevId: devotee.harinamInitiationGurudevId !== undefined ? devotee.harinamInitiationGurudevId : existing.harinamInitiationGurudevId,
       pancharatrikInitiationGurudevId: devotee.pancharatrikInitiationGurudevId !== undefined ? devotee.pancharatrikInitiationGurudevId : existing.pancharatrikInitiationGurudevId,
       initiatedName: devotee.initiatedName !== undefined ? devotee.initiatedName : existing.initiatedName,
@@ -189,8 +189,8 @@ export class MemStorage implements IStorage {
     return this.devotees[index];
   }
 
-  async getDevoteesByNamhatta(namhattaId: number, page = 1, size = 10, statusId?: number): Promise<{ data: Devotee[], total: number }> {
-    let filteredDevotees = this.devotees.filter(d => d.namhattaId === namhattaId);
+  async getDevoteesByNamahatta(namahattaId: number, page = 1, size = 10, statusId?: number): Promise<{ data: Devotee[], total: number }> {
+    let filteredDevotees = this.devotees.filter(d => d.namahattaId === namahattaId);
     
     if (statusId) {
       filteredDevotees = filteredDevotees.filter(d => d.devotionalStatusId === statusId);
@@ -226,117 +226,117 @@ export class MemStorage implements IStorage {
     return this.statusHistory.filter(h => h.devoteeId === id);
   }
 
-  // Namhattas
-  async getNamhattas(page = 1, size = 10, filters: any = {}): Promise<{ data: Namhatta[], total: number }> {
-    let filteredNamhattas = [...this.namhattas];
+  // Namahattas
+  async getNamahattas(page = 1, size = 10, filters: any = {}): Promise<{ data: Namahatta[], total: number }> {
+    let filteredNamahattas = [...this.namahattas];
     
     if (filters.search) {
       const searchLower = filters.search.toLowerCase();
-      filteredNamhattas = filteredNamhattas.filter(n => 
+      filteredNamahattas = filteredNamahattas.filter(n => 
         n.name.toLowerCase().includes(searchLower) ||
         n.code.toLowerCase().includes(searchLower)
       );
     }
 
-    const total = filteredNamhattas.length;
+    const total = filteredNamahattas.length;
     const offset = (page - 1) * size;
-    const data = filteredNamhattas.slice(offset, offset + size);
+    const data = filteredNamahattas.slice(offset, offset + size);
 
     return { data, total };
   }
 
-  async getNamhatta(id: number): Promise<Namhatta | undefined> {
-    return this.namhattas.find(n => n.id === id);
+  async getNamahatta(id: number): Promise<Namahatta | undefined> {
+    return this.namahattas.find(n => n.id === id);
   }
 
-  async createNamhatta(namhatta: InsertNamhatta): Promise<Namhatta> {
-    const newNamhatta: Namhatta = {
+  async createNamahatta(namahatta: InsertNamahatta): Promise<Namahatta> {
+    const newNamahatta: Namahatta = {
       id: this.nextId++,
-      name: namhatta.name,
-      code: namhatta.code,
-      meetingDay: namhatta.meetingDay || null,
-      meetingTime: namhatta.meetingTime || null,
-      malaSenapotiId: namhatta.malaSenapotiId || null,
-      mahaChakraSenapotiId: namhatta.mahaChakraSenapotiId || null,
-      chakraSenapotiId: namhatta.chakraSenapotiId || null,
-      upaChakraSenapotiId: namhatta.upaChakraSenapotiId || null,
-      secretaryId: namhatta.secretaryId || null,
-      presidentId: namhatta.presidentId || null,
-      accountantId: namhatta.accountantId || null,
-      districtSupervisorId: namhatta.districtSupervisorId,
-      status: namhatta.status || "PENDING_APPROVAL",
-      registrationNo: namhatta.registrationNo || null,
-      registrationDate: namhatta.registrationDate || null,
+      name: namahatta.name,
+      code: namahatta.code,
+      meetingDay: namahatta.meetingDay || null,
+      meetingTime: namahatta.meetingTime || null,
+      malaSenapotiId: namahatta.malaSenapotiId || null,
+      mahaChakraSenapotiId: namahatta.mahaChakraSenapotiId || null,
+      chakraSenapotiId: namahatta.chakraSenapotiId || null,
+      upaChakraSenapotiId: namahatta.upaChakraSenapotiId || null,
+      secretaryId: namahatta.secretaryId || null,
+      presidentId: namahatta.presidentId || null,
+      accountantId: namahatta.accountantId || null,
+      districtSupervisorId: namahatta.districtSupervisorId,
+      status: namahatta.status || "PENDING_APPROVAL",
+      registrationNo: namahatta.registrationNo || null,
+      registrationDate: namahatta.registrationDate || null,
       createdAt: new Date(),
       updatedAt: new Date()
-    } as Namhatta;
-    this.namhattas.push(newNamhatta);
+    } as Namahatta;
+    this.namahattas.push(newNamahatta);
     
-    // Update devotees assigned to leadership positions to link them to this namhatta
-    // Only update the devotee table if they are not already tagged to another namhatta
+    // Update devotees assigned to leadership positions to link them to this namahatta
+    // Only update the devotee table if they are not already tagged to another namahatta
     const updateDevotee = (devoteeId: number | null, leadershipRole: string) => {
       if (devoteeId) {
         const devotee = this.devotees.find(d => d.id === devoteeId);
         if (devotee) {
-          // Only assign to the new namhatta if devotee is not already assigned to another namhatta
-          if (!devotee.namhattaId) {
-            devotee.namhattaId = newNamhatta.id;
+          // Only assign to the new namahatta if devotee is not already assigned to another namahatta
+          if (!devotee.namahattaId) {
+            devotee.namahattaId = newNamahatta.id;
             devotee.leadershipRole = leadershipRole;
             devotee.updatedAt = new Date();
           }
-          // Note: The namhatta table itself will always have the role assignment
+          // Note: The namahatta table itself will always have the role assignment
           // regardless of whether the devotee is assigned or not
         }
       }
     };
     
     // Update all assigned devotees
-    updateDevotee(namhatta.malaSenapotiId, 'MALA_SENAPOTI');
-    updateDevotee(namhatta.mahaChakraSenapotiId, 'MAHA_CHAKRA_SENAPOTI');
-    updateDevotee(namhatta.chakraSenapotiId, 'CHAKRA_SENAPOTI');
-    updateDevotee(namhatta.upaChakraSenapotiId, 'UPA_CHAKRA_SENAPOTI');
-    updateDevotee(namhatta.secretaryId, 'SECRETARY');
-    updateDevotee(namhatta.presidentId, 'PRESIDENT');
-    updateDevotee(namhatta.accountantId, 'ACCOUNTANT');
+    updateDevotee(namahatta.malaSenapotiId, 'MALA_SENAPOTI');
+    updateDevotee(namahatta.mahaChakraSenapotiId, 'MAHA_CHAKRA_SENAPOTI');
+    updateDevotee(namahatta.chakraSenapotiId, 'CHAKRA_SENAPOTI');
+    updateDevotee(namahatta.upaChakraSenapotiId, 'UPA_CHAKRA_SENAPOTI');
+    updateDevotee(namahatta.secretaryId, 'SECRETARY');
+    updateDevotee(namahatta.presidentId, 'PRESIDENT');
+    updateDevotee(namahatta.accountantId, 'ACCOUNTANT');
     
-    return newNamhatta;
+    return newNamahatta;
   }
 
-  async updateNamhatta(id: number, namhatta: Partial<InsertNamhatta>): Promise<Namhatta> {
-    const index = this.namhattas.findIndex(n => n.id === id);
-    if (index === -1) throw new Error('Namhatta not found');
+  async updateNamahatta(id: number, namahatta: Partial<InsertNamahatta>): Promise<Namahatta> {
+    const index = this.namahattas.findIndex(n => n.id === id);
+    if (index === -1) throw new Error('Namahatta not found');
     
-    this.namhattas[index] = { ...this.namhattas[index], ...namhatta, updatedAt: new Date() } as Namhatta;
-    return this.namhattas[index];
+    this.namahattas[index] = { ...this.namahattas[index], ...namahatta, updatedAt: new Date() } as Namahatta;
+    return this.namahattas[index];
   }
 
-  async approveNamhatta(id: number, registrationNo: string, registrationDate: string): Promise<void> {
-    const index = this.namhattas.findIndex(n => n.id === id);
+  async approveNamahatta(id: number, registrationNo: string, registrationDate: string): Promise<void> {
+    const index = this.namahattas.findIndex(n => n.id === id);
     if (index !== -1) {
-      this.namhattas[index] = {
-        ...this.namhattas[index],
+      this.namahattas[index] = {
+        ...this.namahattas[index],
         status: "APPROVED",
         registrationNo,
         registrationDate,
         updatedAt: new Date()
-      } as Namhatta;
+      } as Namahatta;
     }
   }
 
   async checkRegistrationNoExists(registrationNo: string): Promise<boolean> {
-    return this.namhattas.some(n => n.registrationNo === registrationNo);
+    return this.namahattas.some(n => n.registrationNo === registrationNo);
   }
 
-  async rejectNamhatta(id: number, reason?: string): Promise<void> {
-    await this.updateNamhatta(id, { status: "REJECTED" });
+  async rejectNamahatta(id: number, reason?: string): Promise<void> {
+    await this.updateNamahatta(id, { status: "REJECTED" });
   }
 
-  async getNamhattaUpdates(id: number): Promise<NamhattaUpdate[]> {
-    return this.namhattaUpdates.filter(u => u.namhattaId === id);
+  async getNamahattaUpdates(id: number): Promise<NamahattaUpdate[]> {
+    return this.namahattaUpdates.filter(u => u.namahattaId === id);
   }
 
-  async getNamhattaDevoteeStatusCount(id: number): Promise<Record<string, number>> {
-    const devotees = this.devotees.filter(d => d.namhattaId === id);
+  async getNamahattaDevoteeStatusCount(id: number): Promise<Record<string, number>> {
+    const devotees = this.devotees.filter(d => d.namahattaId === id);
     const statusCounts: Record<string, number> = {};
     
     for (const devotee of devotees) {
@@ -351,8 +351,8 @@ export class MemStorage implements IStorage {
     return statusCounts;
   }
 
-  async getNamhattaStatusHistory(id: number, page = 1, size = 10): Promise<{ data: StatusHistory[], total: number }> {
-    const devotees = this.devotees.filter(d => d.namhattaId === id);
+  async getNamahattaStatusHistory(id: number, page = 1, size = 10): Promise<{ data: StatusHistory[], total: number }> {
+    const devotees = this.devotees.filter(d => d.namahattaId === id);
     const devoteeIds = devotees.map(d => d.id);
     const history = this.statusHistory.filter(h => devoteeIds.includes(h.devoteeId));
     
@@ -423,10 +423,10 @@ export class MemStorage implements IStorage {
   }
 
   // Updates
-  async createNamhattaUpdate(update: InsertNamhattaUpdate): Promise<NamhattaUpdate> {
-    const newUpdate: NamhattaUpdate = {
+  async createNamahattaUpdate(update: InsertNamahattaUpdate): Promise<NamahattaUpdate> {
+    const newUpdate: NamahattaUpdate = {
       id: this.nextId++,
-      namhattaId: update.namhattaId,
+      namahattaId: update.namahattaId,
       programType: update.programType,
       date: update.date,
       attendance: update.attendance,
@@ -442,16 +442,16 @@ export class MemStorage implements IStorage {
       specialAttraction: update.specialAttraction || null,
       createdAt: new Date()
     };
-    this.namhattaUpdates.push(newUpdate);
+    this.namahattaUpdates.push(newUpdate);
     return newUpdate;
   }
 
-  async getAllUpdates(): Promise<Array<NamhattaUpdate & { namhattaName: string }>> {
-    return this.namhattaUpdates.map(update => {
-      const namhatta = this.namhattas.find(n => n.id === update.namhattaId);
+  async getAllUpdates(): Promise<Array<NamahattaUpdate & { namahattaName: string }>> {
+    return this.namahattaUpdates.map(update => {
+      const namahatta = this.namahattas.find(n => n.id === update.namahattaId);
       return {
         ...update,
-        namhattaName: namhatta?.name || 'Unknown'
+        namahattaName: namahatta?.name || 'Unknown'
       };
     });
   }
@@ -478,23 +478,23 @@ export class MemStorage implements IStorage {
   // Dashboard
   async getDashboardSummary(): Promise<{
     totalDevotees: number;
-    totalNamhattas: number;
+    totalNamahattas: number;
     recentUpdates: Array<{
-      namhattaId: number;
-      namhattaName: string;
+      namahattaId: number;
+      namahattaName: string;
       programType: string;
       date: string;
       attendance: number;
     }>;
   }> {
-    const recentUpdates = this.namhattaUpdates
+    const recentUpdates = this.namahattaUpdates
       .sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0))
       .slice(0, 5)
       .map(update => {
-        const namhatta = this.namhattas.find(n => n.id === update.namhattaId);
+        const namahatta = this.namahattas.find(n => n.id === update.namahattaId);
         return {
-          namhattaId: update.namhattaId,
-          namhattaName: namhatta?.name || 'Unknown',
+          namahattaId: update.namahattaId,
+          namahattaName: namahatta?.name || 'Unknown',
           programType: update.programType,
           date: update.date,
           attendance: update.attendance
@@ -503,7 +503,7 @@ export class MemStorage implements IStorage {
 
     return {
       totalDevotees: this.devotees.length,
-      totalNamhattas: this.namhattas.length,
+      totalNamahattas: this.namahattas.length,
       recentUpdates
     };
   }
@@ -581,33 +581,33 @@ export class MemStorage implements IStorage {
   }
 
   // Map data methods - Basic implementation for migration
-  async getNamhattaCountsByCountry(): Promise<Array<{ country: string; count: number }>> {
-    return [{ country: "India", count: this.namhattas.length }];
+  async getNamahattaCountsByCountry(): Promise<Array<{ country: string; count: number }>> {
+    return [{ country: "India", count: this.namahattas.length }];
   }
 
-  async getNamhattaCountsByState(country?: string): Promise<Array<{ state: string; country: string; count: number }>> {
+  async getNamahattaCountsByState(country?: string): Promise<Array<{ state: string; country: string; count: number }>> {
     return [
-      { state: "West Bengal", country: "India", count: Math.floor(this.namhattas.length * 0.6) },
-      { state: "Odisha", country: "India", count: Math.floor(this.namhattas.length * 0.4) }
+      { state: "West Bengal", country: "India", count: Math.floor(this.namahattas.length * 0.6) },
+      { state: "Odisha", country: "India", count: Math.floor(this.namahattas.length * 0.4) }
     ];
   }
 
-  async getNamhattaCountsByDistrict(state?: string): Promise<Array<{ district: string; state: string; country: string; count: number }>> {
+  async getNamahattaCountsByDistrict(state?: string): Promise<Array<{ district: string; state: string; country: string; count: number }>> {
     if (state === "West Bengal") {
       return [
-        { district: "Nadia", state: "West Bengal", country: "India", count: Math.floor(this.namhattas.length * 0.3) },
-        { district: "Kolkata", state: "West Bengal", country: "India", count: Math.floor(this.namhattas.length * 0.3) }
+        { district: "Nadia", state: "West Bengal", country: "India", count: Math.floor(this.namahattas.length * 0.3) },
+        { district: "Kolkata", state: "West Bengal", country: "India", count: Math.floor(this.namahattas.length * 0.3) }
       ];
     }
-    return [{ district: "Sample District", state: state || "Sample State", country: "India", count: this.namhattas.length }];
+    return [{ district: "Sample District", state: state || "Sample State", country: "India", count: this.namahattas.length }];
   }
 
-  async getNamhattaCountsBySubDistrict(district?: string): Promise<Array<{ subDistrict: string; district: string; state: string; country: string; count: number }>> {
-    return [{ subDistrict: "Sample Sub-District", district: district || "Sample District", state: "Sample State", country: "India", count: this.namhattas.length }];
+  async getNamahattaCountsBySubDistrict(district?: string): Promise<Array<{ subDistrict: string; district: string; state: string; country: string; count: number }>> {
+    return [{ subDistrict: "Sample Sub-District", district: district || "Sample District", state: "Sample State", country: "India", count: this.namahattas.length }];
   }
 
-  async getNamhattaCountsByVillage(subDistrict?: string): Promise<Array<{ village: string; subDistrict: string; district: string; state: string; country: string; count: number }>> {
-    return [{ village: "Sample Village", subDistrict: subDistrict || "Sample Sub-District", district: "Sample District", state: "Sample State", country: "India", count: this.namhattas.length }];
+  async getNamahattaCountsByVillage(subDistrict?: string): Promise<Array<{ village: string; subDistrict: string; district: string; state: string; country: string; count: number }>> {
+    return [{ village: "Sample Village", subDistrict: subDistrict || "Sample Sub-District", district: "Sample District", state: "Sample State", country: "India", count: this.namahattas.length }];
   }
 
   // Admin functions
@@ -799,21 +799,21 @@ export class MemStorage implements IStorage {
   async getAvailableDevoteesForOfficerPositions(): Promise<Devotee[]> {
     // Get all devotee IDs that are currently assigned as Secretary, President, or Accountant
     const assignedDevoteeIds = new Set<number>();
-    this.namhattas.forEach(namhatta => {
-      if (namhatta.secretaryId) assignedDevoteeIds.add(namhatta.secretaryId);
-      if (namhatta.presidentId) assignedDevoteeIds.add(namhatta.presidentId);
-      if (namhatta.accountantId) assignedDevoteeIds.add(namhatta.accountantId);
+    this.namahattas.forEach(namahatta => {
+      if (namahatta.secretaryId) assignedDevoteeIds.add(namahatta.secretaryId);
+      if (namahatta.presidentId) assignedDevoteeIds.add(namahatta.presidentId);
+      if (namahatta.accountantId) assignedDevoteeIds.add(namahatta.accountantId);
     });
 
     // Filter devotees who are available for officer positions
     const senapotiRoles = ['MALA_SENAPOTI', 'MAHA_CHAKRA_SENAPOTI', 'CHAKRA_SENAPOTI', 'UPA_CHAKRA_SENAPOTI'];
     
     return this.devotees.filter(devotee => 
-      // Not assigned to any namhatta as a regular member
-      !devotee.namhattaId &&
+      // Not assigned to any namahatta as a regular member
+      !devotee.namahattaId &&
       // Don't have any senapoti leadership roles
       (!devotee.leadershipRole || !senapotiRoles.includes(devotee.leadershipRole)) &&
-      // Not currently assigned as Secretary, President, or Accountant in any namhatta
+      // Not currently assigned as Secretary, President, or Accountant in any namahatta
       !assignedDevoteeIds.has(devotee.id)
     );
   }

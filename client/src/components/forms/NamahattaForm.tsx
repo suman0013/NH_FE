@@ -31,7 +31,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import type { Namhatta, Address, Devotee } from "@/lib/types";
+import type { Namahatta, Address, Devotee } from "@/lib/types";
 import AddressSection from "@/components/ui/AddressSection";
 import { SearchableSelect } from "@/components/ui/searchable-select";
 import EnhancedDevoteeForm from "./EnhancedDevoteeForm";
@@ -53,11 +53,11 @@ interface CreateDevoteeModal {
   reportingToDevoteeId?: number;
 }
 
-interface NamhattaFormProps {
+interface NamahattaFormProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
-  namhatta?: Namhatta;
+  namahatta?: Namahatta;
 }
 
 // Form data interface matching the new FK structure
@@ -76,13 +76,13 @@ interface FormData {
   districtSupervisorId: number | null;
 }
 
-export default function NamhattaForm({
+export default function NamahattaForm({
   isOpen,
   onClose,
   onSuccess,
-  namhatta,
-}: NamhattaFormProps) {
-  const isEditing = !!namhatta;
+  namahatta,
+}: NamahattaFormProps) {
+  const isEditing = !!namahatta;
   const { toast } = useToast();
   
   // Step management for new creation workflow
@@ -284,7 +284,7 @@ export default function NamhattaForm({
       setCodeValidation({ isChecking: true, isValid: null, message: "Checking availability..." });
       
       try {
-        const response = await fetch(`/api/namhattas/check-code/${encodeURIComponent(currentCode.toUpperCase())}`);
+        const response = await fetch(`/api/namahattas/check-code/${encodeURIComponent(currentCode.toUpperCase())}`);
         if (!response.ok) throw new Error('Failed to check code availability');
         const data = await response.json() as { exists: boolean };
         if (!data.exists) {
@@ -315,7 +315,7 @@ export default function NamhattaForm({
   // Effect for district supervisor auto-selection
   useEffect(() => {
     // Skip auto-selection if user is a district supervisor (they're already auto-assigned)
-    // or if we're editing an existing namhatta or if no district is selected
+    // or if we're editing an existing namahatta or if no district is selected
     if (user?.role === 'DISTRICT_SUPERVISOR' || isEditing || !address.district || !districtSupervisors.length) {
       return;
     }
@@ -346,46 +346,46 @@ export default function NamhattaForm({
     }
   }, [selectedDistrictSupervisor, isEditing, setValue]);
 
-  // Initialize form with existing namhatta data
+  // Initialize form with existing namahatta data
   useEffect(() => {
-    if (namhatta && isEditing) {
+    if (namahatta && isEditing) {
       reset({
-        name: namhatta.name || "",
-        code: namhatta.code || "",
-        meetingDay: namhatta.meetingDay || "",
-        meetingTime: namhatta.meetingTime || "",
-        malaSenapotiId: namhatta.malaSenapotiId || null,
-        mahaChakraSenapotiId: namhatta.mahaChakraSenapotiId || null,
-        chakraSenapotiId: namhatta.chakraSenapotiId || null,
-        upaChakraSenapotiId: namhatta.upaChakraSenapotiId || null,
-        secretaryId: namhatta.secretaryId || null,
-        presidentId: namhatta.presidentId || null,
-        accountantId: namhatta.accountantId || null,
-        districtSupervisorId: namhatta.districtSupervisorId || null,
+        name: namahatta.name || "",
+        code: namahatta.code || "",
+        meetingDay: namahatta.meetingDay || "",
+        meetingTime: namahatta.meetingTime || "",
+        malaSenapotiId: namahatta.malaSenapotiId || null,
+        mahaChakraSenapotiId: namahatta.mahaChakraSenapotiId || null,
+        chakraSenapotiId: namahatta.chakraSenapotiId || null,
+        upaChakraSenapotiId: namahatta.upaChakraSenapotiId || null,
+        secretaryId: namahatta.secretaryId || null,
+        presidentId: namahatta.presidentId || null,
+        accountantId: namahatta.accountantId || null,
+        districtSupervisorId: namahatta.districtSupervisorId || null,
       });
 
-      // For existing namhattas, try to load address information if available
-      // This prevents data loss when editing existing namhattas
-      if (namhatta.address) {
+      // For existing namahattas, try to load address information if available
+      // This prevents data loss when editing existing namahattas
+      if (namahatta.address) {
         setAddress({
-          country: namhatta.address.country || "",
-          state: namhatta.address.state || "",
-          district: namhatta.address.district || "",
-          subDistrict: namhatta.address.subDistrict || "",
-          village: namhatta.address.village || "",
-          postalCode: namhatta.address.postalCode || "",
+          country: namahatta.address.country || "",
+          state: namahatta.address.state || "",
+          district: namahatta.address.district || "",
+          subDistrict: namahatta.address.subDistrict || "",
+          village: namahatta.address.village || "",
+          postalCode: namahatta.address.postalCode || "",
         });
       }
 
-      if (namhatta.districtSupervisorId) {
-        setSelectedDistrictSupervisor(namhatta.districtSupervisorId);
+      if (namahatta.districtSupervisorId) {
+        setSelectedDistrictSupervisor(namahatta.districtSupervisorId);
       }
     }
-  }, [namhatta, isEditing, reset]);
+  }, [namahatta, isEditing, reset]);
 
   // Handle address changes
   const handleAddressChange = (field: keyof Address, value: string) => {
-    console.log("Namhatta address change:", field, "->", value, "New address:", { ...address, [field]: value });
+    console.log("Namahatta address change:", field, "->", value, "New address:", { ...address, [field]: value });
     setAddress(prev => ({ ...prev, [field]: value }));
     
     // Reset district supervisor selection when district changes
@@ -478,11 +478,11 @@ export default function NamhattaForm({
         
         // In editing mode, merge currently selected officers into the list
         // This ensures that currently assigned officers appear in the dropdown even if they're not "available"
-        if (isEditing && namhatta) {
+        if (isEditing && namahatta) {
           const currentOfficers = [
-            namhatta.secretaryId && { field: 'secretaryId', devotee: { id: namhatta.secretaryId, legalName: namhatta.secretary || 'Unknown', initiatedName: '' }},
-            namhatta.presidentId && { field: 'presidentId', devotee: { id: namhatta.presidentId, legalName: namhatta.president || 'Unknown', initiatedName: '' }},
-            namhatta.accountantId && { field: 'accountantId', devotee: { id: namhatta.accountantId, legalName: namhatta.accountant || 'Unknown', initiatedName: '' }}
+            namahatta.secretaryId && { field: 'secretaryId', devotee: { id: namahatta.secretaryId, legalName: namahatta.secretary || 'Unknown', initiatedName: '' }},
+            namahatta.presidentId && { field: 'presidentId', devotee: { id: namahatta.presidentId, legalName: namahatta.president || 'Unknown', initiatedName: '' }},
+            namahatta.accountantId && { field: 'accountantId', devotee: { id: namahatta.accountantId, legalName: namahatta.accountant || 'Unknown', initiatedName: '' }}
           ].filter(Boolean);
           
           // Add missing current officers to the list
@@ -570,7 +570,7 @@ export default function NamhattaForm({
       const devoteeDistrict = devotee.presentAddress.district;
       if (devoteeDistrict !== address.district) {
         const proceed = window.confirm(
-          `District Mismatch: This Mala Senapoti is from ${devoteeDistrict} district, but the Namhatta is in ${address.district} district. Are you sure you want to assign them?`
+          `District Mismatch: This Mala Senapoti is from ${devoteeDistrict} district, but the Namahatta is in ${address.district} district. Are you sure you want to assign them?`
         );
         if (!proceed) {
           setValue('malaSenapotiId', null);
@@ -588,14 +588,14 @@ export default function NamhattaForm({
         ...data,
         address,
       };
-      return apiRequest("POST", "/api/namhattas", payload);
+      return apiRequest("POST", "/api/namahattas", payload);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/namhattas"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/namahattas"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       toast({
         title: "Success",
-        description: "Namhatta created successfully",
+        description: "Namahatta created successfully",
       });
       onSuccess();
       onClose();
@@ -603,7 +603,7 @@ export default function NamhattaForm({
     onError: (error: any) => {
       toast({
         title: "Error",
-        description: error.message || "Failed to create namhatta",
+        description: error.message || "Failed to create namahatta",
         variant: "destructive",
       });
     },
@@ -615,14 +615,14 @@ export default function NamhattaForm({
         ...data,
         address,
       };
-      return apiRequest("PUT", `/api/namhattas/${namhatta!.id}`, payload);
+      return apiRequest("PUT", `/api/namahattas/${namahatta!.id}`, payload);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/namhattas"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/namahattas"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       toast({
         title: "Success",
-        description: "Namhatta updated successfully",
+        description: "Namahatta updated successfully",
       });
       onSuccess();
       onClose();
@@ -630,7 +630,7 @@ export default function NamhattaForm({
     onError: (error: any) => {
       toast({
         title: "Error",
-        description: error.message || "Failed to update namhatta",
+        description: error.message || "Failed to update namahatta",
         variant: "destructive",
       });
     },
@@ -821,9 +821,9 @@ export default function NamhattaForm({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{isEditing ? "Edit Namhatta" : "Add New Namhatta"}</DialogTitle>
+          <DialogTitle>{isEditing ? "Edit Namahatta" : "Add New Namahatta"}</DialogTitle>
           <DialogDescription>
-            {isEditing ? "Update Namhatta information" : "Create a new Namhatta center following the step-by-step workflow"}
+            {isEditing ? "Update Namahatta information" : "Create a new Namahatta center following the step-by-step workflow"}
           </DialogDescription>
         </DialogHeader>
         
@@ -839,10 +839,10 @@ export default function NamhattaForm({
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="name">Namhatta Name *</Label>
+                  <Label htmlFor="name">Namahatta Name *</Label>
                   <Input
                     {...register("name", { required: "Name is required" })}
-                    placeholder="Enter namhatta name"
+                    placeholder="Enter namahatta name"
                     data-testid="input-name"
                   />
                   {errors.name && (
@@ -850,14 +850,14 @@ export default function NamhattaForm({
                   )}
                 </div>
                 <div>
-                  <Label htmlFor="code">Namhatta Code *</Label>
+                  <Label htmlFor="code">Namahatta Code *</Label>
                   <div className="relative">
                     <Input
                       {...register("code", { 
                         required: "Code is required",
                         setValueAs: (value) => value?.toUpperCase()?.trim() || ""
                       })}
-                      placeholder="Enter namhatta code"
+                      placeholder="Enter namahatta code"
                       style={{ textTransform: 'uppercase' }}
                       className={`${
                         !isEditing && codeValidation.isValid === false 
@@ -937,7 +937,7 @@ export default function NamhattaForm({
                 <h3 className="text-lg font-semibold">Address Information</h3>
               </div>
               <AddressSection
-                title="Namhatta Address"
+                title="Namahatta Address"
                 address={address}
                 onAddressChange={handleAddressChange}
                 onBatchAddressChange={handleBatchAddressChange}
@@ -1082,14 +1082,14 @@ export default function NamhattaForm({
                   disabled={isLoading}
                   data-testid="button-submit"
                   onClick={() => {
-                    console.log("Create Namhatta button clicked!");
+                    console.log("Create Namahatta button clicked!");
                     console.log("Form errors:", errors);
                     console.log("Form values:", watch());
                     console.log("Address:", address);
                     console.log("District supervisor:", selectedDistrictSupervisor);
                   }}
                 >
-                  {isLoading ? "Creating..." : "Create Namhatta"}
+                  {isLoading ? "Creating..." : "Create Namahatta"}
                 </Button>
               )}
             </div>
@@ -1112,7 +1112,7 @@ export default function NamhattaForm({
                   disabled={isLoading}
                   data-testid="button-submit"
                 >
-                  {isLoading ? "Updating..." : "Update Namhatta"}
+                  {isLoading ? "Updating..." : "Update Namahatta"}
                 </Button>
               </div>
             </div>

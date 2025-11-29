@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
-  title: Namhatta Management System API
-  description: OpenAPI spec for Namhatta web and mobile-compatible system
+  title: Namahatta Management System API
+  description: OpenAPI spec for Namahatta web and mobile-compatible system
   version: 1.0.0
 servers:
   - url: http://localhost:8080/api
@@ -122,9 +122,9 @@ paths:
                     type: string
                   description:
                     type: string
-  /namhattas/{id}/status-history:
+  /namahattas/{id}/status-history:
     get:
-      summary: Get devotional status change history for all devotees in a Namhatta
+      summary: Get devotional status change history for all devotees in a Namahatta
       parameters:
         - in: query
           name: page
@@ -294,9 +294,9 @@ $1      responses:
         '200':
           description: List of status updates
 
-  /namhattas:
+  /namahattas:
     get:
-      summary: List Namhattas with filters
+      summary: List Namahattas with filters
       parameters:
         - in: query
           name: page
@@ -308,26 +308,26 @@ $1      responses:
             type: integer
 $1      responses:
         '200':
-          description: List of Namhattas
+          description: List of Namahattas
     post:
-      summary: Create Namhatta
+      summary: Create Namahatta
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Namhatta'
+              $ref: '#/components/schemas/Namahatta'
       responses:
         '201':
-          description: Namhatta created
+          description: Namahatta created
 
-  /namhattas/{id}:
+  /namahattas/{id}:
     get:
-      summary: Get Namhatta Details
+      summary: Get Namahatta Details
       responses:
         '200':
-          description: Details of Namhatta
+          description: Details of Namahatta
     put:
-      summary: Update Namhatta details
+      summary: Update Namahatta details
       parameters:
         - in: path
           name: id
@@ -338,16 +338,16 @@ $1      responses:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Namhatta'
+              $ref: '#/components/schemas/Namahatta'
       responses:
         '200':
-          description: Namhatta updated
+          description: Namahatta updated
         '200':
-          description: Details of Namhatta
+          description: Details of Namahatta
 
-  /namhattas/{id}/devotees:
+  /namahattas/{id}/devotees:
     get:
-      summary: Get list of devotees for a Namhatta
+      summary: Get list of devotees for a Namahatta
       parameters:
         - in: query
           name: page
@@ -366,7 +366,7 @@ $1          schema:
           description: Optional filter by devotional status ID
       responses:
         '200':
-          description: List of devotees for the given Namhatta
+          description: List of devotees for the given Namahatta
           content:
             application/json:
               schema:
@@ -374,11 +374,11 @@ $1          schema:
                 items:
                   $ref: '#/components/schemas/Devotee'
         '200':
-          description: Details of Namhatta
+          description: Details of Namahatta
   
-  /namhattas/{id}/approve:
+  /namahattas/{id}/approve:
     post:
-      summary: Approve a pending Namhatta
+      summary: Approve a pending Namahatta
       parameters:
         - in: path
           name: id
@@ -387,18 +387,18 @@ $1          schema:
             type: integer
       responses:
         '200':
-          description: Namhatta approved
+          description: Namahatta approved
 
-  /namhattas/{id}/updates:
+  /namahattas/{id}/updates:
     get:
-      summary: Get updates of Namhatta
+      summary: Get updates of Namahatta
       responses:
         '200':
           description: List of updates
 
-  /namhattas/{id}/devotee-status-count:
+  /namahattas/{id}/devotee-status-count:
     get:
-      summary: Get count of devotees per devotional status for a Namhatta
+      summary: Get count of devotees per devotional status for a Namahatta
       responses:
         '200':
           description: Counts by status
@@ -457,12 +457,12 @@ $1          schema:
 
   /updates:
     post:
-      summary: Post an update for Namhatta
+      summary: Post an update for Namahatta
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NamhattaUpdate'
+              $ref: '#/components/schemas/NamahattaUpdate'
       responses:
         '201':
           description: Update posted
@@ -474,19 +474,19 @@ components:
       properties:
         totalDevotees:
           type: integer
-        totalNamhattas:
+        totalNamahattas:
           type: integer
         recentUpdates:
           type: array
           items:
-            $ref: '#/components/schemas/NamhattaUpdateCard'
+            $ref: '#/components/schemas/NamahattaUpdateCard'
 
-    NamhattaUpdateCard:
+    NamahattaUpdateCard:
       type: object
       properties:
-        namhattaId:
+        namahattaId:
           type: integer
-        namhattaName:
+        namahattaName:
           type: string
         programType:
           type: string
@@ -672,7 +672,7 @@ components:
         landmark:
           type: string
 
-    Namhatta:
+    Namahatta:
       type: object
       properties:
         code:
@@ -707,10 +707,10 @@ components:
         districtCode:
           type: string
 
-    NamhattaUpdate:
+    NamahattaUpdate:
       type: object
       properties:
-        namhattaId:
+        namahattaId:
           type: integer
         programType:
           type: string

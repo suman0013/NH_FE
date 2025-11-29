@@ -145,7 +145,7 @@ export default function Dashboard() {
 
         {/* Three Main Leadership Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* GBC & Namhatta Preaching Minister */}
+          {/* GBC & Namahatta Preaching Minister */}
           <Card className="bg-white/80 dark:bg-slate-800/50 border-purple-300 dark:border-purple-500/30 shadow-xl" data-testid="card-gbc">
             <CardContent className="p-6">
               <div className="text-center space-y-4">
@@ -159,7 +159,7 @@ export default function Dashboard() {
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-purple-700 dark:text-purple-300 mb-2" data-testid="text-gbc-title">
-                    ISKCON GBC & Namhatta Preaching Minister
+                    ISKCON GBC & Namahatta Preaching Minister
                   </h3>
                   <div className="space-y-2">
                     {(hierarchy as any)?.gbc?.map((gbcMember: any, index: number) => (
@@ -189,7 +189,7 @@ export default function Dashboard() {
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-blue-700 dark:text-blue-300 mb-2" data-testid="text-regional-director-title">
-                    ISKCON Namhatta Regional Director
+                    ISKCON Namahatta Regional Director
                   </h3>
                   <div className="space-y-2">
                     {(hierarchy as any)?.regionalDirectors?.map((director: any, index: number) => (
@@ -219,7 +219,7 @@ export default function Dashboard() {
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-teal-700 dark:text-teal-300 mb-2" data-testid="text-co-regional-director-title">
-                    ISKCON Namhatta Co-Regional Director
+                    ISKCON Namahatta Co-Regional Director
                   </h3>
                   <div className="space-y-2">
                     {(hierarchy as any)?.coRegionalDirectors?.map((coDirector: any, index: number) => (
@@ -250,11 +250,11 @@ export default function Dashboard() {
         </div>
         <div className="flex-1">
           <StatsCard
-            title="Total Namhattas"
-            value={(dashboard as any)?.totalNamhattas || 0}
+            title="Total Namahattas"
+            value={(dashboard as any)?.totalNamahattas || 0}
             icon={Home}
             gradient="from-emerald-400 to-emerald-600"
-            onClick={() => setLocation("/namhattas")}
+            onClick={() => setLocation("/namahattas")}
           />
         </div>
       </div>
@@ -341,7 +341,7 @@ export default function Dashboard() {
 
       {/* Recent Activity & Updates */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Namhatta Updates */}
+        {/* Recent Namahatta Updates */}
         <Card className="glass-card">
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -388,7 +388,7 @@ export default function Dashboard() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-medium text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-200">
-                        {update.namhattaName}
+                        {update.namahattaName}
                       </h3>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                         {update.programType}

@@ -48,8 +48,8 @@ export const mockDevotee = (overrides = {}) => ({
   phone: '1234567890',
   devotionalStatusId: 6,
   devotionalStatus: { name: 'Harinam Diksha' },
-  namhattaId: 1,
-  namhatta: { name: 'Test Namhatta' },
+  namahattaId: 1,
+  namahatta: { name: 'Test Namahatta' },
   presentAddress: {
     country: 'India',
     state: 'West Bengal',
@@ -60,9 +60,9 @@ export const mockDevotee = (overrides = {}) => ({
   ...overrides
 })
 
-export const mockNamhatta = (overrides = {}) => ({
+export const mockNamahatta = (overrides = {}) => ({
   id: 1,
-  name: 'Test Namhatta',
+  name: 'Test Namahatta',
   description: 'A test spiritual center',
   foundingDate: '2020-01-01',
   address: {
@@ -83,7 +83,7 @@ export const mockNamhatta = (overrides = {}) => ({
 
 export const mockUpdate = (overrides = {}) => ({
   id: 1,
-  namhattaId: 1,
+  namahattaId: 1,
   title: 'Test Update',
   description: 'A test update',
   date: '2025-01-15',
@@ -97,9 +97,9 @@ export const mockUpdate = (overrides = {}) => ({
   kirtan: true,
   arati: true,
   bhagwatPath: false,
-  namhattaName: 'Test Namhatta',
-  namhattaCity: 'Kolkata',
-  namhattaState: 'West Bengal',
+  namahattaName: 'Test Namahatta',
+  namahattaCity: 'Kolkata',
+  namahattaState: 'West Bengal',
   createdAt: '2025-01-01T00:00:00Z',
   ...overrides
 })
@@ -107,11 +107,11 @@ export const mockUpdate = (overrides = {}) => ({
 // Mock API responses
 export const mockApiResponse = {
   devotees: [mockDevotee(), mockDevotee({ id: 2, legalName: 'Test Devotee 2' })],
-  namhattas: [mockNamhatta(), mockNamhatta({ id: 2, name: 'Test Namhatta 2' })],
+  namahattas: [mockNamahatta(), mockNamahatta({ id: 2, name: 'Test Namahatta 2' })],
   updates: [mockUpdate(), mockUpdate({ id: 2, title: 'Test Update 2' })],
   dashboard: {
     totalDevotees: 250,
-    totalNamhattas: 100,
+    totalNamahattas: 100,
     recentUpdates: [mockUpdate()]
   },
   statusDistribution: [

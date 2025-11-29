@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronRight, MapPin, Crown, UserCheck, Users, Shield, TreePine, Network, Zap, Circle, ArrowRight, ArrowDown, Search, UserCog, MoreVertical } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import iskconLogo from "@assets/iskcon_logo_1757665218141.png";
-import namhattaLogo from "@assets/namhatta_logo_1757673165218.png";
+import namahattaLogo from "@assets/namhatta_logo_1757673165218.png";
 import prabhupadaImage from "@assets/PRAVUPADA_1757698417419.jpg";
 import RoleManagementModal from "@/components/RoleManagementModal";
 import { useAuth } from "@/contexts/AuthContext";
@@ -21,7 +21,7 @@ interface Leader {
   id: number;
   name: string;
   role: string;
-  namhattaName?: string;
+  namahattaName?: string;
 }
 
 interface HierarchyData {
@@ -287,7 +287,7 @@ export default function Hierarchy() {
                         />
                       </div>
                       <h3 className="text-lg font-bold mb-2" data-testid="text-gbc-title">
-                        GBC & Namhatta Minister
+                        GBC & Namahatta Minister
                       </h3>
                       <div className="space-y-1">
                         {hierarchy.gbc && hierarchy.gbc.map((gbcMember, index) => (
@@ -413,9 +413,9 @@ export default function Hierarchy() {
                               <div className="flex items-center justify-between p-2 rounded hover:bg-red-50 dark:hover:bg-red-900/20">
                                 <div className="flex-1">
                                   <p className="font-medium text-red-800 dark:text-red-200">{leader.name}</p>
-                                  {leader.namhattaName && (
-                                    <p className="text-red-600 dark:text-red-400 truncate" title={leader.namhattaName}>
-                                      {leader.namhattaName}
+                                  {leader.namahattaName && (
+                                    <p className="text-red-600 dark:text-red-400 truncate" title={leader.namahattaName}>
+                                      {leader.namahattaName}
                                     </p>
                                   )}
                                 </div>
@@ -461,9 +461,9 @@ export default function Hierarchy() {
                           {hierarchy.mahaChakraSenapotis.map((leader) => (
                             <div key={leader.id} className="text-xs">
                               <p className="font-medium text-indigo-800 dark:text-indigo-200">{leader.name}</p>
-                              {leader.namhattaName && (
-                                <p className="text-indigo-600 dark:text-indigo-400 truncate" title={leader.namhattaName}>
-                                  {leader.namhattaName}
+                              {leader.namahattaName && (
+                                <p className="text-indigo-600 dark:text-indigo-400 truncate" title={leader.namahattaName}>
+                                  {leader.namahattaName}
                                 </p>
                               )}
                             </div>
@@ -487,9 +487,9 @@ export default function Hierarchy() {
                           {hierarchy.chakraSenapotis.map((leader) => (
                             <div key={leader.id} className="text-xs">
                               <p className="font-medium text-green-800 dark:text-green-200">{leader.name}</p>
-                              {leader.namhattaName && (
-                                <p className="text-green-600 dark:text-green-400 truncate" title={leader.namhattaName}>
-                                  {leader.namhattaName}
+                              {leader.namahattaName && (
+                                <p className="text-green-600 dark:text-green-400 truncate" title={leader.namahattaName}>
+                                  {leader.namahattaName}
                                 </p>
                               )}
                             </div>
@@ -513,9 +513,9 @@ export default function Hierarchy() {
                           {hierarchy.upaChakraSenapotis.map((leader) => (
                             <div key={leader.id} className="text-xs">
                               <p className="font-medium text-yellow-800 dark:text-yellow-200">{leader.name}</p>
-                              {leader.namhattaName && (
-                                <p className="text-yellow-600 dark:text-yellow-400 truncate" title={leader.namhattaName}>
-                                  {leader.namhattaName}
+                              {leader.namahattaName && (
+                                <p className="text-yellow-600 dark:text-yellow-400 truncate" title={leader.namahattaName}>
+                                  {leader.namahattaName}
                                 </p>
                               )}
                             </div>

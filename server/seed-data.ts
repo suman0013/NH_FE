@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { devotees, namhattas, devotionalStatuses, namhattaUpdates, addresses, devoteeAddresses, namhattaAddresses, leaders } from "@shared/schema";
+import { devotees, namahattas, devotionalStatuses, namahattaUpdates, addresses, devoteeAddresses, namahattaAddresses, leaders } from "@shared/schema";
 import { eq, and } from "drizzle-orm";
 
 // Sample data for seeding the database
@@ -7,16 +7,16 @@ export async function seedDatabase() {
   console.log("Starting database seeding...");
 
   // Check if we already have enough data
-  const existingNamhattas = await db.select().from(namhattas);
-  if (existingNamhattas.length >= 50) {
+  const existingNamahattas = await db.select().from(namahattas);
+  if (existingNamahattas.length >= 50) {
     console.log("Database already has sufficient data, skipping seed");
     return;
   }
 
   // Clear existing data first to avoid duplicates
-  await db.delete(namhattaUpdates);
+  await db.delete(namahattaUpdates);
   await db.delete(devotees);
-  await db.delete(namhattas);
+  await db.delete(namahattas);
 
   // Get devotional statuses
   const statuses = await db.select().from(devotionalStatuses);
@@ -90,8 +90,8 @@ export async function seedDatabase() {
   // Get district supervisors for assignment
   const supervisorsForAssignment = await db.select().from(leaders).where(eq(leaders.role, 'DISTRICT_SUPERVISOR'));
   
-  // Generate 100 Namhattas
-  const namhattasData = [];
+  // Generate 100 Namahattas
+  const namahattasData = [];
   for (let i = 1; i <= 100; i++) {
     const location = locations[Math.floor(Math.random() * locations.length)];
     const president = leadershipRoles[Math.floor(Math.random() * leadershipRoles.length)];
@@ -111,9 +111,9 @@ export async function seedDatabase() {
       assignedSupervisor = supervisorsForAssignment[Math.floor(Math.random() * supervisorsForAssignment.length)];
     }
     
-    namhattasData.push({
+    namahattasData.push({
       code: `NAM${String(i).padStart(3, '0')}`,
-      name: `${location.village} Namhatta`,
+      name: `${location.village} Namahatta`,
       meetingDay: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"][Math.floor(Math.random() * 7)],
       meetingTime: `${Math.floor(Math.random() * 12) + 6}:${Math.random() > 0.5 ? "00" : "30"} ${Math.random() > 0.5 ? "AM" : "PM"}`,
       malaSenapotiId: Math.random() > 0.7 ? Math.floor(Math.random() * 50) + 1 : null,
@@ -131,13 +131,13 @@ export async function seedDatabase() {
     });
   }
 
-  // Insert Namhattas
-  console.log("Inserting Namhattas...");
-  for (const namhattaItem of namhattasData) {
-    const { location, ...namhattaFields } = namhattaItem;
+  // Insert Namahattas
+  console.log("Inserting Namahattas...");
+  for (const namahattaItem of namahattasData) {
+    const { location, ...namahattaFields } = namahattaItem;
     
-    // Insert the namhatta
-    const [insertedNamhatta] = await db.insert(namhattas).values(namhattaFields).returning();
+    // Insert the namahatta
+    const [insertedNamahatta] = await db.insert(namahattas).values(namahattaFields).returning();
     
     // Create or find address
     let address = await db.select().from(addresses).where(
@@ -163,16 +163,16 @@ export async function seedDatabase() {
       }).returning();
     }
     
-    // Link namhatta to address
-    await db.insert(namhattaAddresses).values({
-      namhattaId: insertedNamhatta.id,
+    // Link namahatta to address
+    await db.insert(namahattaAddresses).values({
+      namahattaId: insertedNamahatta.id,
       addressId: address[0].id,
       landmark: `Near ${location.village} Center`
     });
   }
 
-  // Get all inserted Namhattas
-  const insertedNamhattas = await db.select().from(namhattas);
+  // Get all inserted Namahattas
+  const insertedNamahattas = await db.select().from(namahattas);
   
   // Generate 250 devotees
   const devoteeData = [];
@@ -182,7 +182,7 @@ export async function seedDatabase() {
     const legalName = isMale ? maleNames[Math.floor(Math.random() * maleNames.length)] : femaleNames[Math.floor(Math.random() * femaleNames.length)];
     const initiatedName = isInitiated ? initiatedNames[Math.floor(Math.random() * initiatedNames.length)] : null;
     const statusId = Math.floor(Math.random() * statuses.length) + 1;
-    const namhattaId = insertedNamhattas[Math.floor(Math.random() * insertedNamhattas.length)].id;
+    const namahattaId = insertedNamahattas[Math.floor(Math.random() * insertedNamahattas.length)].id;
     const location = locations[Math.floor(Math.random() * locations.length)];
     
     devoteeData.push({
@@ -238,13 +238,13 @@ export async function seedDatabase() {
   const programTypes = ["Satsang", "Kirtan", "Bhagavad Gita Class", "Srimad Bhagavatam Class", "Harinam Sankirtan", "Prasadam Distribution", "Book Distribution", "Mangal Arati"];
   
   for (let i = 1; i <= 50; i++) {
-    const namhatta = insertedNamhattas[Math.floor(Math.random() * insertedNamhattas.length)];
+    const namahatta = insertedNamahattas[Math.floor(Math.random() * insertedNamahattas.length)];
     const programType = programTypes[Math.floor(Math.random() * programTypes.length)];
     const attendance = Math.floor(Math.random() * 100) + 10;
     const date = new Date(Date.now() - Math.random() * 180 * 24 * 60 * 60 * 1000); // Random date within last 6 months
     
     updateData.push({
-      namhattaId: namhatta.id,
+      namahattaId: namahatta.id,
       programType,
       date: date.toISOString().split('T')[0],
       attendance,
@@ -262,11 +262,11 @@ export async function seedDatabase() {
   // Insert updates
   console.log("Inserting updates...");
   for (const update of updateData) {
-    await db.insert(namhattaUpdates).values(update);
+    await db.insert(namahattaUpdates).values(update);
   }
 
   console.log(`Database seeded successfully with:
-  - ${namhattasData.length} Namhattas
+  - ${namahattasData.length} Namahattas
   - ${devoteeData.length} Devotees  
   - ${updateData.length} Updates`);
 }

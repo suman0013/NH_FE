@@ -1,27 +1,27 @@
-import { Devotee, InsertDevotee, Namhatta, InsertNamhatta, DevotionalStatus, InsertDevotionalStatus, Shraddhakutir, InsertShraddhakutir, NamhattaUpdate, InsertNamhattaUpdate, Leader, InsertLeader, StatusHistory, Gurudev, InsertGurudev, User, InsertUser, RoleChangeHistory, InsertRoleChangeHistory } from "../shared/schema";
+import { Devotee, InsertDevotee, Namahatta, InsertNamahatta, DevotionalStatus, InsertDevotionalStatus, Shraddhakutir, InsertShraddhakutir, NamahattaUpdate, InsertNamahattaUpdate, Leader, InsertLeader, StatusHistory, Gurudev, InsertGurudev, User, InsertUser, RoleChangeHistory, InsertRoleChangeHistory } from "../shared/schema";
 
 export interface IStorage {
   // Devotees
   getDevotees(page?: number, size?: number, filters?: any): Promise<{ data: Devotee[], total: number }>;
   getDevotee(id: number): Promise<Devotee | undefined>;
   createDevotee(devotee: InsertDevotee): Promise<Devotee>;
-  createDevoteeForNamhatta(devotee: InsertDevotee, namhattaId: number): Promise<Devotee>;
+  createDevoteeForNamahatta(devotee: InsertDevotee, namahattaId: number): Promise<Devotee>;
   updateDevotee(id: number, devotee: Partial<InsertDevotee>): Promise<Devotee>;
-  getDevoteesByNamhatta(namhattaId: number, page?: number, size?: number, statusId?: number): Promise<{ data: Devotee[], total: number }>;
+  getDevoteesByNamahatta(namahattaId: number, page?: number, size?: number, statusId?: number): Promise<{ data: Devotee[], total: number }>;
   upgradeDevoteeStatus(id: number, newStatusId: number, notes?: string): Promise<void>;
   getDevoteeStatusHistory(id: number): Promise<StatusHistory[]>;
 
-  // Namhattas
-  getNamhattas(page?: number, size?: number, filters?: any): Promise<{ data: Namhatta[], total: number }>;
-  getNamhatta(id: number): Promise<Namhatta | undefined>;
-  createNamhatta(namhatta: InsertNamhatta): Promise<Namhatta>;
-  updateNamhatta(id: number, namhatta: Partial<InsertNamhatta>): Promise<Namhatta>;
-  approveNamhatta(id: number, registrationNo: string, registrationDate: string): Promise<void>;
-  rejectNamhatta(id: number, reason?: string): Promise<void>;
+  // Namahattas
+  getNamahattas(page?: number, size?: number, filters?: any): Promise<{ data: Namahatta[], total: number }>;
+  getNamahatta(id: number): Promise<Namahatta | undefined>;
+  createNamahatta(namahatta: InsertNamahatta): Promise<Namahatta>;
+  updateNamahatta(id: number, namahatta: Partial<InsertNamahatta>): Promise<Namahatta>;
+  approveNamahatta(id: number, registrationNo: string, registrationDate: string): Promise<void>;
+  rejectNamahatta(id: number, reason?: string): Promise<void>;
   checkRegistrationNoExists(registrationNo: string): Promise<boolean>;
-  getNamhattaUpdates(id: number): Promise<NamhattaUpdate[]>;
-  getNamhattaDevoteeStatusCount(id: number): Promise<Record<string, number>>;
-  getNamhattaStatusHistory(id: number, page?: number, size?: number): Promise<{ data: StatusHistory[], total: number }>;
+  getNamahattaUpdates(id: number): Promise<NamahattaUpdate[]>;
+  getNamahattaDevoteeStatusCount(id: number): Promise<Record<string, number>>;
+  getNamahattaStatusHistory(id: number, page?: number, size?: number): Promise<{ data: StatusHistory[], total: number }>;
 
   // Statuses
   getDevotionalStatuses(): Promise<DevotionalStatus[]>;
@@ -37,8 +37,8 @@ export interface IStorage {
   createGurudev(gurudev: InsertGurudev): Promise<Gurudev>;
 
   // Updates
-  createNamhattaUpdate(update: InsertNamhattaUpdate): Promise<NamhattaUpdate>;
-  getAllUpdates(): Promise<Array<NamhattaUpdate & { namhattaName: string }>>;
+  createNamahattaUpdate(update: InsertNamahattaUpdate): Promise<NamahattaUpdate>;
+  getAllUpdates(): Promise<Array<NamahattaUpdate & { namahattaName: string }>>;
 
   // Hierarchy
   getTopLevelHierarchy(): Promise<{
@@ -52,10 +52,10 @@ export interface IStorage {
   // Dashboard
   getDashboardSummary(): Promise<{
     totalDevotees: number;
-    totalNamhattas: number;
+    totalNamahattas: number;
     recentUpdates: Array<{
-      namhattaId: number;
-      namhattaName: string;
+      namahattaId: number;
+      namahattaName: string;
       programType: string;
       date: string;
       attendance: number;
@@ -105,11 +105,11 @@ export interface IStorage {
   } | null>;
 
   // Map data
-  getNamhattaCountsByCountry(): Promise<Array<{ country: string; count: number }>>;
-  getNamhattaCountsByState(country?: string): Promise<Array<{ state: string; country: string; count: number }>>;
-  getNamhattaCountsByDistrict(state?: string): Promise<Array<{ district: string; state: string; country: string; count: number }>>;
-  getNamhattaCountsBySubDistrict(district?: string): Promise<Array<{ subDistrict: string; district: string; state: string; country: string; count: number }>>;
-  getNamhattaCountsByVillage(subDistrict?: string): Promise<Array<{ village: string; subDistrict: string; district: string; state: string; country: string; count: number }>>;
+  getNamahattaCountsByCountry(): Promise<Array<{ country: string; count: number }>>;
+  getNamahattaCountsByState(country?: string): Promise<Array<{ state: string; country: string; count: number }>>;
+  getNamahattaCountsByDistrict(state?: string): Promise<Array<{ district: string; state: string; country: string; count: number }>>;
+  getNamahattaCountsBySubDistrict(district?: string): Promise<Array<{ subDistrict: string; district: string; state: string; country: string; count: number }>>;
+  getNamahattaCountsByVillage(subDistrict?: string): Promise<Array<{ village: string; subDistrict: string; district: string; state: string; country: string; count: number }>>;
 
   // Devotee counts by geography
   getDevoteeCountsByState(country?: string): Promise<Array<{ state: string; country: string; count: number }>>;
@@ -122,22 +122,22 @@ export interface IStorage {
     states: Array<{
       name: string;
       country: string;
-      namhattaCount: number;
+      namahattaCount: number;
       devoteeCount: number;
       districts: Array<{
         name: string;
         state: string;
-        namhattaCount: number;
+        namahattaCount: number;
         devoteeCount: number;
         subDistricts: Array<{
           name: string;
           district: string;
-          namhattaCount: number;
+          namahattaCount: number;
           devoteeCount: number;
           villages: Array<{
             name: string;
             subDistrict: string;
-            namhattaCount: number;
+            namahattaCount: number;
             devoteeCount: number;
           }>;
         }>;
@@ -149,25 +149,25 @@ export interface IStorage {
   getAllStatesWithCounts(filters?: { allowedDistricts?: string[] }): Promise<Array<{
     name: string;
     country: string;
-    namhattaCount: number;
+    namahattaCount: number;
     devoteeCount: number;
   }>>;
   getAllDistrictsWithCounts(state: string, filters?: { allowedDistricts?: string[] }): Promise<Array<{
     name: string;
     state: string;
-    namhattaCount: number;
+    namahattaCount: number;
     devoteeCount: number;
   }>>;
   getAllSubDistrictsWithCounts(state: string, district: string, filters?: { allowedDistricts?: string[] }): Promise<Array<{
     name: string;
     district: string;
-    namhattaCount: number;
+    namahattaCount: number;
     devoteeCount: number;
   }>>;
   getAllVillagesWithCounts(state: string, district: string, subDistrict: string, filters?: { allowedDistricts?: string[] }): Promise<Array<{
     name: string;
     subDistrict: string;
-    namhattaCount: number;
+    namahattaCount: number;
     devoteeCount: number;
   }>>;
 

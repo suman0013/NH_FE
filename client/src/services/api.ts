@@ -4,7 +4,7 @@ import type {
   HierarchyResponse, 
   PaginatedResponse, 
   Devotee, 
-  Namhatta, 
+  Namahatta, 
   DevotionalStatus,
   Shraddhakutir,
   Leader,
@@ -136,8 +136,8 @@ export const api = {
     return res.json();
   },
 
-  createDevoteeForNamhatta: async (devotee: Partial<Devotee>, namhattaId: number): Promise<Devotee> => {
-    const res = await apiRequest("POST", `/api/devotees/${namhattaId}`, devotee);
+  createDevoteeForNamahatta: async (devotee: Partial<Devotee>, namahattaId: number): Promise<Devotee> => {
+    const res = await apiRequest("POST", `/api/devotees/${namahattaId}`, devotee);
     return res.json();
   },
 
@@ -164,8 +164,8 @@ export const api = {
     return res.json();
   },
 
-  // Namhattas
-  getNamhattas: async (page = 1, size = 10, filters?: any): Promise<PaginatedResponse<Namhatta>> => {
+  // Namahattas
+  getNamahattas: async (page = 1, size = 10, filters?: any): Promise<PaginatedResponse<Namahatta>> => {
     const params = new URLSearchParams({ page: page.toString(), size: size.toString() });
     if (filters) {
       Object.keys(filters).forEach(key => {
@@ -175,48 +175,48 @@ export const api = {
         }
       });
     }
-    const res = await apiRequest("GET", `/api/namhattas?${params}`);
+    const res = await apiRequest("GET", `/api/namahattas?${params}`);
     return res.json();
   },
 
-  getNamhatta: async (id: number): Promise<Namhatta> => {
-    const res = await apiRequest("GET", `/api/namhattas/${id}`);
+  getNamahatta: async (id: number): Promise<Namahatta> => {
+    const res = await apiRequest("GET", `/api/namahattas/${id}`);
     return res.json();
   },
 
-  checkNamhattaCodeExists: async (code: string): Promise<{ exists: boolean }> => {
-    const res = await apiRequest("GET", `/api/namhattas/check-code/${encodeURIComponent(code)}`);
+  checkNamahattaCodeExists: async (code: string): Promise<{ exists: boolean }> => {
+    const res = await apiRequest("GET", `/api/namahattas/check-code/${encodeURIComponent(code)}`);
     return res.json();
   },
 
-  createNamhatta: async (namhatta: Partial<Namhatta>): Promise<Namhatta> => {
-    const res = await apiRequest("POST", "/api/namhattas", namhatta);
+  createNamahatta: async (namahatta: Partial<Namahatta>): Promise<Namahatta> => {
+    const res = await apiRequest("POST", "/api/namahattas", namahatta);
     return res.json();
   },
 
-  updateNamhatta: async (id: number, namhatta: Partial<Namhatta>): Promise<Namhatta> => {
-    const res = await apiRequest("PUT", `/api/namhattas/${id}`, namhatta);
+  updateNamahatta: async (id: number, namahatta: Partial<Namahatta>): Promise<Namahatta> => {
+    const res = await apiRequest("PUT", `/api/namahattas/${id}`, namahatta);
     return res.json();
   },
 
-  approveNamhatta: async (id: number): Promise<void> => {
-    await apiRequest("POST", `/api/namhattas/${id}/approve`);
+  approveNamahatta: async (id: number): Promise<void> => {
+    await apiRequest("POST", `/api/namahattas/${id}/approve`);
   },
 
-  getNamhattaUpdates: async (id: number) => {
-    const res = await apiRequest("GET", `/api/namhattas/${id}/updates`);
+  getNamahattaUpdates: async (id: number) => {
+    const res = await apiRequest("GET", `/api/namahattas/${id}/updates`);
     return res.json();
   },
 
-  getNamhattaDevotees: async (id: number, page = 1, size = 10, statusId?: number) => {
+  getNamahattaDevotees: async (id: number, page = 1, size = 10, statusId?: number) => {
     const params = new URLSearchParams({ page: page.toString(), size: size.toString() });
     if (statusId) params.append('statusId', statusId.toString());
-    const res = await apiRequest("GET", `/api/namhattas/${id}/devotees?${params}`);
+    const res = await apiRequest("GET", `/api/namahattas/${id}/devotees?${params}`);
     return res.json();
   },
 
-  getNamhattaDevoteeStatusCount: async (id: number) => {
-    const res = await apiRequest("GET", `/api/namhattas/${id}/devotee-status-count`);
+  getNamahattaDevoteeStatusCount: async (id: number) => {
+    const res = await apiRequest("GET", `/api/namahattas/${id}/devotee-status-count`);
     return res.json();
   },
 
@@ -262,7 +262,7 @@ export const api = {
   },
 
   // Updates
-  createNamhattaUpdate: async (update: any) => {
+  createNamahattaUpdate: async (update: any) => {
     const res = await apiRequest("POST", "/api/updates", update);
     return res.json();
   },

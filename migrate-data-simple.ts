@@ -4,7 +4,7 @@ import { neon } from '@neondatabase/serverless';
 // Check if SQLite database exists
 import { existsSync } from 'fs';
 
-const sqliteFile = './namhatta.db';
+const sqliteFile = './namahatta.db';
 if (!existsSync(sqliteFile)) {
   console.log('SQLite database not found. Skipping migration.');
   process.exit(0);
@@ -43,21 +43,21 @@ async function migrateData() {
     }
     console.log(`✓ Migrated ${shraddhakutirs.length} shraddhakutirs`);
 
-    // 3. Migrate namhattas
-    console.log('Migrating namhattas...');
-    const namhattas = sqlite.prepare('SELECT * FROM namhattas').all();
-    await sql('TRUNCATE TABLE namhattas RESTART IDENTITY CASCADE');
+    // 3. Migrate namahattas
+    console.log('Migrating namahattas...');
+    const namahattas = sqlite.prepare('SELECT * FROM namahattas').all();
+    await sql('TRUNCATE TABLE namahattas RESTART IDENTITY CASCADE');
     
-    for (const namhatta of namhattas) {
-      await sql(`INSERT INTO namhattas (code, name, meeting_day, meeting_time, mala_senapoti, 
+    for (const namahatta of namahattas) {
+      await sql(`INSERT INTO namahattas (code, name, meeting_day, meeting_time, mala_senapoti, 
                  maha_chakra_senapoti, chakra_senapoti, upa_chakra_senapoti, secretary, status, created_at, updated_at) 
                  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
-                [namhatta.code, namhatta.name, namhatta.meeting_day, namhatta.meeting_time,
-                 namhatta.mala_senapoti, namhatta.maha_chakra_senapoti, namhatta.chakra_senapoti,
-                 namhatta.upa_chakra_senapoti, namhatta.secretary, namhatta.status || 'APPROVED',
+                [namahatta.code, namahatta.name, namahatta.meeting_day, namahatta.meeting_time,
+                 namahatta.mala_senapoti, namahatta.maha_chakra_senapoti, namahatta.chakra_senapoti,
+                 namahatta.upa_chakra_senapoti, namahatta.secretary, namahatta.status || 'APPROVED',
                  new Date(), new Date()]);
     }
-    console.log(`✓ Migrated ${namhattas.length} namhattas`);
+    console.log(`✓ Migrated ${namahattas.length} namahattas`);
 
     // 4. Migrate devotees
     console.log('Migrating devotees...');
@@ -66,7 +66,7 @@ async function migrateData() {
     
     for (const devotee of devotees) {
       await sql(`INSERT INTO devotees (legal_name, name, dob, email, phone, father_name, mother_name, 
-                 husband_name, gender, blood_group, marital_status, devotional_status_id, namhatta_id,
+                 husband_name, gender, blood_group, marital_status, devotional_status_id, namahatta_id,
                  gurudev_harinam, gurudev_pancharatrik, harinam_initiation_gurudev, pancharatrik_initiation_gurudev,
                  initiated_name, harinam_date, pancharatrik_date, education, occupation, devotional_courses,
                  additional_comments, shraddhakutir_id, created_at, updated_at)
@@ -74,7 +74,7 @@ async function migrateData() {
                 [devotee.legal_name, devotee.name, devotee.dob, devotee.email, devotee.phone,
                  devotee.father_name, devotee.mother_name, devotee.husband_name, devotee.gender,
                  devotee.blood_group, devotee.marital_status, devotee.devotional_status_id,
-                 devotee.namhatta_id, devotee.gurudev_harinam, devotee.gurudev_pancharatrik,
+                 devotee.namahatta_id, devotee.gurudev_harinam, devotee.gurudev_pancharatrik,
                  devotee.harinam_initiation_gurudev, devotee.pancharatrik_initiation_gurudev,
                  devotee.initiated_name, devotee.harinam_date, devotee.pancharatrik_date,
                  devotee.education, devotee.occupation, 
@@ -95,7 +95,7 @@ async function migrateData() {
     }
     console.log(`✓ Migrated ${leaders.length} leaders`);
 
-    // 6. Migrate SQLite addresses (for devotee/namhatta addresses)
+    // 6. Migrate SQLite addresses (for devotee/namahatta addresses)
     console.log('Migrating SQLite addresses...');
     const sqliteAddresses = sqlite.prepare('SELECT * FROM addresses').all();
     
@@ -125,20 +125,20 @@ async function migrateData() {
     }
     console.log(`✓ Migrated ${devoteeAddresses.length} devotee addresses`);
 
-    // 8. Migrate namhatta addresses
-    console.log('Migrating namhatta addresses...');
-    const namhattaAddresses = sqlite.prepare('SELECT * FROM namhatta_addresses').all();
-    await sql('TRUNCATE TABLE namhatta_addresses RESTART IDENTITY CASCADE');
+    // 8. Migrate namahatta addresses
+    console.log('Migrating namahatta addresses...');
+    const namahattaAddresses = sqlite.prepare('SELECT * FROM namahatta_addresses').all();
+    await sql('TRUNCATE TABLE namahatta_addresses RESTART IDENTITY CASCADE');
     
-    for (const namAddr of namhattaAddresses) {
+    for (const namAddr of namahattaAddresses) {
       const newAddressId = addressMapping.get(namAddr.address_id);
       if (newAddressId) {
-        await sql(`INSERT INTO namhatta_addresses (namhatta_id, address_id, landmark, created_at) 
+        await sql(`INSERT INTO namahatta_addresses (namahatta_id, address_id, landmark, created_at) 
                    VALUES ($1, $2, $3, $4)`,
-                  [namAddr.namhatta_id, newAddressId, namAddr.landmark, new Date()]);
+                  [namAddr.namahatta_id, newAddressId, namAddr.landmark, new Date()]);
       }
     }
-    console.log(`✓ Migrated ${namhattaAddresses.length} namhatta addresses`);
+    console.log(`✓ Migrated ${namahattaAddresses.length} namahatta addresses`);
 
     // 9. Migrate status history
     console.log('Migrating status history...');
@@ -152,22 +152,22 @@ async function migrateData() {
     }
     console.log(`✓ Migrated ${statusHistory.length} status history records`);
 
-    // 10. Migrate namhatta updates
-    console.log('Migrating namhatta updates...');
-    const namhattaUpdates = sqlite.prepare('SELECT * FROM namhatta_updates').all();
-    await sql('TRUNCATE TABLE namhatta_updates RESTART IDENTITY CASCADE');
+    // 10. Migrate namahatta updates
+    console.log('Migrating namahatta updates...');
+    const namahattaUpdates = sqlite.prepare('SELECT * FROM namahatta_updates').all();
+    await sql('TRUNCATE TABLE namahatta_updates RESTART IDENTITY CASCADE');
     
-    for (const update of namhattaUpdates) {
-      await sql(`INSERT INTO namhatta_updates (namhatta_id, program_type, date, attendance, prasad_distribution,
+    for (const update of namahattaUpdates) {
+      await sql(`INSERT INTO namahatta_updates (namahatta_id, program_type, date, attendance, prasad_distribution,
                  nagar_kirtan, book_distribution, chanting, arati, bhagwat_path, image_urls, facebook_link,
                  youtube_link, special_attraction, created_at) 
                  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
-                [update.namhatta_id, update.program_type, update.date, update.attendance, update.prasad_distribution,
+                [update.namahatta_id, update.program_type, update.date, update.attendance, update.prasad_distribution,
                  update.nagar_kirtan, update.book_distribution, update.chanting, update.arati, update.bhagwat_path,
                  update.image_urls ? JSON.stringify(JSON.parse(update.image_urls)) : null,
                  update.facebook_link, update.youtube_link, update.special_attraction, new Date()]);
     }
-    console.log(`✓ Migrated ${namhattaUpdates.length} namhatta updates`);
+    console.log(`✓ Migrated ${namahattaUpdates.length} namahatta updates`);
 
     console.log('✅ Data migration completed successfully!');
   } catch (error) {

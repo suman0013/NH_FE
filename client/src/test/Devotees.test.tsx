@@ -18,8 +18,8 @@ const mockDevotees = [
       district: 'Kolkata',
       city: 'Kolkata'
     },
-    namhattaId: 1,
-    namhatta: { name: 'Test Namhatta' },
+    namahattaId: 1,
+    namahatta: { name: 'Test Namahatta' },
     createdAt: '2025-01-01T00:00:00Z'
   },
   {
@@ -35,8 +35,8 @@ const mockDevotees = [
       district: 'Mumbai',
       city: 'Mumbai'
     },
-    namhattaId: 2,
-    namhatta: { name: 'Mumbai Namhatta' },
+    namahattaId: 2,
+    namahatta: { name: 'Mumbai Namahatta' },
     createdAt: '2025-01-02T00:00:00Z'
   }
 ]
@@ -88,8 +88,8 @@ describe('Devotees', () => {
     await waitFor(() => {
       expect(screen.getByText('Software Engineer')).toBeInTheDocument()
       expect(screen.getByText('Teacher')).toBeInTheDocument()
-      expect(screen.getByText('Test Namhatta')).toBeInTheDocument()
-      expect(screen.getByText('Mumbai Namhatta')).toBeInTheDocument()
+      expect(screen.getByText('Test Namahatta')).toBeInTheDocument()
+      expect(screen.getByText('Mumbai Namahatta')).toBeInTheDocument()
     })
   })
 

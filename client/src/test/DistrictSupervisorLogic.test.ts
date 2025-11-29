@@ -8,8 +8,8 @@ import { describe, it, expect } from 'vitest';
 describe('District Supervisor Assignment Logic', () => {
   describe('Role-based Assignment Logic', () => {
     it('should auto-assign supervisor for district supervisor users', () => {
-      const getAssignedSupervisor = (user: any, namhattaDistrict: string) => {
-        if (user.role === 'DISTRICT_SUPERVISOR' && user.location?.district === namhattaDistrict) {
+      const getAssignedSupervisor = (user: any, namahattaDistrict: string) => {
+        if (user.role === 'DISTRICT_SUPERVISOR' && user.location?.district === namahattaDistrict) {
           return user.id;
         }
         return null;
@@ -28,10 +28,10 @@ describe('District Supervisor Assignment Logic', () => {
       expect(getAssignedSupervisor(adminUser, 'Bankura')).toBe(null);
     });
 
-    it('should validate district supervisor can only create namhattas in their district', () => {
-      const canCreateNamhatta = (user: any, namhattaDistrict: string) => {
+    it('should validate district supervisor can only create namahattas in their district', () => {
+      const canCreateNamahatta = (user: any, namahattaDistrict: string) => {
         if (user.role === 'DISTRICT_SUPERVISOR') {
-          return user.location?.district === namhattaDistrict;
+          return user.location?.district === namahattaDistrict;
         }
         return true; // Admin/Office can create anywhere
       };
@@ -42,9 +42,9 @@ describe('District Supervisor Assignment Logic', () => {
         location: { district: 'Bankura' }
       };
 
-      expect(canCreateNamhatta(districtSupervisor, 'Bankura')).toBe(true);
-      expect(canCreateNamhatta(districtSupervisor, 'Nadia')).toBe(false);
-      expect(canCreateNamhatta({ role: 'ADMIN' }, 'Bankura')).toBe(true);
+      expect(canCreateNamahatta(districtSupervisor, 'Bankura')).toBe(true);
+      expect(canCreateNamahatta(districtSupervisor, 'Nadia')).toBe(false);
+      expect(canCreateNamahatta({ role: 'ADMIN' }, 'Bankura')).toBe(true);
     });
   });
 
@@ -113,11 +113,11 @@ describe('District Supervisor Assignment Logic', () => {
       expect(getSupervisorsByDistrict(mockSupervisors, 'UnknownDistrict')).toHaveLength(0);
     });
 
-    it('should validate supervisor belongs to namhatta district', () => {
-      const validateSupervisorDistrict = (supervisorId: number, namhattaDistrict: string, supervisors: any[]) => {
+    it('should validate supervisor belongs to namahatta district', () => {
+      const validateSupervisorDistrict = (supervisorId: number, namahattaDistrict: string, supervisors: any[]) => {
         const supervisor = supervisors.find(s => s.id === supervisorId);
         if (!supervisor) return false;
-        return supervisor.location.district === namhattaDistrict;
+        return supervisor.location.district === namahattaDistrict;
       };
 
       expect(validateSupervisorDistrict(1, 'Bankura', mockSupervisors)).toBe(true);
@@ -128,15 +128,15 @@ describe('District Supervisor Assignment Logic', () => {
 
   describe('Form Validation Logic', () => {
     it('should validate required fields', () => {
-      const validateNamhattaForm = (data: any) => {
+      const validateNamahattaForm = (data: any) => {
         const errors: any = {};
 
         if (!data.code || data.code.trim() === '') {
-          errors.code = 'Namhatta code is required';
+          errors.code = 'Namahatta code is required';
         }
 
         if (!data.name || data.name.trim() === '') {
-          errors.name = 'Namhatta name is required';
+          errors.name = 'Namahatta name is required';
         }
 
         if (!data.secretary || data.secretary.trim() === '') {
@@ -152,7 +152,7 @@ describe('District Supervisor Assignment Logic', () => {
 
       const validData = {
         code: 'NAM001',
-        name: 'Test Namhatta',
+        name: 'Test Namahatta',
         secretary: 'Test Secretary',
         districtSupervisorId: 1
       };
@@ -164,8 +164,8 @@ describe('District Supervisor Assignment Logic', () => {
         districtSupervisorId: 0
       };
 
-      expect(Object.keys(validateNamhattaForm(validData))).toHaveLength(0);
-      expect(Object.keys(validateNamhattaForm(invalidData))).toHaveLength(4);
+      expect(Object.keys(validateNamahattaForm(validData))).toHaveLength(0);
+      expect(Object.keys(validateNamahattaForm(invalidData))).toHaveLength(4);
     });
 
     it('should validate district is selected before supervisor', () => {
@@ -245,7 +245,7 @@ describe('District Supervisor Assignment Logic', () => {
 
   describe('Data Transformation Logic', () => {
     it('should transform form data for API submission', () => {
-      const transformNamhattaData = (formData: any, user: any) => {
+      const transformNamahattaData = (formData: any, user: any) => {
         const baseData = {
           code: formData.code,
           name: formData.name,
@@ -270,7 +270,7 @@ describe('District Supervisor Assignment Logic', () => {
 
       const formData = {
         code: 'NAM001',
-        name: 'Test Namhatta',
+        name: 'Test Namahatta',
         secretary: 'Test Secretary',
         address: { district: 'Bankura' },
         districtSupervisorId: 2
@@ -279,8 +279,8 @@ describe('District Supervisor Assignment Logic', () => {
       const districtSupervisor = { id: 1, role: 'DISTRICT_SUPERVISOR' };
       const admin = { id: 3, role: 'ADMIN' };
 
-      const dsResult = transformNamhattaData(formData, districtSupervisor);
-      const adminResult = transformNamhattaData(formData, admin);
+      const dsResult = transformNamahattaData(formData, districtSupervisor);
+      const adminResult = transformNamahattaData(formData, admin);
 
       expect(dsResult.districtSupervisorId).toBe(1); // Auto-assigned
       expect(adminResult.districtSupervisorId).toBe(2); // Manual selection

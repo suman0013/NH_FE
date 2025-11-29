@@ -6,7 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const navigationItems = [
   { href: "/dashboard", label: "Dashboard", shortLabel: "Dash", icon: Home },
-  { href: "/namhattas", label: "Namhattas", shortLabel: "Nam", icon: Home },
+  { href: "/namahattas", label: "Namahattas", shortLabel: "Nam", icon: Home },
   { href: "/devotees", label: "Devotees", shortLabel: "Dev", icon: Users },
   { href: "/map", label: "Map View", shortLabel: "Map", icon: MapPin },
   { href: "/reports", label: "Reports", shortLabel: "Rep", icon: BarChart3 },

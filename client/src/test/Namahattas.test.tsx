@@ -2,12 +2,12 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { vi } from 'vitest'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { useLocation } from 'wouter'
-import Namhattas from '@/pages/Namhattas'
+import Namahattas from '@/pages/Namahattas'
 
-const mockNamhattas = [
+const mockNamahattas = [
   {
     id: 1,
-    name: 'Test Namhatta',
+    name: 'Test Namahatta',
     description: 'A test spiritual center',
     foundingDate: '2020-01-01',
     address: {
@@ -27,7 +27,7 @@ const mockNamhattas = [
   },
   {
     id: 2,
-    name: 'Mumbai Namhatta',
+    name: 'Mumbai Namahatta',
     description: 'Mumbai spiritual center',
     foundingDate: '2021-01-01',
     address: {
@@ -50,9 +50,9 @@ const mockNamhattas = [
 vi.mocked(useQuery).mockImplementation(({ queryKey }) => {
   const key = queryKey[0] as string
   
-  if (key === '/api/namhattas') {
+  if (key === '/api/namahattas') {
     return {
-      data: mockNamhattas,
+      data: mockNamahattas,
       isLoading: false,
       error: null
     }
@@ -86,24 +86,24 @@ vi.mocked(useMutation).mockReturnValue({
 
 vi.mocked(useLocation).mockReturnValue(['/', vi.fn()])
 
-describe('Namhattas', () => {
+describe('Namahattas', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  it('should render namhattas list', async () => {
-    render(<Namhattas />)
+  it('should render namahattas list', async () => {
+    render(<Namahattas />)
     
     await waitFor(() => {
-      expect(screen.getByText('Test Namhatta')).toBeInTheDocument()
-      expect(screen.getByText('Mumbai Namhatta')).toBeInTheDocument()
+      expect(screen.getByText('Test Namahatta')).toBeInTheDocument()
+      expect(screen.getByText('Mumbai Namahatta')).toBeInTheDocument()
       expect(screen.getByText('A test spiritual center')).toBeInTheDocument()
       expect(screen.getByText('Mumbai spiritual center')).toBeInTheDocument()
     })
   })
 
-  it('should show namhatta cards with proper information', async () => {
-    render(<Namhattas />)
+  it('should show namahatta cards with proper information', async () => {
+    render(<Namahattas />)
     
     await waitFor(() => {
       expect(screen.getByText('Test Shraddhakutir')).toBeInTheDocument()
@@ -113,20 +113,20 @@ describe('Namhattas', () => {
     })
   })
 
-  it('should filter namhattas by search term', async () => {
-    render(<Namhattas />)
+  it('should filter namahattas by search term', async () => {
+    render(<Namahattas />)
     
     await waitFor(() => {
-      const searchInput = screen.getByPlaceholderText('Search namhattas...')
+      const searchInput = screen.getByPlaceholderText('Search namahattas...')
       fireEvent.change(searchInput, { target: { value: 'Test' } })
       
-      expect(screen.getByText('Test Namhatta')).toBeInTheDocument()
-      expect(screen.queryByText('Mumbai Namhatta')).not.toBeInTheDocument()
+      expect(screen.getByText('Test Namahatta')).toBeInTheDocument()
+      expect(screen.queryByText('Mumbai Namahatta')).not.toBeInTheDocument()
     })
   })
 
-  it('should sort namhattas by name', async () => {
-    render(<Namhattas />)
+  it('should sort namahattas by name', async () => {
+    render(<Namahattas />)
     
     await waitFor(() => {
       const sortSelect = screen.getByRole('combobox')
@@ -135,33 +135,33 @@ describe('Namhattas', () => {
       const nameOption = screen.getByText('Name')
       fireEvent.click(nameOption)
       
-      expect(screen.getByText('Test Namhatta')).toBeInTheDocument()
-      expect(screen.getByText('Mumbai Namhatta')).toBeInTheDocument()
+      expect(screen.getByText('Test Namahatta')).toBeInTheDocument()
+      expect(screen.getByText('Mumbai Namahatta')).toBeInTheDocument()
     })
   })
 
-  it('should open add namhatta dialog', async () => {
-    render(<Namhattas />)
+  it('should open add namahatta dialog', async () => {
+    render(<Namahattas />)
     
     await waitFor(() => {
-      const addButton = screen.getByRole('button', { name: /add new namhatta/i })
+      const addButton = screen.getByRole('button', { name: /add new namahatta/i })
       fireEvent.click(addButton)
       
-      expect(screen.getByText('Add New Namhatta')).toBeInTheDocument()
+      expect(screen.getByText('Add New Namahatta')).toBeInTheDocument()
     })
   })
 
-  it('should navigate to namhatta detail when clicking on card', async () => {
+  it('should navigate to namahatta detail when clicking on card', async () => {
     const mockSetLocation = vi.fn()
     vi.mocked(useLocation).mockReturnValue(['/', mockSetLocation])
     
-    render(<Namhattas />)
+    render(<Namahattas />)
     
     await waitFor(() => {
-      const namhattaCard = screen.getByText('Test Namhatta').closest('div[class*="cursor-pointer"]')
-      if (namhattaCard) {
-        fireEvent.click(namhattaCard)
-        expect(mockSetLocation).toHaveBeenCalledWith('/namhattas/1')
+      const namahattaCard = screen.getByText('Test Namahatta').closest('div[class*="cursor-pointer"]')
+      if (namahattaCard) {
+        fireEvent.click(namahattaCard)
+        expect(mockSetLocation).toHaveBeenCalledWith('/namahattas/1')
       }
     })
   })
@@ -173,10 +173,10 @@ describe('Namhattas', () => {
       error: null
     })
     
-    render(<Namhattas />)
+    render(<Namahattas />)
     
     // Should show skeleton loading components
-    expect(screen.getByTestId('namhattas-skeleton')).toBeInTheDocument()
+    expect(screen.getByTestId('namahattas-skeleton')).toBeInTheDocument()
   })
 
   it('should handle empty state', async () => {
@@ -186,10 +186,10 @@ describe('Namhattas', () => {
       error: null
     })
     
-    render(<Namhattas />)
+    render(<Namahattas />)
     
     await waitFor(() => {
-      expect(screen.getByText('No namhattas found')).toBeInTheDocument()
+      expect(screen.getByText('No namahattas found')).toBeInTheDocument()
     })
   })
 
@@ -200,15 +200,15 @@ describe('Namhattas', () => {
       error: new Error('API Error')
     })
     
-    render(<Namhattas />)
+    render(<Namahattas />)
     
     await waitFor(() => {
-      expect(screen.getByText('Error loading namhattas')).toBeInTheDocument()
+      expect(screen.getByText('Error loading namahattas')).toBeInTheDocument()
     })
   })
 
   it('should filter by country', async () => {
-    render(<Namhattas />)
+    render(<Namahattas />)
     
     await waitFor(() => {
       const countryFilter = screen.getByLabelText('Country')
@@ -217,13 +217,13 @@ describe('Namhattas', () => {
       const indiaOption = screen.getByText('India')
       fireEvent.click(indiaOption)
       
-      expect(screen.getByText('Test Namhatta')).toBeInTheDocument()
-      expect(screen.getByText('Mumbai Namhatta')).toBeInTheDocument()
+      expect(screen.getByText('Test Namahatta')).toBeInTheDocument()
+      expect(screen.getByText('Mumbai Namahatta')).toBeInTheDocument()
     })
   })
 
   it('should toggle sorting order', async () => {
-    render(<Namhattas />)
+    render(<Namahattas />)
     
     await waitFor(() => {
       const sortButton = screen.getByRole('button', { name: /sort/i })

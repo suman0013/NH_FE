@@ -198,8 +198,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "namhatta_id": {
-          "name": "namhatta_id",
+        "namahatta_id": {
+          "name": "namahatta_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
@@ -389,8 +389,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.namhatta_addresses": {
-      "name": "namhatta_addresses",
+    "public.namahatta_addresses": {
+      "name": "namahatta_addresses",
       "schema": "",
       "columns": {
         "id": {
@@ -399,8 +399,8 @@
           "primaryKey": true,
           "notNull": true
         },
-        "namhatta_id": {
-          "name": "namhatta_id",
+        "namahatta_id": {
+          "name": "namahatta_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
@@ -433,8 +433,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.namhatta_updates": {
-      "name": "namhatta_updates",
+    "public.namahatta_updates": {
+      "name": "namahatta_updates",
       "schema": "",
       "columns": {
         "id": {
@@ -443,8 +443,8 @@
           "primaryKey": true,
           "notNull": true
         },
-        "namhatta_id": {
-          "name": "namhatta_id",
+        "namahatta_id": {
+          "name": "namahatta_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": true
@@ -548,8 +548,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.namhattas": {
-      "name": "namhattas",
+    "public.namahattas": {
+      "name": "namahattas",
       "schema": "",
       "columns": {
         "id": {
@@ -638,8 +638,8 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "namhattas_code_unique": {
-          "name": "namhattas_code_unique",
+        "namahattas_code_unique": {
+          "name": "namahattas_code_unique",
           "nullsNotDistinct": false,
           "columns": [
             "code"

@@ -1,12 +1,12 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { vi } from 'vitest'
 import { useQuery, useMutation } from '@tanstack/react-query'
-import NamhattaForm from '@/components/forms/NamhattaForm'
+import NamahattaForm from '@/components/forms/NamahattaForm'
 import { useToast } from '@/hooks/use-toast'
 
-const mockNamhatta = {
+const mockNamahatta = {
   id: 1,
-  name: 'Test Namhatta',
+  name: 'Test Namahatta',
   description: 'A test spiritual center',
   foundingDate: '2020-01-01',
   address: {
@@ -60,7 +60,7 @@ vi.mocked(useQuery).mockImplementation(({ queryKey }) => {
   return { data: [], isLoading: false, error: null }
 })
 
-describe('NamhattaForm', () => {
+describe('NamahattaForm', () => {
   const mockOnSuccess = vi.fn()
   const mockOnCancel = vi.fn()
 
@@ -69,18 +69,18 @@ describe('NamhattaForm', () => {
   })
 
   it('should render form fields', () => {
-    render(<NamhattaForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />)
+    render(<NamahattaForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />)
     
-    expect(screen.getByLabelText('Namhatta Name')).toBeInTheDocument()
+    expect(screen.getByLabelText('Namahatta Name')).toBeInTheDocument()
     expect(screen.getByLabelText('Description')).toBeInTheDocument()
     expect(screen.getByLabelText('Founding Date')).toBeInTheDocument()
     expect(screen.getByLabelText('Shraddhakutir')).toBeInTheDocument()
   })
 
-  it('should populate form with existing namhatta data', () => {
-    render(<NamhattaForm namhatta={mockNamhatta} onSuccess={mockOnSuccess} onCancel={mockOnCancel} />)
+  it('should populate form with existing namahatta data', () => {
+    render(<NamahattaForm namahatta={mockNamahatta} onSuccess={mockOnSuccess} onCancel={mockOnCancel} />)
     
-    expect(screen.getByDisplayValue('Test Namhatta')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('Test Namahatta')).toBeInTheDocument()
     expect(screen.getByDisplayValue('A test spiritual center')).toBeInTheDocument()
     expect(screen.getByDisplayValue('2020-01-01')).toBeInTheDocument()
     expect(screen.getByDisplayValue('John Doe')).toBeInTheDocument()
@@ -88,23 +88,23 @@ describe('NamhattaForm', () => {
   })
 
   it('should validate required fields', async () => {
-    render(<NamhattaForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />)
+    render(<NamahattaForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />)
     
     const submitButton = screen.getByRole('button', { name: /save/i })
     fireEvent.click(submitButton)
     
     await waitFor(() => {
-      expect(screen.getByText('Namhatta name is required')).toBeInTheDocument()
+      expect(screen.getByText('Namahatta name is required')).toBeInTheDocument()
       expect(screen.getByText('Description is required')).toBeInTheDocument()
       expect(screen.getByText('Founding date is required')).toBeInTheDocument()
     })
   })
 
   it('should validate address fields', async () => {
-    render(<NamhattaForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />)
+    render(<NamahattaForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />)
     
     // Fill required basic fields
-    fireEvent.change(screen.getByLabelText('Namhatta Name'), { target: { value: 'Test' } })
+    fireEvent.change(screen.getByLabelText('Namahatta Name'), { target: { value: 'Test' } })
     fireEvent.change(screen.getByLabelText('Description'), { target: { value: 'Test description' } })
     fireEvent.change(screen.getByLabelText('Founding Date'), { target: { value: '2020-01-01' } })
     
@@ -119,10 +119,10 @@ describe('NamhattaForm', () => {
   })
 
   it('should submit form with valid data', async () => {
-    render(<NamhattaForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />)
+    render(<NamahattaForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />)
     
     // Fill required fields
-    fireEvent.change(screen.getByLabelText('Namhatta Name'), { target: { value: 'Test Namhatta' } })
+    fireEvent.change(screen.getByLabelText('Namahatta Name'), { target: { value: 'Test Namahatta' } })
     fireEvent.change(screen.getByLabelText('Description'), { target: { value: 'Test description' } })
     fireEvent.change(screen.getByLabelText('Founding Date'), { target: { value: '2020-01-01' } })
     
@@ -146,7 +146,7 @@ describe('NamhattaForm', () => {
   })
 
   it('should handle cancel action', () => {
-    render(<NamhattaForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />)
+    render(<NamahattaForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />)
     
     const cancelButton = screen.getByRole('button', { name: /cancel/i })
     fireEvent.click(cancelButton)
@@ -160,7 +160,7 @@ describe('NamhattaForm', () => {
       isPending: true
     })
     
-    render(<NamhattaForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />)
+    render(<NamahattaForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />)
     
     expect(screen.getByText('Saving...')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /saving/i })).toBeDisabled()
@@ -173,19 +173,19 @@ describe('NamhattaForm', () => {
       error: new Error('Submission failed')
     })
     
-    render(<NamhattaForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />)
+    render(<NamahattaForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />)
     
     await waitFor(() => {
       expect(mockToast).toHaveBeenCalledWith({
         title: 'Error',
-        description: 'Failed to save namhatta. Please try again.',
+        description: 'Failed to save namahatta. Please try again.',
         variant: 'destructive'
       })
     })
   })
 
   it('should render leadership roles section', () => {
-    render(<NamhattaForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />)
+    render(<NamahattaForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />)
     
     expect(screen.getByText('Leadership Roles')).toBeInTheDocument()
     expect(screen.getByLabelText('Mala Senapoti')).toBeInTheDocument()
@@ -196,7 +196,7 @@ describe('NamhattaForm', () => {
   })
 
   it('should validate postal code format', async () => {
-    render(<NamhattaForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />)
+    render(<NamahattaForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />)
     
     const postalCodeInput = screen.getByLabelText('Postal Code')
     fireEvent.change(postalCodeInput, { target: { value: '123' } })
@@ -210,7 +210,7 @@ describe('NamhattaForm', () => {
   })
 
   it('should show address section', () => {
-    render(<NamhattaForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />)
+    render(<NamahattaForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />)
     
     expect(screen.getByText('Address Information')).toBeInTheDocument()
     expect(screen.getByLabelText('Country')).toBeInTheDocument()

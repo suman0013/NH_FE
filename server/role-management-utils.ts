@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { devotees, namhattas, namhattaAddresses, addresses, userDistricts } from "@shared/schema";
+import { devotees, namahattas, namahattaAddresses, addresses, userDistricts } from "@shared/schema";
 import { eq, and, isNull, isNotNull } from "drizzle-orm";
 
 // Define the role hierarchy and progression rules
@@ -256,7 +256,7 @@ export async function validateRoleProgression(
   // Additional validation can be added here for:
   // - District boundary checks
   // - Subordinate count limits
-  // - Active namhatta leadership constraints
+  // - Active namahatta leadership constraints
 
   return result;
 }
@@ -306,7 +306,7 @@ export async function getDevoteesByDistrictAndRole(
   legalName: string;
   leadershipRole: string | null;
   reportingToDevoteeId: number | null;
-  namhattaId: number | null;
+  namahattaId: number | null;
 }>> {
   try {
     // Build conditions based on role filter
@@ -319,7 +319,7 @@ export async function getDevoteesByDistrictAndRole(
       conditions.push(eq(devotees.leadershipRole, role));
     }
 
-    // Build query with proper district filtering through namhatta and address joins
+    // Build query with proper district filtering through namahatta and address joins
     const result = await db
       .select({
         id: devotees.id,
@@ -327,12 +327,12 @@ export async function getDevoteesByDistrictAndRole(
         legalName: devotees.legalName,
         leadershipRole: devotees.leadershipRole,
         reportingToDevoteeId: devotees.reportingToDevoteeId,
-        namhattaId: devotees.namhattaId
+        namahattaId: devotees.namahattaId
       })
       .from(devotees)
-      .innerJoin(namhattas, eq(devotees.namhattaId, namhattas.id))
-      .innerJoin(namhattaAddresses, eq(namhattas.id, namhattaAddresses.namhattaId))
-      .innerJoin(addresses, eq(namhattaAddresses.addressId, addresses.id))
+      .innerJoin(namahattas, eq(devotees.namahattaId, namahattas.id))
+      .innerJoin(namahattaAddresses, eq(namahattas.id, namahattaAddresses.namahattaId))
+      .innerJoin(addresses, eq(namahattaAddresses.addressId, addresses.id))
       .where(and(...conditions));
     
     return result.map(devotee => ({
@@ -529,7 +529,7 @@ export async function getDirectSubordinates(supervisorId: number): Promise<Array
   legalName: string;
   leadershipRole: string | null;
   reportingToDevoteeId: number | null;
-  namhattaId: number | null;
+  namahattaId: number | null;
 }>> {
   try {
     const subordinates = await db
@@ -539,7 +539,7 @@ export async function getDirectSubordinates(supervisorId: number): Promise<Array
         legalName: devotees.legalName,
         leadershipRole: devotees.leadershipRole,
         reportingToDevoteeId: devotees.reportingToDevoteeId,
-        namhattaId: devotees.namhattaId
+        namahattaId: devotees.namahattaId
       })
       .from(devotees)
       .where(eq(devotees.reportingToDevoteeId, supervisorId));

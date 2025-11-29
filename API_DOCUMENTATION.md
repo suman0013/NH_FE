@@ -1,4 +1,4 @@
-# Complete API Documentation - Namhatta Management System
+# Complete API Documentation - Namahatta Management System
 
 ## Authentication APIs (`/api/auth/`)
 
@@ -91,9 +91,9 @@
 - **Response (Success 200)**:
 ```json
 {
-  "name": "Namhatta Management System",
+  "name": "Namahatta Management System",
   "version": "1.0.0",
-  "description": "OpenAPI spec for Namhatta web and mobile-compatible system"
+  "description": "OpenAPI spec for Namahatta web and mobile-compatible system"
 }
 ```
 
@@ -187,7 +187,7 @@
 ## Map Data APIs
 
 ### GET `/api/map/countries`
-- **Purpose**: Get Namhatta counts by country
+- **Purpose**: Get Namahatta counts by country
 - **Auth Required**: No
 - **Response (Success 200)**:
 ```json
@@ -200,7 +200,7 @@
 ```
 
 ### GET `/api/map/states`
-- **Purpose**: Get Namhatta counts by state
+- **Purpose**: Get Namahatta counts by state
 - **Auth Required**: No
 - **Response (Success 200)**:
 ```json
@@ -214,7 +214,7 @@
 ```
 
 ### GET `/api/map/districts`
-- **Purpose**: Get Namhatta counts by district
+- **Purpose**: Get Namahatta counts by district
 - **Auth Required**: No
 - **Response (Success 200)**:
 ```json
@@ -229,7 +229,7 @@
 ```
 
 ### GET `/api/map/sub-districts`
-- **Purpose**: Get Namhatta counts by sub-district
+- **Purpose**: Get Namahatta counts by sub-district
 - **Auth Required**: No
 - **Response (Success 200)**:
 ```json
@@ -245,7 +245,7 @@
 ```
 
 ### GET `/api/map/villages`
-- **Purpose**: Get Namhatta counts by village
+- **Purpose**: Get Namahatta counts by village
 - **Auth Required**: No
 - **Response (Success 200)**:
 ```json
@@ -270,11 +270,11 @@
 ```json
 {
   "totalDevotees": 1000,
-  "totalNamhattas": 50,
+  "totalNamahattas": 50,
   "recentUpdates": [
     {
-      "namhattaId": 1,
-      "namhattaName": "Sample Namhatta",
+      "namahattaId": 1,
+      "namahattaName": "Sample Namahatta",
       "programType": "Weekly Meeting",
       "date": "2025-01-15",
       "attendance": 25
@@ -357,7 +357,7 @@
       "phone": "1234567890",
       "devotionalStatusId": 1,
       "devotionalStatusName": "Sri Guru Charan Ashray",
-      "namhattaId": 1,
+      "namahattaId": 1,
       "presentAddress": {
         "country": "India",
         "state": "West Bengal",
@@ -390,7 +390,7 @@
   "maritalStatus": "MARRIED",
   "devotionalStatusId": 1,
   "devotionalStatusName": "Sri Guru Charan Ashray",
-  "namhattaId": 1,
+  "namahattaId": 1,
   "education": "Graduate",
   "occupation": "Engineer",
   "devotionalCourses": [
@@ -437,7 +437,7 @@
   "bloodGroup": "O+",
   "maritalStatus": "MARRIED",
   "devotionalStatusId": 1,
-  "namhattaId": 1,
+  "namahattaId": 1,
   "harinamInitiationGurudevId": 1,
   "pancharatrikInitiationGurudevId": 1,
   "initiatedName": "Initiated Name",
@@ -473,11 +473,11 @@
 ```
 - **Response (Success 201)**: Same as GET devotee response
 
-### POST `/api/devotees/:namhattaId`
-- **Purpose**: Create devotee for specific Namhatta
+### POST `/api/devotees/:namahattaId`
+- **Purpose**: Create devotee for specific Namahatta
 - **Auth Required**: Yes (ADMIN, OFFICE only)
 - **Rate Limited**: Yes
-- **Path Params**: `namhattaId` (number)
+- **Path Params**: `namahattaId` (number)
 - **Request**: Same as POST `/api/devotees`
 - **Response (Success 201)**: Same as GET devotee response
 
@@ -548,10 +548,10 @@
 }
 ```
 
-## Namhattas APIs
+## Namahattas APIs
 
-### GET `/api/namhattas?page=number&size=number&search=string&country=string&state=string&district=string&subDistrict=string&village=string&status=string&sortBy=string&sortOrder=string`
-- **Purpose**: Get paginated Namhattas list with filters
+### GET `/api/namahattas?page=number&size=number&search=string&country=string&state=string&district=string&subDistrict=string&village=string&status=string&sortBy=string&sortOrder=string`
+- **Purpose**: Get paginated Namahattas list with filters
 - **Auth Required**: Yes (with district filtering for DISTRICT_SUPERVISOR)
 - **Query Params**: All optional with defaults
 - **Response (Success 200)**:
@@ -561,7 +561,7 @@
     {
       "id": 1,
       "code": "NMH001",
-      "name": "Sample Namhatta",
+      "name": "Sample Namahatta",
       "meetingDay": "Sunday",
       "meetingTime": "10:00 AM",
       "malaSenapoti": "Leader Name",
@@ -581,8 +581,8 @@
 }
 ```
 
-### GET `/api/namhattas/pending?page=number&size=number`
-- **Purpose**: Get pending approval Namhattas
+### GET `/api/namahattas/pending?page=number&size=number`
+- **Purpose**: Get pending approval Namahattas
 - **Auth Required**: Yes (ADMIN, OFFICE only)
 - **Query Params**: `page`, `size` (optional)
 - **Response (Success 200)**:
@@ -591,20 +591,20 @@
   {
     "id": 1,
     "code": "NMH001",
-    "name": "Sample Namhatta",
+    "name": "Sample Namahatta",
     "status": "PENDING_APPROVAL"
   }
 ]
 ```
 
-### GET `/api/namhattas/:id`
-- **Purpose**: Get single Namhatta details
+### GET `/api/namahattas/:id`
+- **Purpose**: Get single Namahatta details
 - **Auth Required**: Yes
 - **Path Params**: `id` (number)
-- **Response (Success 200)**: Single Namhatta object (same structure as array item above)
+- **Response (Success 200)**: Single Namahatta object (same structure as array item above)
 
-### GET `/api/namhattas/check-code/:code`
-- **Purpose**: Check if Namhatta code exists
+### GET `/api/namahattas/check-code/:code`
+- **Purpose**: Check if Namahatta code exists
 - **Auth Required**: Yes (ADMIN, OFFICE only)
 - **Path Params**: `code` (string)
 - **Response (Success 200)**:
@@ -614,15 +614,15 @@
 }
 ```
 
-### POST `/api/namhattas`
-- **Purpose**: Create new Namhatta
+### POST `/api/namahattas`
+- **Purpose**: Create new Namahatta
 - **Auth Required**: Yes (ADMIN, OFFICE only)
 - **Rate Limited**: Yes
 - **Request**:
 ```json
 {
   "code": "NMH001",
-  "name": "Sample Namhatta",
+  "name": "Sample Namahatta",
   "meetingDay": "Sunday",
   "meetingTime": "10:00 AM",
   "malaSenapoti": "Leader Name",
@@ -643,18 +643,18 @@
   }
 }
 ```
-- **Response (Success 201)**: Created Namhatta object
+- **Response (Success 201)**: Created Namahatta object
 
-### PUT `/api/namhattas/:id`
-- **Purpose**: Update Namhatta
+### PUT `/api/namahattas/:id`
+- **Purpose**: Update Namahatta
 - **Auth Required**: Yes (ADMIN, OFFICE only)
 - **Rate Limited**: Yes
 - **Path Params**: `id` (number)
-- **Request**: Partial Namhatta object (same fields as POST, all optional)
-- **Response (Success 200)**: Updated Namhatta object
+- **Request**: Partial Namahatta object (same fields as POST, all optional)
+- **Response (Success 200)**: Updated Namahatta object
 
-### GET `/api/namhattas/:id/devotees?page=number&size=number&statusId=number`
-- **Purpose**: Get devotees in specific Namhatta
+### GET `/api/namahattas/:id/devotees?page=number&size=number&statusId=number`
+- **Purpose**: Get devotees in specific Namahatta
 - **Auth Required**: No
 - **Path Params**: `id` (number)
 - **Query Params**: `page`, `size`, `statusId` (all optional)
@@ -673,20 +673,20 @@
 }
 ```
 
-### POST `/api/namhattas/:id/approve`
-- **Purpose**: Approve pending Namhatta
+### POST `/api/namahattas/:id/approve`
+- **Purpose**: Approve pending Namahatta
 - **Auth Required**: Yes (ADMIN, OFFICE only)
 - **Path Params**: `id` (number)
 - **Request**: Empty body
 - **Response (Success 200)**:
 ```json
 {
-  "message": "Namhatta approved successfully"
+  "message": "Namahatta approved successfully"
 }
 ```
 
-### POST `/api/namhattas/:id/reject`
-- **Purpose**: Reject pending Namhatta
+### POST `/api/namahattas/:id/reject`
+- **Purpose**: Reject pending Namahatta
 - **Auth Required**: Yes (ADMIN, OFFICE only)
 - **Path Params**: `id` (number)
 - **Request**:
@@ -698,12 +698,12 @@
 - **Response (Success 200)**:
 ```json
 {
-  "message": "Namhatta rejected successfully"
+  "message": "Namahatta rejected successfully"
 }
 ```
 
-### GET `/api/namhattas/:id/updates`
-- **Purpose**: Get updates for specific Namhatta
+### GET `/api/namahattas/:id/updates`
+- **Purpose**: Get updates for specific Namahatta
 - **Auth Required**: No
 - **Path Params**: `id` (number)
 - **Response (Success 200)**:
@@ -711,7 +711,7 @@
 [
   {
     "id": 1,
-    "namhattaId": 1,
+    "namahattaId": 1,
     "programType": "Weekly Meeting",
     "date": "2025-01-15",
     "attendance": 25,
@@ -730,8 +730,8 @@
 ]
 ```
 
-### GET `/api/namhattas/:id/devotee-status-count`
-- **Purpose**: Get devotee count by status for Namhatta
+### GET `/api/namahattas/:id/devotee-status-count`
+- **Purpose**: Get devotee count by status for Namahatta
 - **Auth Required**: No
 - **Path Params**: `id` (number)
 - **Response (Success 200)**:
@@ -743,8 +743,8 @@
 }
 ```
 
-### GET `/api/namhattas/:id/status-history?page=number&size=number`
-- **Purpose**: Get status history for Namhatta
+### GET `/api/namahattas/:id/status-history?page=number&size=number`
+- **Purpose**: Get status history for Namahatta
 - **Auth Required**: No
 - **Path Params**: `id` (number)
 - **Query Params**: `page`, `size` (optional)
@@ -871,15 +871,15 @@
 ## Updates APIs
 
 ### GET `/api/updates/all`
-- **Purpose**: Get all updates from all Namhattas
+- **Purpose**: Get all updates from all Namahattas
 - **Auth Required**: No
 - **Response (Success 200)**:
 ```json
 [
   {
     "id": 1,
-    "namhattaId": 1,
-    "namhattaName": "Sample Namhatta",
+    "namahattaId": 1,
+    "namahattaName": "Sample Namahatta",
     "programType": "Weekly Meeting",
     "date": "2025-01-15",
     "attendance": 25,
@@ -899,12 +899,12 @@
 ```
 
 ### POST `/api/updates`
-- **Purpose**: Create new Namhatta update
+- **Purpose**: Create new Namahatta update
 - **Auth Required**: No
 - **Request**:
 ```json
 {
-  "namhattaId": 1,
+  "namahattaId": 1,
   "programType": "Weekly Meeting",
   "date": "2025-01-15",
   "attendance": 25,
@@ -1124,4 +1124,4 @@ All APIs use consistent error response format:
 - **Single Login**: Only one active session per user
 - **Token Blacklisting**: Logout invalidates tokens immediately
 
-This completes the comprehensive API documentation for your Namhatta Management System backend.
+This completes the comprehensive API documentation for your Namahatta Management System backend.

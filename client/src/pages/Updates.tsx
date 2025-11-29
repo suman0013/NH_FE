@@ -8,14 +8,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Calendar, Search, Filter, TrendingUp, Users, Home } from "lucide-react";
-import NamhattaUpdateCard from "@/components/NamhattaUpdateCard";
+import NamahattaUpdateCard from "@/components/NamahattaUpdateCard";
 
 export default function Updates() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProgramType, setSelectedProgramType] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
 
-  // Get all updates from all namhattas - optimized single API call
+  // Get all updates from all namahattas - optimized single API call
   const { data: allUpdates, isLoading } = useQuery({
     queryKey: ["/api/updates/all"],
     queryFn: () => api.getAllUpdates(),
@@ -37,7 +37,7 @@ export default function Updates() {
   // Filter and sort updates
   const filteredUpdates = allUpdates?.filter((update: any) => {
     const matchesSearch = update.programType.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         update.namhattaName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         update.namahattaName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (update.specialAttraction && update.specialAttraction.toLowerCase().includes(searchTerm.toLowerCase()));
     
     const matchesType = selectedProgramType === "all" || update.programType === selectedProgramType;
@@ -67,7 +67,7 @@ export default function Updates() {
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">All Updates</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Latest activities and programs from all Namhattas
+            Latest activities and programs from all Namahattas
           </p>
         </div>
         <div className="flex items-center space-x-2">
@@ -116,9 +116,9 @@ export default function Updates() {
           <CardContent className="p-2 h-full flex items-center">
             <div className="flex items-center justify-between w-full">
               <div className="flex flex-col justify-center min-w-0 flex-1">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400 whitespace-nowrap leading-tight">Active Namhattas</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400 whitespace-nowrap leading-tight">Active Namahattas</p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1 leading-none">
-                  {allUpdates ? new Set(allUpdates.map((update: any) => update.namhattaId)).size : 0}
+                  {allUpdates ? new Set(allUpdates.map((update: any) => update.namahattaId)).size : 0}
                 </p>
               </div>
               <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0 ml-4">
@@ -137,7 +137,7 @@ export default function Updates() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
               type="text"
-              placeholder="Search updates by program type, namhatta, or description..."
+              placeholder="Search updates by program type, namahatta, or description..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 glass border-0"
@@ -197,11 +197,11 @@ export default function Updates() {
       {filteredUpdates && filteredUpdates.length > 0 ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-2">
           {filteredUpdates.map((update: any) => (
-            <NamhattaUpdateCard
-              key={`${update.namhattaId}-${update.id}`}
+            <NamahattaUpdateCard
+              key={`${update.namahattaId}-${update.id}`}
               update={update}
-              showNamhattaName={true}
-              namhattaName={update.namhattaName}
+              showNamahattaName={true}
+              namahattaName={update.namahattaName}
             />
           ))}
         </div>

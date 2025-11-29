@@ -19,7 +19,7 @@ const mockDevotee = {
   phone: '1234567890',
   whatsapp: '1234567890',
   devotionalStatusId: 6,
-  namhattaId: 1,
+  namahattaId: 1,
   presentAddress: {
     country: 'India',
     state: 'West Bengal',
@@ -70,9 +70,9 @@ vi.mocked(useQuery).mockImplementation(({ queryKey }) => {
     }
   }
   
-  if (key === '/api/namhattas') {
+  if (key === '/api/namahattas') {
     return {
-      data: [{ id: 1, name: 'Test Namhatta' }],
+      data: [{ id: 1, name: 'Test Namahatta' }],
       isLoading: false,
       error: null
     }

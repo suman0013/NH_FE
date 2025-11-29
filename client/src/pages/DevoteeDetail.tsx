@@ -37,7 +37,7 @@ import {
 } from "lucide-react";
 import type { Devotee } from "@/lib/types";
 import DevoteeForm from "@/components/forms/DevoteeForm";
-import ChangeNamhattaModal from "@/components/ChangeNamhattaModal";
+import ChangeNamahattaModal from "@/components/ChangeNamahattaModal";
 import RoleManagementModal from "@/components/RoleManagementModal";
 import { Shield, UserCog, History } from "lucide-react";
 
@@ -53,15 +53,15 @@ export default function DevoteeDetail() {
   const [statusComment, setStatusComment] = useState("");
   const [selectedStatusId, setSelectedStatusId] = useState<number | null>(null);
   const [backUrl, setBackUrl] = useState("/devotees");
-  const [showChangeNamhattaModal, setShowChangeNamhattaModal] = useState(false);
+  const [showChangeNamahattaModal, setShowChangeNamahattaModal] = useState(false);
   const [showRoleManagementModal, setShowRoleManagementModal] = useState(false);
 
-  // Check if we came from a Namhatta page
+  // Check if we came from a Namahatta page
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const fromNamhatta = urlParams.get('from');
-    if (fromNamhatta) {
-      setBackUrl(`/namhattas/${fromNamhatta}`);
+    const fromNamahatta = urlParams.get('from');
+    if (fromNamahatta) {
+      setBackUrl(`/namahattas/${fromNamahatta}`);
     }
   }, []);
 
@@ -82,11 +82,11 @@ export default function DevoteeDetail() {
     enabled: !!id,
   });
 
-  // Fetch current namhatta data if devotee has one
-  const { data: currentNamhatta } = useQuery({
-    queryKey: ["/api/namhattas", devotee?.namhattaId],
-    queryFn: () => api.getNamhatta(devotee!.namhattaId!),
-    enabled: !!devotee?.namhattaId,
+  // Fetch current namahatta data if devotee has one
+  const { data: currentNamahatta } = useQuery({
+    queryKey: ["/api/namahattas", devotee?.namahattaId],
+    queryFn: () => api.getNamahatta(devotee!.namahattaId!),
+    enabled: !!devotee?.namahattaId,
   });
 
   // Fetch role change history for devotee
@@ -96,14 +96,14 @@ export default function DevoteeDetail() {
     enabled: !!id && !!devotee?.leadershipRole,
   });
 
-  // Get devotee's district for role management - MUST use namhatta's district, not personal address
+  // Get devotee's district for role management - MUST use namahatta's district, not personal address
   const getDevoteeDistrict = (): string => {
-    // First priority: Use the namhatta's district (where they serve spiritually)
-    if (currentNamhatta?.address?.district) {
-      return currentNamhatta.address.district;
+    // First priority: Use the namahatta's district (where they serve spiritually)
+    if (currentNamahatta?.address?.district) {
+      return currentNamahatta.address.district;
     }
     
-    // Fallback: If no namhatta, try personal address (rare case)
+    // Fallback: If no namahatta, try personal address (rare case)
     if (devotee?.presentAddress?.district) return devotee.presentAddress.district;
     if (devotee?.permanentAddress?.district) return devotee.permanentAddress.district;
     
@@ -366,7 +366,7 @@ export default function DevoteeDetail() {
               </CardContent>
             </Card>
 
-            {/* Namhatta Assignment */}
+            {/* Namahatta Assignment */}
             <Card className="glass-card">
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center justify-between text-base">
@@ -374,39 +374,39 @@ export default function DevoteeDetail() {
                     <div className="w-6 h-6 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center mr-2">
                       <Building className="h-3 w-3 text-white" />
                     </div>
-                    Namhatta Assignment
+                    Namahatta Assignment
                   </div>
-                  {/* Change Namhatta button - only for admin/office */}
+                  {/* Change Namahatta button - only for admin/office */}
                   {(user?.role === 'ADMIN' || user?.role === 'OFFICE') && (
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setShowChangeNamhattaModal(true)}
+                      onClick={() => setShowChangeNamahattaModal(true)}
                       className="text-xs"
-                      data-testid="button-change-namhatta"
+                      data-testid="button-change-namahatta"
                     >
                       <RefreshCw className="h-3 w-3 mr-1" />
-                      Change Namhatta
+                      Change Namahatta
                     </Button>
                   )}
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-2">
-                {devotee.namhattaId && currentNamhatta ? (
+                {devotee.namahattaId && currentNamahatta ? (
                   <div className="p-3 bg-gradient-to-br from-indigo-50 to-purple-100 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-lg border border-indigo-200 dark:border-indigo-800">
                     <div className="flex items-center mb-2">
                       <Building className="h-4 w-4 text-indigo-600 dark:text-indigo-400 mr-2" />
-                      <p className="text-sm font-medium text-indigo-600 dark:text-indigo-400">Current Namhatta</p>
+                      <p className="text-sm font-medium text-indigo-600 dark:text-indigo-400">Current Namahatta</p>
                     </div>
                     <p className="font-semibold text-gray-900 dark:text-white text-base">
-                      {currentNamhatta.name}
+                      {currentNamahatta.name}
                     </p>
                     <p className="text-sm text-indigo-700 dark:text-indigo-300">
-                      Code: {currentNamhatta.code}
+                      Code: {currentNamahatta.code}
                     </p>
-                    {currentNamhatta.meetingDay && currentNamhatta.meetingTime && (
+                    {currentNamahatta.meetingDay && currentNamahatta.meetingTime && (
                       <p className="text-xs text-indigo-600 dark:text-indigo-400 mt-1">
-                        Meetings: {currentNamhatta.meetingDay} at {currentNamhatta.meetingTime}
+                        Meetings: {currentNamahatta.meetingDay} at {currentNamahatta.meetingTime}
                       </p>
                     )}
                   </div>
@@ -414,10 +414,10 @@ export default function DevoteeDetail() {
                   <div className="p-3 bg-gradient-to-br from-gray-50 to-slate-100 dark:from-gray-900/20 dark:to-slate-900/20 rounded-lg border border-gray-200 dark:border-gray-800">
                     <div className="flex items-center mb-1">
                       <Building className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-2" />
-                      <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Namhatta Assignment</p>
+                      <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Namahatta Assignment</p>
                     </div>
                     <p className="text-sm text-gray-600 dark:text-gray-300">
-                      No namhatta assigned
+                      No namahatta assigned
                     </p>
                   </div>
                 )}
@@ -1134,13 +1134,13 @@ export default function DevoteeDetail() {
         />
       )}
 
-      {/* Change Namhatta Modal */}
-      {showChangeNamhattaModal && devotee && (
-        <ChangeNamhattaModal
-          isOpen={showChangeNamhattaModal}
-          onClose={() => setShowChangeNamhattaModal(false)}
+      {/* Change Namahatta Modal */}
+      {showChangeNamahattaModal && devotee && (
+        <ChangeNamahattaModal
+          isOpen={showChangeNamahattaModal}
+          onClose={() => setShowChangeNamahattaModal(false)}
           devotee={devotee}
-          currentNamhattaName={currentNamhatta?.name}
+          currentNamahattaName={currentNamahatta?.name}
         />
       )}
 

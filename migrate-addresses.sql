@@ -37,13 +37,13 @@ JOIN addresses a ON
 WHERE d.permanent_address IS NOT NULL AND d.permanent_address != ''
   AND d.permanent_address != d.present_address;
 
--- Migrate namhatta addresses
-INSERT INTO namhatta_addresses (namhatta_id, address_id, landmark)
+-- Migrate namahatta addresses
+INSERT INTO namahatta_addresses (namahatta_id, address_id, landmark)
 SELECT 
-  n.id as namhatta_id,
+  n.id as namahatta_id,
   a.id as address_id,
   json_extract(n.address, '$.landmark') as landmark
-FROM namhattas n
+FROM namahattas n
 JOIN addresses a ON 
   json_extract(n.address, '$.country') = a.country AND
   json_extract(n.address, '$.state') = a.state AND

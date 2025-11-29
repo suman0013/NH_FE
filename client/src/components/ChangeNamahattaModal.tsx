@@ -22,77 +22,77 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Loader2, Search } from "lucide-react";
-import type { Devotee, Namhatta } from "@/lib/types";
+import type { Devotee, Namahatta } from "@/lib/types";
 
-interface ChangeNamhattaModalProps {
+interface ChangeNamahattaModalProps {
   isOpen: boolean;
   onClose: () => void;
   devotee: Devotee;
-  currentNamhattaName?: string;
+  currentNamahattaName?: string;
 }
 
-export default function ChangeNamhattaModal({
+export default function ChangeNamahattaModal({
   isOpen,
   onClose,
   devotee,
-  currentNamhattaName,
-}: ChangeNamhattaModalProps) {
+  currentNamahattaName,
+}: ChangeNamahattaModalProps) {
   const { toast } = useToast();
-  const [selectedNamhattaId, setSelectedNamhattaId] = useState<number | null>(null);
+  const [selectedNamahattaId, setSelectedNamahattaId] = useState<number | null>(null);
   const [reason, setReason] = useState("");
   const [isValid, setIsValid] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Fetch all namhattas
-  const { data: namhattasData, isLoading: isLoadingNamhattas } = useQuery({
-    queryKey: ["/api/namhattas"],
-    queryFn: () => api.getNamhattas(1, 1000, { status: "APPROVED" }),
+  // Fetch all namahattas
+  const { data: namahattasData, isLoading: isLoadingNamahattas } = useQuery({
+    queryKey: ["/api/namahattas"],
+    queryFn: () => api.getNamahattas(1, 1000, { status: "APPROVED" }),
     enabled: isOpen,
   });
 
   // Update validation when inputs change
   useEffect(() => {
     setIsValid(
-      selectedNamhattaId !== null && 
-      selectedNamhattaId !== devotee.namhattaId && 
+      selectedNamahattaId !== null && 
+      selectedNamahattaId !== devotee.namahattaId && 
       reason.trim().length > 0
     );
-  }, [selectedNamhattaId, reason, devotee.namhattaId]);
+  }, [selectedNamahattaId, reason, devotee.namahattaId]);
 
   // Reset form when modal opens/closes
   useEffect(() => {
     if (!isOpen) {
       setSearchTerm("");
-      setSelectedNamhattaId(null);
+      setSelectedNamahattaId(null);
       setReason("");
       setIsValid(false);
     }
   }, [isOpen]);
 
-  // Filter namhattas based on search term
-  const filteredNamhattas = namhattasData?.data.filter(namhatta => 
-    namhatta.id !== devotee.namhattaId && // Exclude current namhatta
-    (namhatta.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-     namhatta.code.toLowerCase().includes(searchTerm.toLowerCase()))
+  // Filter namahattas based on search term
+  const filteredNamahattas = namahattasData?.data.filter(namahatta => 
+    namahatta.id !== devotee.namahattaId && // Exclude current namahatta
+    (namahatta.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+     namahatta.code.toLowerCase().includes(searchTerm.toLowerCase()))
   ) || [];
 
   const updateDevoteeMutation = useMutation({
     mutationFn: async () => {
-      const selectedNamhatta = namhattasData?.data.find(n => n.id === selectedNamhattaId);
+      const selectedNamahatta = namahattasData?.data.find(n => n.id === selectedNamahattaId);
       const currentTimestamp = new Date().toISOString();
-      const assignmentNote = `\n\n--- Namhatta Assignment Change (${currentTimestamp}) ---\nFrom: ${currentNamhattaName || 'Unknown'} (ID: ${devotee.namhattaId || 'None'})\nTo: ${selectedNamhatta?.name} (ID: ${selectedNamhattaId})\nReason: ${reason.trim()}\n`;
+      const assignmentNote = `\n\n--- Namahatta Assignment Change (${currentTimestamp}) ---\nFrom: ${currentNamahattaName || 'Unknown'} (ID: ${devotee.namahattaId || 'None'})\nTo: ${selectedNamahatta?.name} (ID: ${selectedNamahattaId})\nReason: ${reason.trim()}\n`;
       
       const updatedAdditionalComments = (devotee.additionalComments || "") + assignmentNote;
       
       return api.updateDevotee(devotee.id, {
-        namhattaId: selectedNamhattaId!,
+        namahattaId: selectedNamahattaId!,
         additionalComments: updatedAdditionalComments,
       });
     },
     onSuccess: () => {
       toast({
         title: "Success",
-        description: "Namhatta assignment changed successfully",
+        description: "Namahatta assignment changed successfully",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/devotees", devotee.id.toString()] });
       onClose();
@@ -100,7 +100,7 @@ export default function ChangeNamhattaModal({
     onError: (error) => {
       toast({
         title: "Error",
-        description: "Failed to change namhatta assignment",
+        description: "Failed to change namahatta assignment",
         variant: "destructive",
       });
       console.error("Failed to update devotee:", error);
@@ -113,15 +113,15 @@ export default function ChangeNamhattaModal({
     }
   };
 
-  const selectedNamhatta = namhattasData?.data.find(n => n.id === selectedNamhattaId);
+  const selectedNamahatta = namahattasData?.data.find(n => n.id === selectedNamahattaId);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Change Namhatta Assignment</DialogTitle>
+          <DialogTitle>Change Namahatta Assignment</DialogTitle>
           <DialogDescription>
-            Change the namhatta assignment for {devotee.legalName}
+            Change the namahatta assignment for {devotee.legalName}
           </DialogDescription>
         </DialogHeader>
         
@@ -132,21 +132,21 @@ export default function ChangeNamhattaModal({
               Current Assignment
             </Label>
             <p className="text-sm font-semibold text-gray-900 dark:text-white">
-              {currentNamhattaName || "No namhatta assigned"}
+              {currentNamahattaName || "No namahatta assigned"}
             </p>
           </div>
 
-          {/* Search and Select Namhatta */}
+          {/* Search and Select Namahatta */}
           <div className="space-y-2">
-            <Label htmlFor="namhatta-select">Search and Select New Namhatta *</Label>
+            <Label htmlFor="namahatta-select">Search and Select New Namahatta *</Label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 z-10" />
               <Select 
-                value={selectedNamhattaId?.toString() || ""} 
-                onValueChange={(value) => setSelectedNamhattaId(parseInt(value))}
+                value={selectedNamahattaId?.toString() || ""} 
+                onValueChange={(value) => setSelectedNamahattaId(parseInt(value))}
               >
-                <SelectTrigger data-testid="select-namhatta" className="pl-10">
-                  <SelectValue placeholder="Search and select a namhatta..." />
+                <SelectTrigger data-testid="select-namahatta" className="pl-10">
+                  <SelectValue placeholder="Search and select a namahatta..." />
                 </SelectTrigger>
                 <SelectContent>
                   <div className="sticky top-0 bg-white dark:bg-gray-950 border-b p-2 z-10">
@@ -158,22 +158,22 @@ export default function ChangeNamhattaModal({
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="pl-10 h-8"
-                        data-testid="input-namhatta-search"
+                        data-testid="input-namahatta-search"
                       />
                     </div>
                   </div>
-                  {isLoadingNamhattas ? (
+                  {isLoadingNamahattas ? (
                     <div className="flex items-center justify-center p-4">
                       <Loader2 className="h-4 w-4 animate-spin" />
                     </div>
-                  ) : filteredNamhattas.length === 0 ? (
+                  ) : filteredNamahattas.length === 0 ? (
                     <div className="p-4 text-center text-gray-500">
-                      {searchTerm ? "No namhattas match your search" : "No namhattas found"}
+                      {searchTerm ? "No namahattas match your search" : "No namahattas found"}
                     </div>
                   ) : (
-                    filteredNamhattas.map((namhatta) => (
-                      <SelectItem key={namhatta.id} value={namhatta.id.toString()}>
-                        {namhatta.name} ({namhatta.code})
+                    filteredNamahattas.map((namahatta) => (
+                      <SelectItem key={namahatta.id} value={namahatta.id.toString()}>
+                        {namahatta.name} ({namahatta.code})
                       </SelectItem>
                     ))
                   )}
@@ -182,18 +182,18 @@ export default function ChangeNamhattaModal({
             </div>
           </div>
 
-          {/* Selected Namhatta Preview */}
-          {selectedNamhatta && (
+          {/* Selected Namahatta Preview */}
+          {selectedNamahatta && (
             <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
               <Label className="text-sm font-medium text-blue-600 dark:text-blue-400">
-                Selected Namhatta
+                Selected Namahatta
               </Label>
               <p className="text-sm font-semibold text-blue-900 dark:text-blue-100">
-                {selectedNamhatta.name} ({selectedNamhatta.code})
+                {selectedNamahatta.name} ({selectedNamahatta.code})
               </p>
-              {selectedNamhatta.meetingDay && selectedNamhatta.meetingTime && (
+              {selectedNamahatta.meetingDay && selectedNamahatta.meetingTime && (
                 <p className="text-xs text-blue-700 dark:text-blue-300">
-                  Meetings: {selectedNamhatta.meetingDay} at {selectedNamhatta.meetingTime}
+                  Meetings: {selectedNamahatta.meetingDay} at {selectedNamahatta.meetingTime}
                 </p>
               )}
             </div>
@@ -234,7 +234,7 @@ export default function ChangeNamhattaModal({
                   Changing...
                 </>
               ) : (
-                "Change Namhatta"
+                "Change Namahatta"
               )}
             </Button>
           </div>

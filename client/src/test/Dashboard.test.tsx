@@ -12,20 +12,20 @@ vi.mocked(useQuery).mockImplementation(({ queryKey }) => {
     return {
       data: {
         totalDevotees: 250,
-        totalNamhattas: 100,
+        totalNamahattas: 100,
         recentUpdates: [
           {
             id: 1,
-            namhattaId: 1,
+            namahattaId: 1,
             title: 'Weekly Satsang',
             description: 'Regular weekly spiritual gathering',
             date: '2025-01-15',
             time: '18:00',
             type: 'Satsang',
             location: 'Main Hall',
-            namhattaName: 'Test Namhatta',
-            namhattaCity: 'Test City',
-            namhattaState: 'Test State'
+            namahattaName: 'Test Namahatta',
+            namahattaCity: 'Test City',
+            namahattaState: 'Test State'
           }
         ]
       },
@@ -77,7 +77,7 @@ describe('Dashboard', () => {
       expect(screen.getByText('250')).toBeInTheDocument()
       expect(screen.getByText('100')).toBeInTheDocument()
       expect(screen.getByText('Total Devotees')).toBeInTheDocument()
-      expect(screen.getByText('Total Namhattas')).toBeInTheDocument()
+      expect(screen.getByText('Total Namahattas')).toBeInTheDocument()
     })
   })
 
@@ -87,7 +87,7 @@ describe('Dashboard', () => {
     await waitFor(() => {
       expect(screen.getByText('Recent Updates')).toBeInTheDocument()
       expect(screen.getByText('Weekly Satsang')).toBeInTheDocument()
-      expect(screen.getByText('Test Namhatta')).toBeInTheDocument()
+      expect(screen.getByText('Test Namahatta')).toBeInTheDocument()
     })
   })
 
@@ -126,17 +126,17 @@ describe('Dashboard', () => {
     })
   })
 
-  it('should navigate to namhattas page when clicking total namhattas', async () => {
+  it('should navigate to namahattas page when clicking total namahattas', async () => {
     const mockSetLocation = vi.fn()
     vi.mocked(useLocation).mockReturnValue(['/', mockSetLocation])
     
     render(<Dashboard />)
     
     await waitFor(() => {
-      const namhattaCard = screen.getByText('Total Namhattas').closest('button')
-      if (namhattaCard) {
-        fireEvent.click(namhattaCard)
-        expect(mockSetLocation).toHaveBeenCalledWith('/namhattas')
+      const namahattaCard = screen.getByText('Total Namahattas').closest('button')
+      if (namahattaCard) {
+        fireEvent.click(namahattaCard)
+        expect(mockSetLocation).toHaveBeenCalledWith('/namahattas')
       }
     })
   })

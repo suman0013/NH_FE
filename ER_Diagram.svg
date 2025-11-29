@@ -16,7 +16,7 @@
 
   <!-- Title -->
   <text x="700" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#1976d2">
-    Namhatta Management System - Entity Relationship Diagram
+    Namahatta Management System - Entity Relationship Diagram
   </text>
 
   <!-- DEVOTEES Entity -->
@@ -50,7 +50,7 @@
     <circle class="fk" cx="15" cy="290" r="5"/>
     <text class="entity-text" x="25" y="295">shraddhakutir_id (FK)</text>
     <circle class="fk" cx="15" cy="310" r="5"/>
-    <text class="entity-text" x="25" y="315">namhatta_id (FK)</text>
+    <text class="entity-text" x="25" y="315">namahatta_id (FK)</text>
     
     <text class="entity-text" x="15" y="330">education</text>
     <text class="entity-text" x="15" y="345">occupation</text>
@@ -60,11 +60,11 @@
     <text class="entity-text" x="15" y="405">updated_at</text>
   </g>
 
-  <!-- NAMHATTAS Entity -->
+  <!-- NAMAHATTAS Entity -->
   <g transform="translate(400, 80)">
     <rect class="entity" width="280" height="220" rx="5"/>
     <rect class="entity-header" width="280" height="30" rx="5"/>
-    <text class="entity-title" x="140" y="20" text-anchor="middle">NAMHATTAS</text>
+    <text class="entity-title" x="140" y="20" text-anchor="middle">NAMAHATTAS</text>
     
     <!-- PK -->
     <circle class="pk" cx="15" cy="45" r="5"/>
@@ -117,11 +117,11 @@
     <text class="entity-text" x="15" y="100">created_at</text>
   </g>
 
-  <!-- NAMHATTA_UPDATES Entity -->
+  <!-- NAMAHATTA_UPDATES Entity -->
   <g transform="translate(400, 350)">
     <rect class="entity" width="280" height="280" rx="5"/>
     <rect class="entity-header" width="280" height="30" rx="5"/>
-    <text class="entity-title" x="140" y="20" text-anchor="middle">NAMHATTA_UPDATES</text>
+    <text class="entity-title" x="140" y="20" text-anchor="middle">NAMAHATTA_UPDATES</text>
     
     <!-- PK -->
     <circle class="pk" cx="15" cy="45" r="5"/>
@@ -129,7 +129,7 @@
     
     <!-- FK -->
     <circle class="fk" cx="15" cy="70" r="5"/>
-    <text class="entity-text" x="25" y="75">namhatta_id (FK)</text>
+    <text class="entity-text" x="25" y="75">namahatta_id (FK)</text>
     
     <!-- Fields -->
     <text class="entity-text" x="15" y="95">program_type</text>
@@ -210,11 +210,11 @@
     <text class="entity-text" x="15" y="145">created_at</text>
   </g>
 
-  <!-- NAMHATTA_ADDRESSES Junction Table - Updated with landmark -->
+  <!-- NAMAHATTA_ADDRESSES Junction Table - Updated with landmark -->
   <g transform="translate(1000, 350)">
     <rect class="entity" width="200" height="120" rx="5"/>
     <rect class="entity-header" width="200" height="30" rx="5"/>
-    <text class="entity-title" x="100" y="20" text-anchor="middle">NAMHATTA_ADDRESSES</text>
+    <text class="entity-title" x="100" y="20" text-anchor="middle">NAMAHATTA_ADDRESSES</text>
     
     <!-- PK -->
     <circle class="pk" cx="15" cy="45" r="5"/>
@@ -222,7 +222,7 @@
     
     <!-- FKs -->
     <circle class="fk" cx="15" cy="70" r="5"/>
-    <text class="entity-text" x="25" y="75">namhatta_id (FK)</text>
+    <text class="entity-text" x="25" y="75">namahatta_id (FK)</text>
     <circle class="fk" cx="15" cy="90" r="5"/>
     <text class="entity-text" x="25" y="95">address_id (FK)</text>
     
@@ -262,11 +262,11 @@
   <line class="relationship" x1="330" y1="365" x2="1000" y2="140"/>
   <text x="665" y="250" font-family="Arial, sans-serif" font-size="10" fill="#666">belongs to</text>
   
-  <!-- Devotees -> Namhattas -->
+  <!-- Devotees -> Namahattas -->
   <line class="relationship" x1="330" y1="385" x2="400" y2="190"/>
   <text x="350" y="280" font-family="Arial, sans-serif" font-size="10" fill="#666">belongs to</text>
   
-  <!-- Namhattas -> Namhatta_Updates -->
+  <!-- Namahattas -> Namahatta_Updates -->
   <line class="relationship" x1="540" y1="300" x2="540" y2="350"/>
   <text x="545" y="330" font-family="Arial, sans-serif" font-size="10" fill="#666">has many</text>
   
@@ -282,11 +282,11 @@
   <line class="relationship" x1="850" y1="420" x2="850" y2="450"/>
   <text x="855" y="440" font-family="Arial, sans-serif" font-size="10" fill="#666">referenced by</text>
   
-  <!-- Namhattas -> Namhatta_Addresses -->
+  <!-- Namahattas -> Namahatta_Addresses -->
   <line class="relationship" x1="680" y1="190" x2="1000" y2="400"/>
   <text x="840" y="300" font-family="Arial, sans-serif" font-size="10" fill="#666">has many</text>
   
-  <!-- Addresses -> Namhatta_Addresses -->
+  <!-- Addresses -> Namahatta_Addresses -->
   <line class="relationship" x1="950" y1="320" x2="1000" y2="405"/>
   <text x="970" y="360" font-family="Arial, sans-serif" font-size="10" fill="#666">referenced by</text>
   

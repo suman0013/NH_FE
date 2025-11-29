@@ -5,7 +5,7 @@ import { z } from "zod";
 import { DatabaseStorage } from "./storage-db";
 
 const storage = new DatabaseStorage();
-import { insertDevoteeSchema, insertNamhattaSchema, insertDevotionalStatusSchema, insertShraddhakutirSchema, insertNamhattaUpdateSchema, insertGurudevSchema, insertRoleChangeHistorySchema } from "@shared/schema";
+import { insertDevoteeSchema, insertNamahattaSchema, insertDevotionalStatusSchema, insertShraddhakutirSchema, insertNamahattaUpdateSchema, insertGurudevSchema, insertRoleChangeHistorySchema } from "@shared/schema";
 import { authRoutes } from "./auth/routes";
 import { authenticateJWT, authorize, validateDistrictAccess, loginRateLimit, sanitizeInput } from "./auth/middleware";
 import rateLimit from 'express-rate-limit';
@@ -126,9 +126,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // About
   app.get("/api/about", async (req, res) => {
     res.json({
-      name: "Namhatta Management System",
+      name: "Namahatta Management System",
       version: "1.0.0",
-      description: "OpenAPI spec for Namhatta web and mobile-compatible system"
+      description: "OpenAPI spec for Namahatta web and mobile-compatible system"
     });
   });
 
@@ -160,7 +160,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get district supervisors by district (for Namhatta form)
+  // Get district supervisors by district (for Namahatta form)
   app.get("/api/district-supervisors", authenticateJWT, async (req, res) => {
     try {
       const { district } = req.query;
@@ -284,27 +284,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Map data endpoints
   app.get("/api/map/countries", async (req, res) => {
-    const data = await storage.getNamhattaCountsByCountry();
+    const data = await storage.getNamahattaCountsByCountry();
     res.json(data);
   });
 
   app.get("/api/map/states", async (req, res) => {
-    const data = await storage.getNamhattaCountsByState(); // Get all states
+    const data = await storage.getNamahattaCountsByState(); // Get all states
     res.json(data);
   });
 
   app.get("/api/map/districts", async (req, res) => {
-    const data = await storage.getNamhattaCountsByDistrict(); // Get all districts
+    const data = await storage.getNamahattaCountsByDistrict(); // Get all districts
     res.json(data);
   });
 
   app.get("/api/map/sub-districts", async (req, res) => {
-    const data = await storage.getNamhattaCountsBySubDistrict(); // Get all sub-districts
+    const data = await storage.getNamahattaCountsBySubDistrict(); // Get all sub-districts
     res.json(data);
   });
 
   app.get("/api/map/villages", async (req, res) => {
-    const data = await storage.getNamhattaCountsByVillage(); // Get all villages
+    const data = await storage.getNamahattaCountsByVillage(); // Get all villages
     res.json(data);
   });
 
@@ -498,7 +498,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/devotees", sanitizeInput, modifyRateLimit, authenticateJWT, authorize(['ADMIN', 'OFFICE']), async (req, res) => {
     try {
-      // Extract address and other fields separately (similar to namhatta creation)
+      // Extract address and other fields separately (similar to namahatta creation)
       const { presentAddress, permanentAddress, ...devoteeFields } = req.body;
       
       // Validate only the devotee fields against schema
@@ -519,9 +519,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Add devotee to specific Namhatta
-  app.post("/api/devotees/:namhattaId", sanitizeInput, modifyRateLimit, authenticateJWT, authorize(['ADMIN', 'OFFICE']), async (req, res) => {
-    const namhattaId = parseInt(req.params.namhattaId);
+  // Add devotee to specific Namahatta
+  app.post("/api/devotees/:namahattaId", sanitizeInput, modifyRateLimit, authenticateJWT, authorize(['ADMIN', 'OFFICE']), async (req, res) => {
+    const namahattaId = parseInt(req.params.namahattaId);
     try {
       // Extract address and other fields separately
       const { presentAddress, permanentAddress, ...devoteeFields } = req.body;
@@ -536,7 +536,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         permanentAddress: permanentAddress
       };
       
-      const devotee = await storage.createDevoteeForNamhatta(devoteeDataWithAddresses, namhattaId);
+      const devotee = await storage.createDevoteeForNamahatta(devoteeDataWithAddresses, namahattaId);
       res.status(201).json(devotee);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
@@ -917,8 +917,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Namhattas (requires authentication, district filtering for supervisors)
-  app.get("/api/namhattas", authenticateJWT, validateDistrictAccess, async (req, res) => {
+  // Namahattas (requires authentication, district filtering for supervisors)
+  app.get("/api/namahattas", authenticateJWT, validateDistrictAccess, async (req, res) => {
     const page = parseInt(req.query.page as string) || 1;
     const size = parseInt(req.query.size as string) || 10;
     const sortBy = req.query.sortBy as string;
@@ -936,31 +936,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       sortOrder,
       allowedDistricts: req.user?.role === 'DISTRICT_SUPERVISOR' ? req.user.districts : undefined,
     };
-    const result = await storage.getNamhattas(page, size, filters);
+    const result = await storage.getNamahattas(page, size, filters);
     res.json(result);
   });
 
-  app.get("/api/namhattas/pending", authenticateJWT, authorize(['ADMIN', 'OFFICE']), async (req, res) => {
+  app.get("/api/namahattas/pending", authenticateJWT, authorize(['ADMIN', 'OFFICE']), async (req, res) => {
     const page = parseInt(req.query.page as string) || 1;
     const size = parseInt(req.query.size as string) || 10;
-    const result = await storage.getNamhattas(page, size, { status: "PENDING_APPROVAL" });
+    const result = await storage.getNamahattas(page, size, { status: "PENDING_APPROVAL" });
     res.json(result.data);
   });
 
-  app.get("/api/namhattas/:id", authenticateJWT, async (req, res) => {
+  app.get("/api/namahattas/:id", authenticateJWT, async (req, res) => {
     const id = parseInt(req.params.id);
-    const namhatta = await storage.getNamhatta(id);
-    if (!namhatta) {
-      return res.status(404).json({ message: "Namhatta not found" });
+    const namahatta = await storage.getNamahatta(id);
+    if (!namahatta) {
+      return res.status(404).json({ message: "Namahatta not found" });
     }
-    res.json(namhatta);
+    res.json(namahatta);
   });
 
-  // Check if namhatta code exists
-  app.get("/api/namhattas/check-code/:code", authenticateJWT, authorize(['ADMIN', 'OFFICE']), async (req, res) => {
+  // Check if namahatta code exists
+  app.get("/api/namahattas/check-code/:code", authenticateJWT, authorize(['ADMIN', 'OFFICE']), async (req, res) => {
     try {
       const code = req.params.code;
-      const exists = await storage.checkNamhattaCodeExists(code);
+      const exists = await storage.checkNamahattaCodeExists(code);
       res.json({ exists });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
@@ -968,26 +968,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/namhattas", sanitizeInput, modifyRateLimit, authenticateJWT, authorize(['ADMIN', 'OFFICE']), async (req, res) => {
+  app.post("/api/namahattas", sanitizeInput, modifyRateLimit, authenticateJWT, authorize(['ADMIN', 'OFFICE']), async (req, res) => {
     try {
       // Extract address and other fields separately
-      const { address, ...namhattaFields } = req.body;
+      const { address, ...namahattaFields } = req.body;
       
-      // Validate only the namhatta fields against schema
-      const validatedNamhattaData = insertNamhattaSchema.parse(namhattaFields);
+      // Validate only the namahatta fields against schema
+      const validatedNamahattaData = insertNamahattaSchema.parse(namahattaFields);
       
       // Add address back to the data
-      const namhattaDataWithAddress = {
-        ...validatedNamhattaData,
+      const namahattaDataWithAddress = {
+        ...validatedNamahattaData,
         address: address
       };
       
-      const namhatta = await storage.createNamhatta(namhattaDataWithAddress);
-      res.status(201).json(namhatta);
+      const namahatta = await storage.createNamahatta(namahattaDataWithAddress);
+      res.status(201).json(namahatta);
     } catch (error) {
       // Return appropriate error status based on error type
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      console.error('❌ Namhatta creation error:', error);
+      console.error('❌ Namahatta creation error:', error);
       console.error('❌ Error message:', errorMessage);
       
       if (errorMessage.includes('already exists')) {
@@ -999,41 +999,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/namhattas/:id", sanitizeInput, modifyRateLimit, authenticateJWT, authorize(['ADMIN', 'OFFICE']), async (req, res) => {
+  app.put("/api/namahattas/:id", sanitizeInput, modifyRateLimit, authenticateJWT, authorize(['ADMIN', 'OFFICE']), async (req, res) => {
     const id = parseInt(req.params.id);
     try {
       // Extract address and other fields separately (same as POST route)
-      const { address, ...namhattaFields } = req.body;
+      const { address, ...namahattaFields } = req.body;
       
-      // Validate only the namhatta fields against schema
-      const validatedNamhattaData = insertNamhattaSchema.partial().parse(namhattaFields);
+      // Validate only the namahatta fields against schema
+      const validatedNamahattaData = insertNamahattaSchema.partial().parse(namahattaFields);
       
       // Add address back to the data
-      const namhattaDataWithAddress = {
-        ...validatedNamhattaData,
+      const namahattaDataWithAddress = {
+        ...validatedNamahattaData,
         address: address
       };
       
-      const namhatta = await storage.updateNamhatta(id, namhattaDataWithAddress);
-      res.json(namhatta);
+      const namahatta = await storage.updateNamahatta(id, namahattaDataWithAddress);
+      res.json(namahatta);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      res.status(400).json({ message: "Invalid namhatta data", error: errorMessage });
+      res.status(400).json({ message: "Invalid namahatta data", error: errorMessage });
     }
   });
 
-  app.get("/api/namhattas/:id/devotees", async (req, res) => {
+  app.get("/api/namahattas/:id/devotees", async (req, res) => {
     const id = parseInt(req.params.id);
     const page = parseInt(req.query.page as string) || 1;
     const size = parseInt(req.query.size as string) || 10;
     const statusId = req.query.statusId ? parseInt(req.query.statusId as string) : undefined;
     
-    const result = await storage.getDevoteesByNamhatta(id, page, size, statusId);
+    const result = await storage.getDevoteesByNamahatta(id, page, size, statusId);
     res.json(result);
   });
 
   // Check registration number availability
-  app.get("/api/namhattas/check-registration/:registrationNo", authenticateJWT, authorize(['ADMIN', 'OFFICE']), async (req, res) => {
+  app.get("/api/namahattas/check-registration/:registrationNo", authenticateJWT, authorize(['ADMIN', 'OFFICE']), async (req, res) => {
     const registrationNo = req.params.registrationNo;
     try {
       const exists = await storage.checkRegistrationNoExists(registrationNo);
@@ -1043,8 +1043,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Namhatta approval endpoints - only ADMIN and OFFICE users can approve/reject
-  app.post("/api/namhattas/:id/approve", authenticateJWT, authorize(['ADMIN', 'OFFICE']), async (req, res) => {
+  // Namahatta approval endpoints - only ADMIN and OFFICE users can approve/reject
+  app.post("/api/namahattas/:id/approve", authenticateJWT, authorize(['ADMIN', 'OFFICE']), async (req, res) => {
     const id = parseInt(req.params.id);
     const { registrationNo, registrationDate } = req.body;
     
@@ -1059,47 +1059,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Registration number already exists" });
       }
       
-      await storage.approveNamhatta(id, registrationNo, registrationDate);
-      res.json({ message: "Namhatta approved successfully" });
+      await storage.approveNamahatta(id, registrationNo, registrationDate);
+      res.json({ message: "Namahatta approved successfully" });
     } catch (error) {
-      res.status(404).json({ message: "Namhatta not found" });
+      res.status(404).json({ message: "Namahatta not found" });
     }
   });
 
-  app.post("/api/namhattas/:id/reject", authenticateJWT, authorize(['ADMIN', 'OFFICE']), async (req, res) => {
+  app.post("/api/namahattas/:id/reject", authenticateJWT, authorize(['ADMIN', 'OFFICE']), async (req, res) => {
     const id = parseInt(req.params.id);
     const { reason } = req.body;
     try {
-      await storage.rejectNamhatta(id, reason);
-      res.json({ message: "Namhatta rejected successfully" });
+      await storage.rejectNamahatta(id, reason);
+      res.json({ message: "Namahatta rejected successfully" });
     } catch (error) {
-      res.status(404).json({ message: "Namhatta not found" });
+      res.status(404).json({ message: "Namahatta not found" });
     }
   });
 
-  app.get("/api/namhattas/:id/updates", async (req, res) => {
+  app.get("/api/namahattas/:id/updates", async (req, res) => {
     const id = parseInt(req.params.id);
-    const updates = await storage.getNamhattaUpdates(id);
+    const updates = await storage.getNamahattaUpdates(id);
     res.json(updates);
   });
 
-  // Get all updates from all namhattas (optimized endpoint)
+  // Get all updates from all namahattas (optimized endpoint)
   app.get("/api/updates/all", async (req, res) => {
     const updates = await storage.getAllUpdates();
     res.json(updates);
   });
 
-  app.get("/api/namhattas/:id/devotee-status-count", async (req, res) => {
+  app.get("/api/namahattas/:id/devotee-status-count", async (req, res) => {
     const id = parseInt(req.params.id);
-    const counts = await storage.getNamhattaDevoteeStatusCount(id);
+    const counts = await storage.getNamahattaDevoteeStatusCount(id);
     res.json(counts);
   });
 
-  app.get("/api/namhattas/:id/status-history", async (req, res) => {
+  app.get("/api/namahattas/:id/status-history", async (req, res) => {
     const id = parseInt(req.params.id);
     const page = parseInt(req.query.page as string) || 1;
     const size = parseInt(req.query.size as string) || 10;
-    const result = await storage.getNamhattaStatusHistory(id, page, size);
+    const result = await storage.getNamahattaStatusHistory(id, page, size);
     res.json(result);
   });
 
@@ -1177,13 +1177,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Ensure proper type conversion for numeric fields
       const processedData = {
         ...req.body,
-        namhattaId: Number(req.body.namhattaId),
+        namahattaId: Number(req.body.namahattaId),
         attendance: Number(req.body.attendance),
         prasadDistribution: req.body.prasadDistribution ? Number(req.body.prasadDistribution) : undefined,
       };
       
-      const updateData = insertNamhattaUpdateSchema.parse(processedData);
-      const update = await storage.createNamhattaUpdate(updateData);
+      const updateData = insertNamahattaUpdateSchema.parse(processedData);
+      const update = await storage.createNamahattaUpdate(updateData);
       res.status(201).json(update);
     } catch (error) {
       console.error("Validation error:", error);
@@ -1413,7 +1413,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = await createUser({
         username,
         fullName: devotee.legalName,
-        email: devotee.email || `${username}@namhatta.local`,
+        email: devotee.email || `${username}@namahatta.local`,
         passwordHash: password,
         role: 'DISTRICT_SUPERVISOR',
         devoteeId

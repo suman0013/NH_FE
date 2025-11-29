@@ -17,9 +17,9 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 
-interface NamhattaUpdate {
+interface NamahattaUpdate {
   id: number;
-  namhattaId: number;
+  namahattaId: number;
   programType: string;
   date: string;
   attendance: number;
@@ -37,15 +37,15 @@ interface NamhattaUpdate {
 }
 
 interface UpdateDetailModalProps {
-  update: NamhattaUpdate;
-  namhattaName?: string;
+  update: NamahattaUpdate;
+  namahattaName?: string;
   isOpen: boolean;
   onClose: () => void;
 }
 
 export default function UpdateDetailModal({ 
   update, 
-  namhattaName, 
+  namahattaName, 
   isOpen, 
   onClose 
 }: UpdateDetailModalProps) {
@@ -58,7 +58,7 @@ export default function UpdateDetailModal({
   ];
 
   const activeActivities = activities.filter(activity => 
-    update[activity.key as keyof NamhattaUpdate] === true
+    update[activity.key as keyof NamahattaUpdate] === true
   );
 
   // Determine event status based on date
@@ -91,10 +91,10 @@ export default function UpdateDetailModal({
               <DialogDescription className="sr-only">
                 Detailed information about the {update.programType} program update
               </DialogDescription>
-              {namhattaName && (
+              {namahattaName && (
                 <div className="flex items-center mt-2 text-gray-600 dark:text-gray-400">
                   <MapPin className="mr-1 h-4 w-4" />
-                  <span>{namhattaName}</span>
+                  <span>{namahattaName}</span>
                 </div>
               )}
             </div>

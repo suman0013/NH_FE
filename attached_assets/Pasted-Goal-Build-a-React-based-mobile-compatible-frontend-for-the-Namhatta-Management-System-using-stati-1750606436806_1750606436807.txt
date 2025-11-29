@@ -1,4 +1,4 @@
-Goal: Build a React-based, mobile-compatible frontend for the Namhatta Management System using static/mock data based on the OpenAPI spec. The backend is not implemented yet — mock all API responses.
+Goal: Build a React-based, mobile-compatible frontend for the Namahatta Management System using static/mock data based on the OpenAPI spec. The backend is not implemented yet — mock all API responses.
 
 📦 Tech Stack
 React (Vite or CRA)
@@ -36,14 +36,14 @@ Use collapsible or tree UI if possible
 
 Total Devotees
 
-Total Namhattas
+Total Namahattas
 
-🗓️ Recent Namhatta Updates
+🗓️ Recent Namahatta Updates
 
 Show last 5 updates (name, date, attendance, program type)
 
-🔹 Namhattas (/namhattas)
-📋 List Namhattas with pagination
+🔹 Namahattas (/namahattas)
+📋 List Namahattas with pagination
 
 🔍 Filters:
 
@@ -51,19 +51,19 @@ Location: Country, State, District, Sub-district, Village
 
 Role filters: MalaSenapoti, MahaChakraSenapoti, ChakraSenapoti, UpaChakraSenapoti
 
-🧾 Detail View (/namhattas/:id)
+🧾 Detail View (/namahattas/:id)
 
-Show Namhatta info + address
+Show Namahatta info + address
 
 Devotees list with devotional status grouping
 
 Status change history
 
-List of Namhatta updates
+List of Namahatta updates
 
-Approve pending Namhatta
+Approve pending Namahatta
 
-Edit Namhatta
+Edit Namahatta
 
 🔹 Devotees (/devotees)
 🧑 Paginated list of Devotees
@@ -96,8 +96,8 @@ View all Shraddhakutirs
 
 Create new (name + auto-generated code: SK-<DISTRICT-CODE>-<SERIAL>)
 
-🔹 Namhatta Updates (/namhattas/:id/updates)
-View updates for a Namhatta
+🔹 Namahatta Updates (/namahattas/:id/updates)
+View updates for a Namahatta
 
 Add update:
 
@@ -122,7 +122,7 @@ Show list of leaders for selected level using mock data from /hierarchy/{level}
 🧪 Mock API Layer
 Create mocks/ folder for:
 
-namhattas.json, devotees.json, statuses.json, hierarchy.json, etc.
+namahattas.json, devotees.json, statuses.json, hierarchy.json, etc.
 
 Create services/ layer to simulate API calls using local mocks
 
