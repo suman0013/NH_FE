@@ -128,7 +128,7 @@ export default function Sidebar({ onClose }: SidebarProps) {
           <>
             <div className="my-4 px-3">
               <hr className="border-white/20 dark:border-slate-700/50" />
-              <p className="text-xs text-muted-foreground mt-2 mb-2 font-medium uppercase tracking-wider">
+              <p className="text-xs font-medium uppercase tracking-wider mt-2 mb-2 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
                 Administration
               </p>
             </div>
