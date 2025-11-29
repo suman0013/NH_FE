@@ -164,26 +164,26 @@ export default function Reports() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-50 dark:from-slate-900 dark:via-purple-900 dark:to-indigo-900 text-slate-900 dark:text-white" data-testid="reports-page">
-      <div className="container mx-auto p-4">
-        <div className="space-y-4">
+      <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-4">
+        <div className="space-y-3 sm:space-y-4">
           {/* Compact Header */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center">
-                <BarChart3 className="h-6 w-6 text-white" />
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+            <div className="flex items-start sm:items-center gap-2 sm:gap-3">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
+                <BarChart3 className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
               </div>
-              <div>
-                <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Namahatta Preaching Report</h1>
-                <p className="text-slate-600 dark:text-purple-200 text-sm">
+              <div className="min-w-0">
+                <h1 className="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">Namahatta Preaching Report</h1>
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-purple-200 line-clamp-2 sm:line-clamp-none">
                   Geographic breakdown • {statesData?.length || 0} states • {totalNamahattas} centers • {totalDevotees} devotees
-                  {user?.role === 'DISTRICT_SUPERVISOR' && <span className="ml-2 text-orange-600 dark:text-orange-300">🔒 District-filtered</span>}
+                  {user?.role === 'DISTRICT_SUPERVISOR' && <span className="ml-1 sm:ml-2 text-orange-600 dark:text-orange-300">District-filtered</span>}
                 </p>
               </div>
             </div>
           </div>
 
           {/* Compact States List */}
-          <div className="space-y-2">
+          <div className="space-y-1 sm:space-y-2">
             {statesData?.map((state) => {
               const stateKey = `${state.name}_${state.country}`;
               const isStateOpen = openStates.has(stateKey);
@@ -267,14 +267,14 @@ function NamahattasModal({ selectedArea, onClose }: { selectedArea: SelectedArea
 
   return (
     <Dialog open={!!selectedArea} onOpenChange={onClose}>
-      <DialogContent className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[95vw] sm:w-full sm:max-w-2xl max-h-[85vh] sm:max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Namahattas in {selectedArea.name}</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-base sm:text-lg">Namahattas in {selectedArea.name}</DialogTitle>
+          <DialogDescription className="text-xs sm:text-sm">
             Found {filteredNamahattas.length} namahatta{filteredNamahattas.length !== 1 ? 's' : ''}
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-2">
+        <div className="space-y-1.5 sm:space-y-2">
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -287,15 +287,15 @@ function NamahattasModal({ selectedArea, onClose }: { selectedArea: SelectedArea
             filteredNamahattas.map((namahatta: any) => (
               <div 
                 key={namahatta.id} 
-                className="p-3 border rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition-colors"
+                className="p-2 sm:p-3 border rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition-colors"
                 onClick={() => {
                   onClose();
                   setLocation(`/namahattas/${namahatta.id}`);
                 }}
                 data-testid={`namahatta-item-${namahatta.id}`}
               >
-                <div className="font-semibold text-slate-900 dark:text-white">{namahatta.name}</div>
-                <div className="text-sm text-slate-600 dark:text-slate-400">{formatAddress(namahatta)}</div>
+                <div className="font-semibold text-sm sm:text-base text-slate-900 dark:text-white">{namahatta.name}</div>
+                <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">{formatAddress(namahatta)}</div>
               </div>
             ))
           )}
@@ -338,30 +338,30 @@ function StateCard({
     <div className={`border-l-4 border-purple-500 ${cardBg} backdrop-blur-sm rounded-r-lg hover:bg-purple-50 dark:hover:bg-slate-800/70 transition-all`}>
       <Collapsible open={isOpen} onOpenChange={onToggle}>
         <CollapsibleTrigger asChild>
-          <div className="flex items-center justify-between p-3 cursor-pointer hover:bg-purple-100/50 dark:hover:bg-slate-700/50 transition-colors" data-testid={`state-header-${state.name.toLowerCase().replace(/\s+/g, '-')}`}>
-            <div className="flex items-center gap-3">
-              <div className="text-purple-600 dark:text-purple-400">
-                {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 p-2 sm:p-3 cursor-pointer hover:bg-purple-100/50 dark:hover:bg-slate-700/50 transition-colors" data-testid={`state-header-${state.name.toLowerCase().replace(/\s+/g, '-')}`}>
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+              <div className="text-purple-600 dark:text-purple-400 flex-shrink-0">
+                {isOpen ? <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4" /> : <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />}
               </div>
-              <Globe className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-              <span className="text-slate-900 dark:text-white font-semibold text-lg">{state.name}</span>
-              <span className="text-slate-600 dark:text-purple-300 text-base">({state.country})</span>
+              <Globe className="h-3 w-3 sm:h-4 sm:w-4 text-purple-600 dark:text-purple-400 flex-shrink-0" />
+              <span className="text-slate-900 dark:text-white font-semibold text-sm sm:text-lg truncate">{state.name}</span>
+              <span className="text-slate-600 dark:text-purple-300 text-xs sm:text-base flex-shrink-0">({state.country})</span>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1 text-green-600 dark:text-green-400 cursor-pointer hover:text-green-700 dark:hover:text-green-300" onClick={(e) => { e.stopPropagation(); if (state.namahattaCount > 0) onSelectArea({ name: state.name, state: state.name, type: 'state' }); }} data-testid="button-state-namahattas">
-                <Building2 className="h-3 w-3" />
-                <span className="text-base font-medium">{state.namahattaCount}</span>
+            <div className="flex items-center gap-2 sm:gap-4 ml-5 sm:ml-0">
+              <div className="flex items-center gap-0.5 sm:gap-1 text-green-600 dark:text-green-400 cursor-pointer hover:text-green-700 dark:hover:text-green-300" onClick={(e) => { e.stopPropagation(); if (state.namahattaCount > 0) onSelectArea({ name: state.name, state: state.name, type: 'state' }); }} data-testid="button-state-namahattas">
+                <Building2 className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                <span className="text-xs sm:text-base font-medium">{state.namahattaCount}</span>
               </div>
-              <div className="flex items-center gap-1 text-blue-600 dark:text-blue-400">
-                <Users className="h-3 w-3" />
-                <span className="text-base font-medium">{state.devoteeCount}</span>
+              <div className="flex items-center gap-0.5 sm:gap-1 text-blue-600 dark:text-blue-400">
+                <Users className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                <span className="text-xs sm:text-base font-medium">{state.devoteeCount}</span>
               </div>
             </div>
           </div>
         </CollapsibleTrigger>
         
         <CollapsibleContent>
-          <div className="pl-6 pb-1">
+          <div className="pl-3 sm:pl-6 pb-1">
             {districtsLoading ? (
               <div className="flex items-center gap-2 py-2 text-slate-600 dark:text-purple-300">
                 <Loader2 className="h-3 w-3 animate-spin" />
@@ -370,7 +370,7 @@ function StateCard({
             ) : districtsData?.length === 0 ? (
               <div className="text-slate-500 dark:text-purple-400 text-sm py-1">No districts found</div>
             ) : (
-              <div className="space-y-0.5">
+              <div className="space-y-0">
                 {districtsData?.map((district) => (
                   <DistrictCard 
                     key={`${district.name}_${district.state}`}
@@ -417,32 +417,32 @@ function DistrictCard({
   const cardBg = getCardBackground(district.namahattaCount, district.devoteeCount);
   
   return (
-    <div className={`border-l-2 border-green-400 ml-4 my-1 ${cardBg} rounded-r`}>
+    <div className={`border-l-2 border-green-400 ml-2 sm:ml-4 my-0.5 sm:my-1 ${cardBg} rounded-r`}>
       <Collapsible open={isOpen} onOpenChange={onToggle}>
         <CollapsibleTrigger asChild>
-          <div className="flex items-center justify-between py-1.5 px-3 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700/30 rounded-r transition-colors" data-testid={`district-header-${district.name.toLowerCase().replace(/\s+/g, '-')}`}>
-            <div className="flex items-center gap-2">
-              <div className="text-green-500 dark:text-green-400">
-                {isOpen ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+          <div className="flex items-center justify-between py-1 sm:py-1.5 px-2 sm:px-3 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700/30 rounded-r transition-colors" data-testid={`district-header-${district.name.toLowerCase().replace(/\s+/g, '-')}`}>
+            <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+              <div className="text-green-500 dark:text-green-400 flex-shrink-0">
+                {isOpen ? <ChevronDown className="h-2.5 w-2.5 sm:h-3 sm:w-3" /> : <ChevronRight className="h-2.5 w-2.5 sm:h-3 sm:w-3" />}
               </div>
-              <MapPin className="h-3 w-3 text-green-500 dark:text-green-400" />
-              <span className="text-slate-800 dark:text-white text-base font-medium">{district.name}</span>
+              <MapPin className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-green-500 dark:text-green-400 flex-shrink-0" />
+              <span className="text-slate-800 dark:text-white text-xs sm:text-base font-medium truncate">{district.name}</span>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1 text-green-600 dark:text-green-400 cursor-pointer hover:text-green-700 dark:hover:text-green-300" onClick={(e) => { e.stopPropagation(); if (district.namahattaCount > 0) onSelectArea({ name: district.name, state: district.state, district: district.name, type: 'district' }); }} data-testid="button-district-namahattas">
-                <Building2 className="h-3 w-3" />
-                <span className="text-sm">{district.namahattaCount}</span>
+            <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
+              <div className="flex items-center gap-0.5 sm:gap-1 text-green-600 dark:text-green-400 cursor-pointer hover:text-green-700 dark:hover:text-green-300" onClick={(e) => { e.stopPropagation(); if (district.namahattaCount > 0) onSelectArea({ name: district.name, state: district.state, district: district.name, type: 'district' }); }} data-testid="button-district-namahattas">
+                <Building2 className="h-2 w-2 sm:h-3 sm:w-3" />
+                <span className="text-xs sm:text-sm">{district.namahattaCount}</span>
               </div>
-              <div className="flex items-center gap-1 text-blue-600 dark:text-blue-400">
-                <Users className="h-3 w-3" />
-                <span className="text-sm">{district.devoteeCount}</span>
+              <div className="flex items-center gap-0.5 sm:gap-1 text-blue-600 dark:text-blue-400">
+                <Users className="h-2 w-2 sm:h-3 sm:w-3" />
+                <span className="text-xs sm:text-sm">{district.devoteeCount}</span>
               </div>
             </div>
           </div>
         </CollapsibleTrigger>
         
         <CollapsibleContent>
-          <div className="ml-4 py-0.5">
+          <div className="ml-2 sm:ml-4 py-0.5">
             {subDistrictsLoading ? (
               <div className="flex items-center gap-2 py-1 text-slate-600 dark:text-purple-300">
                 <Loader2 className="h-3 w-3 animate-spin" />
@@ -451,7 +451,7 @@ function DistrictCard({
             ) : subDistrictsData?.length === 0 ? (
               <div className="text-slate-500 dark:text-purple-400 text-xs py-0.5">No sub-districts found</div>
             ) : (
-              <div className="space-y-0.5">
+              <div className="space-y-0">
                 {subDistrictsData?.map((subDistrict) => (
                   <SubDistrictCard 
                     key={`${subDistrict.name}_${subDistrict.district}`}
@@ -495,58 +495,58 @@ function SubDistrictCard({
   const cardBg = getCardBackground(subDistrict.namahattaCount, subDistrict.devoteeCount);
   
   return (
-    <div className={`border-l-2 border-orange-400 ml-4 my-0.5 ${cardBg} rounded-r`}>
+    <div className={`border-l-2 border-orange-400 ml-2 sm:ml-4 my-0.5 sm:my-0.5 ${cardBg} rounded-r`}>
       <Collapsible open={isOpen} onOpenChange={onToggle}>
         <CollapsibleTrigger asChild>
-          <div className="flex items-center justify-between py-1 px-2 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700/30 rounded-r transition-colors" data-testid={`subdistrict-header-${subDistrict.name.toLowerCase().replace(/\s+/g, '-')}`}>
-            <div className="flex items-center gap-2">
-              <div className="text-orange-500 dark:text-orange-400">
-                {isOpen ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+          <div className="flex items-center justify-between py-1 px-1.5 sm:px-2 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700/30 rounded-r transition-colors" data-testid={`subdistrict-header-${subDistrict.name.toLowerCase().replace(/\s+/g, '-')}`}>
+            <div className="flex items-center gap-1 sm:gap-2 min-w-0">
+              <div className="text-orange-500 dark:text-orange-400 flex-shrink-0">
+                {isOpen ? <ChevronDown className="h-2.5 w-2.5 sm:h-3 sm:w-3" /> : <ChevronRight className="h-2.5 w-2.5 sm:h-3 sm:w-3" />}
               </div>
-              <Building2 className="h-3 w-3 text-orange-500 dark:text-orange-400" />
-              <span className="text-slate-800 dark:text-white text-base">{subDistrict.name}</span>
+              <Building2 className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-orange-500 dark:text-orange-400 flex-shrink-0" />
+              <span className="text-slate-800 dark:text-white text-xs sm:text-base truncate">{subDistrict.name}</span>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1 text-green-600 dark:text-green-400 cursor-pointer hover:text-green-700 dark:hover:text-green-300" onClick={(e) => { e.stopPropagation(); if (subDistrict.namahattaCount > 0) onSelectArea({ name: subDistrict.name, state: districtState, district: subDistrict.district, subDistrict: subDistrict.name, type: 'sub-district' }); }} data-testid="button-subdistrict-namahattas">
-                <Home className="h-3 w-3" />
-                <span className="text-sm">{subDistrict.namahattaCount}</span>
+            <div className="flex items-center gap-1 sm:gap-3 flex-shrink-0">
+              <div className="flex items-center gap-0.5 text-green-600 dark:text-green-400 cursor-pointer hover:text-green-700 dark:hover:text-green-300" onClick={(e) => { e.stopPropagation(); if (subDistrict.namahattaCount > 0) onSelectArea({ name: subDistrict.name, state: districtState, district: subDistrict.district, subDistrict: subDistrict.name, type: 'sub-district' }); }} data-testid="button-subdistrict-namahattas">
+                <Home className="h-2 w-2 sm:h-3 sm:w-3" />
+                <span className="text-xs sm:text-sm">{subDistrict.namahattaCount}</span>
               </div>
-              <div className="flex items-center gap-1 text-blue-600 dark:text-blue-400">
-                <Users className="h-3 w-3" />
-                <span className="text-sm">{subDistrict.devoteeCount}</span>
+              <div className="flex items-center gap-0.5 text-blue-600 dark:text-blue-400">
+                <Users className="h-2 w-2 sm:h-3 sm:w-3" />
+                <span className="text-xs sm:text-sm">{subDistrict.devoteeCount}</span>
               </div>
             </div>
           </div>
         </CollapsibleTrigger>
         
         <CollapsibleContent>
-          <div className="ml-4 py-0.5">
+          <div className="ml-2 sm:ml-4 py-0.5">
             {villagesLoading ? (
               <div className="flex items-center gap-2 py-1 text-slate-600 dark:text-purple-300">
-                <Loader2 className="h-3 w-3 animate-spin" />
+                <Loader2 className="h-2 w-2 sm:h-3 sm:w-3 animate-spin" />
                 <span className="text-xs">Loading...</span>
               </div>
             ) : villagesData?.length === 0 ? (
               <div className="text-slate-500 dark:text-purple-400 text-xs py-0.5">No villages found</div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 mt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1 sm:gap-2 mt-1 sm:mt-2">
                 {villagesData?.map((village) => (
                   <div key={`${village.name}_${village.subDistrict}`} 
-                       className={`${getCardBackground(village.namahattaCount, village.devoteeCount)} border rounded-lg p-2 hover:shadow-sm hover:border-yellow-300 dark:hover:border-yellow-600 transition-all`}
+                       className={`${getCardBackground(village.namahattaCount, village.devoteeCount)} border rounded-md sm:rounded-lg p-1.5 sm:p-2 hover:shadow-sm hover:border-yellow-300 dark:hover:border-yellow-600 transition-all`}
                        data-testid={`village-item-${village.name.toLowerCase().replace(/\s+/g, '-')}`}>
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full flex-shrink-0"></div>
-                      <Home className="h-3 w-3 text-yellow-500 dark:text-yellow-400 flex-shrink-0" />
-                      <span className="text-slate-700 dark:text-white text-sm font-medium truncate" title={village.name}>{village.name}</span>
+                    <div className="flex items-center gap-1 mb-1 min-w-0">
+                      <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-yellow-500 rounded-full flex-shrink-0"></div>
+                      <Home className="h-2 w-2 sm:h-3 sm:w-3 text-yellow-500 dark:text-yellow-400 flex-shrink-0" />
+                      <span className="text-slate-700 dark:text-white text-xs sm:text-sm font-medium truncate" title={village.name}>{village.name}</span>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1 text-green-600 dark:text-green-400 cursor-pointer hover:text-green-700 dark:hover:text-green-300" onClick={(e) => { e.stopPropagation(); if (village.namahattaCount > 0) onSelectArea({ name: village.name, state: districtState, district: village.subDistrict, subDistrict: village.subDistrict, type: 'village' }); }} data-testid="button-village-namahattas">
-                        <Building2 className="h-2 w-2" />
-                        <span className="text-sm">{village.namahattaCount}</span>
+                    <div className="flex items-center justify-between gap-1">
+                      <div className="flex items-center gap-0.5 text-green-600 dark:text-green-400 cursor-pointer hover:text-green-700 dark:hover:text-green-300" onClick={(e) => { e.stopPropagation(); if (village.namahattaCount > 0) onSelectArea({ name: village.name, state: districtState, district: village.subDistrict, subDistrict: village.subDistrict, type: 'village' }); }} data-testid="button-village-namahattas">
+                        <Building2 className="h-1.5 w-1.5 sm:h-2 sm:w-2" />
+                        <span className="text-xs sm:text-sm">{village.namahattaCount}</span>
                       </div>
-                      <div className="flex items-center gap-1 text-blue-600 dark:text-blue-400">
-                        <Users className="h-2 w-2" />
-                        <span className="text-sm">{village.devoteeCount}</span>
+                      <div className="flex items-center gap-0.5 text-blue-600 dark:text-blue-400">
+                        <Users className="h-1.5 w-1.5 sm:h-2 sm:w-2" />
+                        <span className="text-xs sm:text-sm">{village.devoteeCount}</span>
                       </div>
                     </div>
                   </div>
