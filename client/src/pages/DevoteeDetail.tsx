@@ -235,24 +235,24 @@ export default function DevoteeDetail() {
   };
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="p-2 sm:p-3 md:p-4 space-y-2 sm:space-y-3 md:space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4">
+        <div className="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto">
           <Link href={backUrl}>
-            <Button variant="outline" size="icon" className="glass">
+            <Button variant="outline" size="icon" className="glass flex-shrink-0">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
-          <div className="flex items-center space-x-4">
-            <Avatar className="h-16 w-16">
-              <AvatarFallback className="bg-gradient-to-br from-indigo-400 to-purple-600 text-white text-xl">
+          <div className="flex items-center space-x-2 sm:space-x-4 flex-1 min-w-0">
+            <Avatar className="h-12 w-12 sm:h-16 sm:w-16 flex-shrink-0">
+              <AvatarFallback className="bg-gradient-to-br from-indigo-400 to-purple-600 text-white text-base sm:text-xl">
                 {devotee.legalName.substring(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{devotee.legalName}</h1>
-              <div className="flex items-center space-x-4 mt-2">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white truncate">{devotee.legalName}</h1>
+              <div className="flex items-center space-x-2 sm:space-x-4 mt-1 sm:mt-2 flex-wrap gap-1">
                 <Badge className={getStatusColor(devotee.devotionalStatusId)}>
                   {getStatusName(devotee.devotionalStatusId)}
                 </Badge>
@@ -266,48 +266,50 @@ export default function DevoteeDetail() {
             </div>
           </div>
         </div>
-        <div className="flex space-x-3">
+        <div className="flex space-x-1.5 sm:space-x-2 md:space-x-3 w-full sm:w-auto">
           {/* Role Management Button - For ADMIN and DISTRICT_SUPERVISOR (both with and without existing roles) */}
           {(user?.role === 'ADMIN' || user?.role === 'DISTRICT_SUPERVISOR') && (
             <Button 
               variant="outline" 
-              className="glass" 
+              className="glass text-xs sm:text-sm flex-1 sm:flex-none" 
               onClick={() => setShowRoleManagementModal(true)}
               data-testid="button-role-management"
             >
-              <Shield className="mr-2 h-4 w-4" />
-              {devotee.leadershipRole ? 'Manage Role' : 'Assign Role'}
+              <Shield className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">{devotee.leadershipRole ? 'Manage Role' : 'Assign Role'}</span>
+              <span className="sm:hidden">{devotee.leadershipRole ? 'Manage' : 'Assign'}</span>
             </Button>
           )}
           
           {/* Edit Profile Button */}
-          <Button variant="outline" className="glass" onClick={() => setShowEditForm(true)}>
-            <Edit className="mr-2 h-4 w-4" />
-            Edit Profile
+          <Button variant="outline" className="glass text-xs sm:text-sm flex-1 sm:flex-none" onClick={() => setShowEditForm(true)}>
+            <Edit className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Edit Profile</span>
+            <span className="sm:hidden">Edit</span>
           </Button>
         </div>
       </div>
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-2 sm:space-y-3 md:space-y-4">
         <TabsList className="glass">
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="status">Status Management</TabsTrigger>
+          <TabsTrigger value="profile" className="text-xs sm:text-sm">Profile</TabsTrigger>
+          <TabsTrigger value="status" className="text-xs sm:text-sm">Status Management</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="profile" className="space-y-1">
+        <TabsContent value="profile" className="space-y-1.5 sm:space-y-2">
             {/* Basic Information */}
             <Card className="glass-card">
               <CardHeader className="pb-2">
-                <CardTitle className="flex items-center text-base">
-                  <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center mr-2">
-                    <User className="h-3 w-3 text-white" />
+                <CardTitle className="flex items-center text-xs sm:text-sm md:text-base">
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center mr-2 flex-shrink-0">
+                    <User className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-white" />
                   </div>
                   Basic Information
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-2">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1.5 sm:gap-2">
                   <div className="p-2 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                     <div className="flex items-center mb-1">
                       <User className="h-3 w-3 text-blue-600 dark:text-blue-400 mr-1" />
@@ -369,10 +371,10 @@ export default function DevoteeDetail() {
             {/* Namahatta Assignment */}
             <Card className="glass-card">
               <CardHeader className="pb-2">
-                <CardTitle className="flex items-center justify-between text-base">
+                <CardTitle className="flex items-center justify-between text-xs sm:text-sm md:text-base gap-2 flex-wrap">
                   <div className="flex items-center">
-                    <div className="w-6 h-6 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center mr-2">
-                      <Building className="h-3 w-3 text-white" />
+                    <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center mr-2 flex-shrink-0">
+                      <Building className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-white" />
                     </div>
                     Namahatta Assignment
                   </div>
@@ -385,23 +387,24 @@ export default function DevoteeDetail() {
                       className="text-xs"
                       data-testid="button-change-namahatta"
                     >
-                      <RefreshCw className="h-3 w-3 mr-1" />
-                      Change Namahatta
+                      <RefreshCw className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1" />
+                      <span className="hidden sm:inline">Change Namahatta</span>
+                      <span className="sm:hidden">Change</span>
                     </Button>
                   )}
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-2">
                 {devotee.namahattaId && currentNamahatta ? (
-                  <div className="p-3 bg-gradient-to-br from-indigo-50 to-purple-100 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-lg border border-indigo-200 dark:border-indigo-800">
-                    <div className="flex items-center mb-2">
-                      <Building className="h-4 w-4 text-indigo-600 dark:text-indigo-400 mr-2" />
-                      <p className="text-sm font-medium text-indigo-600 dark:text-indigo-400">Current Namahatta</p>
+                  <div className="p-2 sm:p-3 bg-gradient-to-br from-indigo-50 to-purple-100 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-lg border border-indigo-200 dark:border-indigo-800">
+                    <div className="flex items-center mb-1 sm:mb-2">
+                      <Building className="h-3 w-3 sm:h-4 sm:w-4 text-indigo-600 dark:text-indigo-400 mr-1.5 sm:mr-2 flex-shrink-0" />
+                      <p className="text-xs sm:text-sm font-medium text-indigo-600 dark:text-indigo-400">Current Namahatta</p>
                     </div>
-                    <p className="font-semibold text-gray-900 dark:text-white text-base">
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base truncate">
                       {currentNamahatta.name}
                     </p>
-                    <p className="text-sm text-indigo-700 dark:text-indigo-300">
+                    <p className="text-xs sm:text-sm text-indigo-700 dark:text-indigo-300">
                       Code: {currentNamahatta.code}
                     </p>
                     {currentNamahatta.meetingDay && currentNamahatta.meetingTime && (
@@ -411,12 +414,12 @@ export default function DevoteeDetail() {
                     )}
                   </div>
                 ) : (
-                  <div className="p-3 bg-gradient-to-br from-gray-50 to-slate-100 dark:from-gray-900/20 dark:to-slate-900/20 rounded-lg border border-gray-200 dark:border-gray-800">
+                  <div className="p-2 sm:p-3 bg-gradient-to-br from-gray-50 to-slate-100 dark:from-gray-900/20 dark:to-slate-900/20 rounded-lg border border-gray-200 dark:border-gray-800">
                     <div className="flex items-center mb-1">
-                      <Building className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-2" />
-                      <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Namahatta Assignment</p>
+                      <Building className="h-3 w-3 sm:h-4 sm:w-4 text-gray-500 dark:text-gray-400 mr-1.5 sm:mr-2 flex-shrink-0" />
+                      <p className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Namahatta Assignment</p>
                     </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
                       No namahatta assigned
                     </p>
                   </div>

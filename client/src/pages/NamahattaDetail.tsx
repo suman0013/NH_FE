@@ -259,18 +259,18 @@ export default function NamahattaDetail() {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-2 sm:p-4 md:p-6 space-y-3 sm:space-y-4 md:space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4">
+        <div className="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto">
           <Link href="/namahattas">
-            <Button variant="outline" size="icon" className="glass">
+            <Button variant="outline" size="icon" className="glass flex-shrink-0">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{namahatta.name}</h1>
-            <div className="flex items-center space-x-4 mt-2">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white truncate">{namahatta.name}</h1>
+            <div className="flex items-center space-x-2 sm:space-x-4 mt-1 sm:mt-2 flex-wrap gap-1">
               {getStatusBadge(namahatta.status)}
               {namahatta.address && (
                 <div className="flex items-center text-gray-600 dark:text-gray-400">
@@ -287,58 +287,60 @@ export default function NamahattaDetail() {
             </div>
           </div>
         </div>
-        <div className="flex space-x-3">
+        <div className="flex space-x-1.5 sm:space-x-2 md:space-x-3 w-full sm:w-auto">
           {/* Approval buttons - only show for ADMIN and OFFICE users */}
           {namahatta.status === "PENDING_APPROVAL" && canApprove && (
             <>
               <Button
                 onClick={() => setShowApprovalDialog(true)}
                 disabled={approveMutation.isPending}
-                className="bg-green-600 hover:bg-green-700 text-white"
+                className="bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm flex-1 sm:flex-none"
               >
-                <CheckCircle className="mr-2 h-4 w-4" />
-                Approve
+                <CheckCircle className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">Approve</span>
+                <span className="sm:hidden">OK</span>
               </Button>
               <Button
                 variant="outline"
                 onClick={() => setShowRejectionDialog(true)}
                 disabled={rejectMutation.isPending}
-                className="border-red-300 text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/20"
+                className="border-red-300 text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/20 text-xs sm:text-sm flex-1 sm:flex-none"
               >
-                <X className="mr-2 h-4 w-4" />
-                Reject
+                <X className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">Reject</span>
               </Button>
             </>
           )}
           
-          <Button variant="outline" className="glass" onClick={() => setShowEditForm(true)}>
-            <Edit className="mr-2 h-4 w-4" />
-            Edit Details
+          <Button variant="outline" className="glass text-xs sm:text-sm" onClick={() => setShowEditForm(true)}>
+            <Edit className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Edit Details</span>
+            <span className="sm:hidden">Edit</span>
           </Button>
         </div>
       </div>
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-3 sm:space-y-4 md:space-y-6">
         <TabsList className="glass">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="devotees">Devotees</TabsTrigger>
-          <TabsTrigger value="updates">Updates</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="overview" className="text-xs sm:text-sm">Overview</TabsTrigger>
+          <TabsTrigger value="devotees" className="text-xs sm:text-sm">Devotees</TabsTrigger>
+          <TabsTrigger value="updates" className="text-xs sm:text-sm">Updates</TabsTrigger>
+          <TabsTrigger value="analytics" className="text-xs sm:text-sm">Analytics</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="space-y-6">
+        <TabsContent value="overview" className="space-y-3 sm:space-y-4 md:space-y-6">
           {/* Quick Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 md:gap-6">
             <Card className="glass-card card-hover-effect glow-effect">
-              <CardContent className="p-6">
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center">
-                    <Users className="h-6 w-6 text-white float-animation" />
+              <CardContent className="p-2 sm:p-3 md:p-6">
+                <div className="flex items-center space-x-1.5 sm:space-x-3">
+                  <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <Users className="h-4 w-4 sm:h-6 sm:w-6 text-white float-animation" />
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Total Devotees</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <div className="min-w-0">
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Total Devotees</p>
+                    <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                       {devotees?.total || 0}
                     </p>
                   </div>
@@ -349,14 +351,14 @@ export default function NamahattaDetail() {
 
 
             <Card className="glass-card card-hover-effect">
-              <CardContent className="p-6">
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center">
-                    <Home className="h-6 w-6 text-white float-animation" />
+              <CardContent className="p-2 sm:p-3 md:p-6">
+                <div className="flex items-center space-x-1.5 sm:space-x-3">
+                  <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <Home className="h-4 w-4 sm:h-6 sm:w-6 text-white float-animation" />
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Meeting Schedule</p>
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                  <div className="min-w-0">
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Meeting Schedule</p>
+                    <p className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white truncate">
                       {namahatta.meetingDay ? `${namahatta.meetingDay} ${namahatta.meetingTime || ''}` : "Not scheduled"}
                     </p>
                   </div>
@@ -368,15 +370,15 @@ export default function NamahattaDetail() {
           {/* Leadership Roles */}
           <Card className="glass-card">
             <CardHeader className="pb-2">
-              <CardTitle className="flex items-center text-base">
-                <div className="w-6 h-6 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg flex items-center justify-center mr-2">
-                  <Crown className="h-3 w-3 text-white" />
+              <CardTitle className="flex items-center text-xs sm:text-sm md:text-base">
+                <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg flex items-center justify-center mr-2 flex-shrink-0">
+                  <Crown className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-white" />
                 </div>
                 Leadership Roles
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-2">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2">
                 {(namahatta as any).malaSenapotiName && (
                   <div className="p-2 bg-gradient-to-br from-purple-50 to-indigo-100 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
                     <div className="flex items-center mb-1">
@@ -457,15 +459,15 @@ export default function NamahattaDetail() {
           {namahatta.address && (
             <Card className="glass-card">
               <CardHeader className="pb-2">
-                <CardTitle className="flex items-center text-base">
-                  <div className="w-6 h-6 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center mr-2">
-                    <MapPin className="h-3 w-3 text-white" />
+                <CardTitle className="flex items-center text-xs sm:text-sm md:text-base">
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center mr-2 flex-shrink-0">
+                    <MapPin className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-white" />
                   </div>
                   Address Information
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-2">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1.5 sm:gap-2">
                   {namahatta.address.country && (
                     <div className="p-2 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                       <div className="flex items-center mb-1">
