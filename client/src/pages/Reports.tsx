@@ -197,6 +197,7 @@ export default function Reports() {
                   onToggleDistrict={toggleDistrict}
                   openSubDistricts={openSubDistricts}
                   onToggleSubDistrict={toggleSubDistrict}
+                  onSelectArea={setSelectedArea}
                 />
               );
             })}
@@ -217,18 +218,18 @@ export default function Reports() {
 }
 
 function NamahattasModal({ selectedArea, onClose }: { selectedArea: SelectedArea | null; onClose: () => void }) {
-  const { data: namahattas, isLoading } = useQuery({
+  const { data: namahattas = [], isLoading } = useQuery<any[]>({
     queryKey: ['/api/namahattas', selectedArea?.state, selectedArea?.district, selectedArea?.subDistrict],
     enabled: !!selectedArea,
   });
 
-  const filteredNamahattas = namahattas?.filter((n: any) => {
+  const filteredNamahattas = namahattas.filter((n: any) => {
     if (selectedArea?.type === 'state') return n.address?.stateCode === selectedArea.state;
     if (selectedArea?.type === 'district') return n.address?.district === selectedArea.district;
     if (selectedArea?.type === 'sub-district') return n.address?.subDistrict === selectedArea.subDistrict;
     if (selectedArea?.type === 'village') return n.address?.village === selectedArea.name;
     return false;
-  }) || [];
+  });
 
   if (!selectedArea) return null;
 
@@ -272,7 +273,8 @@ function StateCard({
   openDistricts, 
   onToggleDistrict,
   openSubDistricts,
-  onToggleSubDistrict 
+  onToggleSubDistrict,
+  onSelectArea
 }: {
   state: StateData;
   isOpen: boolean;
@@ -281,6 +283,7 @@ function StateCard({
   onToggleDistrict: (key: string) => void;
   openSubDistricts: Set<string>;
   onToggleSubDistrict: (key: string) => void;
+  onSelectArea: (area: SelectedArea) => void;
 }) {
   // Only fetch districts when state is opened
   const { data: districtsData, isLoading: districtsLoading } = useQuery<DistrictData[]>({
@@ -305,7 +308,7 @@ function StateCard({
               <span className="text-slate-600 dark:text-purple-300 text-base">({state.country})</span>
             </div>
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1 text-green-600 dark:text-green-400 cursor-pointer hover:text-green-700 dark:hover:text-green-300" onClick={() => setSelectedArea({ name: state.name, state: state.name, type: 'state' })} data-testid="button-state-namahattas">
+              <div className="flex items-center gap-1 text-green-600 dark:text-green-400 cursor-pointer hover:text-green-700 dark:hover:text-green-300" onClick={() => onSelectArea({ name: state.name, state: state.name, type: 'state' })} data-testid="button-state-namahattas">
                 <Building2 className="h-3 w-3" />
                 <span className="text-base font-medium">{state.namahattaCount}</span>
               </div>
@@ -336,6 +339,7 @@ function StateCard({
                     onToggle={() => onToggleDistrict(`${district.name}_${district.state}`)}
                     openSubDistricts={openSubDistricts}
                     onToggleSubDistrict={onToggleSubDistrict}
+                    onSelectArea={onSelectArea}
                   />
                 ))}
               </div>
@@ -353,13 +357,15 @@ function DistrictCard({
   isOpen, 
   onToggle,
   openSubDistricts,
-  onToggleSubDistrict 
+  onToggleSubDistrict,
+  onSelectArea
 }: {
   district: DistrictData;
   isOpen: boolean;
   onToggle: () => void;
   openSubDistricts: Set<string>;
   onToggleSubDistrict: (key: string) => void;
+  onSelectArea: (area: SelectedArea) => void;
 }) {
   // Only fetch sub-districts when district is opened
   const { data: subDistrictsData, isLoading: subDistrictsLoading } = useQuery<SubDistrictData[]>({
@@ -383,7 +389,7 @@ function DistrictCard({
               <span className="text-slate-800 dark:text-white text-base font-medium">{district.name}</span>
             </div>
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1 text-green-600 dark:text-green-400 cursor-pointer hover:text-green-700 dark:hover:text-green-300" onClick={() => setSelectedArea({ name: district.name, state: district.state, district: district.name, type: 'district' })} data-testid="button-district-namahattas">
+              <div className="flex items-center gap-1 text-green-600 dark:text-green-400 cursor-pointer hover:text-green-700 dark:hover:text-green-300" onClick={() => onSelectArea({ name: district.name, state: district.state, district: district.name, type: 'district' })} data-testid="button-district-namahattas">
                 <Building2 className="h-3 w-3" />
                 <span className="text-sm">{district.namahattaCount}</span>
               </div>
@@ -413,6 +419,7 @@ function DistrictCard({
                     isOpen={openSubDistricts.has(`${subDistrict.name}_${subDistrict.district}`)}
                     onToggle={() => onToggleSubDistrict(`${subDistrict.name}_${subDistrict.district}`)}
                     districtState={district.state}
+                    onSelectArea={onSelectArea}
                   />
                 ))}
               </div>
@@ -429,12 +436,14 @@ function SubDistrictCard({
   subDistrict, 
   isOpen, 
   onToggle,
-  districtState 
+  districtState,
+  onSelectArea
 }: {
   subDistrict: SubDistrictData;
   isOpen: boolean;
   onToggle: () => void;
   districtState: string;
+  onSelectArea: (area: SelectedArea) => void;
 }) {
   // Only fetch villages when sub-district is opened
   const { data: villagesData, isLoading: villagesLoading } = useQuery<VillageData[]>({
@@ -458,7 +467,7 @@ function SubDistrictCard({
               <span className="text-slate-800 dark:text-white text-base">{subDistrict.name}</span>
             </div>
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1 text-green-600 dark:text-green-400 cursor-pointer hover:text-green-700 dark:hover:text-green-300" onClick={() => setSelectedArea({ name: subDistrict.name, state: districtState, district: subDistrict.district, subDistrict: subDistrict.name, type: 'sub-district' })} data-testid="button-subdistrict-namahattas">
+              <div className="flex items-center gap-1 text-green-600 dark:text-green-400 cursor-pointer hover:text-green-700 dark:hover:text-green-300" onClick={() => onSelectArea({ name: subDistrict.name, state: districtState, district: subDistrict.district, subDistrict: subDistrict.name, type: 'sub-district' })} data-testid="button-subdistrict-namahattas">
                 <Home className="h-3 w-3" />
                 <span className="text-sm">{subDistrict.namahattaCount}</span>
               </div>
@@ -491,7 +500,7 @@ function SubDistrictCard({
                       <span className="text-slate-700 dark:text-white text-sm font-medium truncate" title={village.name}>{village.name}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1 text-green-600 dark:text-green-400 cursor-pointer hover:text-green-700 dark:hover:text-green-300" onClick={() => setSelectedArea({ name: village.name, state: districtState, district: village.subDistrict, subDistrict: village.subDistrict, type: 'village' })} data-testid="button-village-namahattas">
+                      <div className="flex items-center gap-1 text-green-600 dark:text-green-400 cursor-pointer hover:text-green-700 dark:hover:text-green-300" onClick={() => onSelectArea({ name: village.name, state: districtState, district: village.subDistrict, subDistrict: village.subDistrict, type: 'village' })} data-testid="button-village-namahattas">
                         <Building2 className="h-2 w-2" />
                         <span className="text-sm">{village.namahattaCount}</span>
                       </div>
