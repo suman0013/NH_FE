@@ -111,13 +111,18 @@ export default function Sidebar({ onClose }: SidebarProps) {
             <Link key={item.href} href={item.href}>
               <div
                 className={cn(
-                  "nav-item group cursor-pointer",
-                  isActive ? "nav-item-active" : "nav-item-inactive"
+                  "flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-300 relative whitespace-nowrap group overflow-hidden",
+                  isActive
+                    ? "bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-700/50 shadow-lg scale-105"
+                    : "text-gray-600 dark:text-gray-300 hover:bg-gradient-to-r hover:from-white/60 hover:to-white/40 dark:hover:from-slate-800/60 dark:hover:to-slate-700/40 hover:text-gray-900 dark:hover:text-white hover:scale-105 hover:shadow-md"
                 )}
                 onClick={onClose}
               >
-                <Icon className="mr-3 h-5 w-5" />
-                {item.label}
+                {/* Background shimmer effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                
+                <Icon className="mr-3 h-5 w-5 flex-shrink-0 relative z-10" />
+                <span className="relative z-10">{item.label}</span>
               </div>
             </Link>
           );
@@ -140,13 +145,18 @@ export default function Sidebar({ onClose }: SidebarProps) {
                 <Link key={item.href} href={item.href}>
                   <div
                     className={cn(
-                      "nav-item group cursor-pointer",
-                      isActive ? "nav-item-active" : "nav-item-inactive"
+                      "flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-300 relative whitespace-nowrap group overflow-hidden",
+                      isActive
+                        ? "bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-700/50 shadow-lg scale-105"
+                        : "text-gray-600 dark:text-gray-300 hover:bg-gradient-to-r hover:from-white/60 hover:to-white/40 dark:hover:from-slate-800/60 dark:hover:to-slate-700/40 hover:text-gray-900 dark:hover:text-white hover:scale-105 hover:shadow-md"
                     )}
                     onClick={onClose}
                   >
-                    <Icon className="mr-3 h-5 w-5" />
-                    {item.label}
+                    {/* Background shimmer effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                    
+                    <Icon className="mr-3 h-5 w-5 flex-shrink-0 relative z-10" />
+                    <span className="relative z-10">{item.label}</span>
                   </div>
                 </Link>
               );
