@@ -752,6 +752,7 @@ export class DatabaseStorage implements IStorage {
     const namhattaData = result[0];
     
     // Fetch full devotee objects for leadership roles
+    // Filter out null, undefined, and 0 values
     const devoteeIds = [
       namhattaData.malaSenapotiId,
       namhattaData.mahaChakraSenapotiId,
@@ -760,7 +761,7 @@ export class DatabaseStorage implements IStorage {
       namhattaData.secretaryId,
       namhattaData.presidentId,
       namhattaData.accountantId
-    ].filter(id => id !== null);
+    ].filter((id): id is number => id !== null && id !== undefined && id > 0);
     
     const devoteeObjects = devoteeIds.length > 0 ? await db
       .select()
@@ -768,8 +769,12 @@ export class DatabaseStorage implements IStorage {
       .where(inArray(devotees.id, devoteeIds))
     : [];
     
-    // Create a map for quick lookup
-    const devoteeMap = new Map(devoteeObjects.map(d => [d.id, d]));
+    // Create a map for quick lookup - use Number() to ensure consistent key types
+    // Database may return IDs as strings, but namhatta FK IDs are numbers
+    const devoteeMap = new Map(devoteeObjects.map(d => [Number(d.id), d]));
+    
+    // Helper function to safely get devotee from map (handles type coercion)
+    const getDevotee = (id: number | string | null) => id ? devoteeMap.get(Number(id)) : null;
     
     // Fetch address information from normalized tables
     const addressResults = await db.select({
@@ -800,26 +805,26 @@ export class DatabaseStorage implements IStorage {
       meetingTime: namhattaData.meetingTime,
       // Include FK IDs, full devotee objects, and name fields for backward compatibility
       malaSenapotiId: namhattaData.malaSenapotiId,
-      malaSenapoti: namhattaData.malaSenapotiId ? devoteeMap.get(namhattaData.malaSenapotiId) || null : null,
-      malaSenapotiName: namhattaData.malaSenapotiId ? getDisplayName(devoteeMap.get(namhattaData.malaSenapotiId)) : null,
+      malaSenapoti: getDevotee(namhattaData.malaSenapotiId) || null,
+      malaSenapotiName: getDisplayName(getDevotee(namhattaData.malaSenapotiId)),
       mahaChakraSenapotiId: namhattaData.mahaChakraSenapotiId,
-      mahaChakraSenapoti: namhattaData.mahaChakraSenapotiId ? devoteeMap.get(namhattaData.mahaChakraSenapotiId) || null : null,
-      mahaChakraSenapotiName: namhattaData.mahaChakraSenapotiId ? getDisplayName(devoteeMap.get(namhattaData.mahaChakraSenapotiId)) : null,
+      mahaChakraSenapoti: getDevotee(namhattaData.mahaChakraSenapotiId) || null,
+      mahaChakraSenapotiName: getDisplayName(getDevotee(namhattaData.mahaChakraSenapotiId)),
       chakraSenapotiId: namhattaData.chakraSenapotiId,
-      chakraSenapoti: namhattaData.chakraSenapotiId ? devoteeMap.get(namhattaData.chakraSenapotiId) || null : null,
-      chakraSenapotiName: namhattaData.chakraSenapotiId ? getDisplayName(devoteeMap.get(namhattaData.chakraSenapotiId)) : null,
+      chakraSenapoti: getDevotee(namhattaData.chakraSenapotiId) || null,
+      chakraSenapotiName: getDisplayName(getDevotee(namhattaData.chakraSenapotiId)),
       upaChakraSenapotiId: namhattaData.upaChakraSenapotiId,
-      upaChakraSenapoti: namhattaData.upaChakraSenapotiId ? devoteeMap.get(namhattaData.upaChakraSenapotiId) || null : null,
-      upaChakraSenapotiName: namhattaData.upaChakraSenapotiId ? getDisplayName(devoteeMap.get(namhattaData.upaChakraSenapotiId)) : null,
+      upaChakraSenapoti: getDevotee(namhattaData.upaChakraSenapotiId) || null,
+      upaChakraSenapotiName: getDisplayName(getDevotee(namhattaData.upaChakraSenapotiId)),
       secretaryId: namhattaData.secretaryId,
-      secretary: namhattaData.secretaryId ? devoteeMap.get(namhattaData.secretaryId) || null : null,
-      secretaryName: namhattaData.secretaryId ? getDisplayName(devoteeMap.get(namhattaData.secretaryId)) : null,
+      secretary: getDevotee(namhattaData.secretaryId) || null,
+      secretaryName: getDisplayName(getDevotee(namhattaData.secretaryId)),
       presidentId: namhattaData.presidentId,
-      president: namhattaData.presidentId ? devoteeMap.get(namhattaData.presidentId) || null : null,
-      presidentName: namhattaData.presidentId ? getDisplayName(devoteeMap.get(namhattaData.presidentId)) : null,
+      president: getDevotee(namhattaData.presidentId) || null,
+      presidentName: getDisplayName(getDevotee(namhattaData.presidentId)),
       accountantId: namhattaData.accountantId,
-      accountant: namhattaData.accountantId ? devoteeMap.get(namhattaData.accountantId) || null : null,
-      accountantName: namhattaData.accountantId ? getDisplayName(devoteeMap.get(namhattaData.accountantId)) : null,
+      accountant: getDevotee(namhattaData.accountantId) || null,
+      accountantName: getDisplayName(getDevotee(namhattaData.accountantId)),
       districtSupervisorId: namhattaData.districtSupervisorId,
       status: namhattaData.status,
       registrationNo: namhattaData.registrationNo,
