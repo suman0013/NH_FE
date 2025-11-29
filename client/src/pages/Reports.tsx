@@ -8,17 +8,29 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronDown, ChevronRight, MapPin, Users, Home, BarChart3, RefreshCw, Loader2, TrendingUp, Building2, Globe } from "lucide-react";
 
 // Helper function to get card background color based on counts
+// Standardized coloring:
+// - Lightest red: No namhatta AND no devotee
+// - Lightest blue: Has namhatta but no devotee
+// - Lightest yellow: Has devotee but no namhatta
+// - Lightest green: Has both namhatta and devotee
 function getCardBackground(namhattaCount: number, devoteeCount: number): string {
-  if (namhattaCount === 0 && devoteeCount === 0) {
-    return "bg-gray-100 dark:bg-gray-800/30 border-gray-200 dark:border-gray-700"; // No activity
+  const hasNamhatta = namhattaCount > 0;
+  const hasDevotee = devoteeCount > 0;
+
+  if (!hasNamhatta && !hasDevotee) {
+    // Lightest red - No namhatta AND no devotee
+    return "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800";
   }
-  if (namhattaCount === 0) {
-    return "bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800"; // No namhattas
+  if (hasNamhatta && !hasDevotee) {
+    // Lightest blue - Has namhatta but no devotee
+    return "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800";
   }
-  if (devoteeCount === 0) {
-    return "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"; // No devotees
+  if (!hasNamhatta && hasDevotee) {
+    // Lightest yellow - Has devotee but no namhatta
+    return "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800";
   }
-  return "bg-white/70 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700"; // Has both
+  // Lightest green - Has both namhatta and devotee
+  return "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800";
 }
 import { useAuth } from "@/contexts/AuthContext";
 import { queryClient } from "@/lib/queryClient";
