@@ -2605,12 +2605,15 @@ export class DatabaseStorage implements IStorage {
 
   async getSenapotisByTypeAndReporting(type: string, reportingId: number): Promise<Array<Devotee & { reportingToName?: string }>> {
     try {
-      // Get all devotees who are available for assignment to senapoti roles
-      // This includes both devotees with no current leadership role and those with existing roles
-      // (since roles can be changed during namhatta assignment)
+      // Get devotees with the specific leadership role who report to the specified devotee
+      // This filters the hierarchy properly: e.g., get all MALA_SENAPOTI who report to a specific District Supervisor
       const devoteeResults = await db
         .select({ id: devotees.id })
         .from(devotees)
+        .where(and(
+          eq(devotees.leadershipRole, type),
+          eq(devotees.reportingToDevoteeId, reportingId)
+        ))
         .orderBy(asc(devotees.legalName));
 
       const devoteeData = await Promise.all(
