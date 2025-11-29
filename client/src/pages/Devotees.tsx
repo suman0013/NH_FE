@@ -98,18 +98,18 @@ export default function Devotees() {
   }
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-1 sm:space-y-2">
       {/* Page Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Devotees Management</h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Devotees Management</h1>
+        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">
           Manage devotee profiles and spiritual progress
         </p>
       </div>
 
       {/* Search and Filters */}
       <Card className="glass-card relative z-40">
-        <CardContent className="p-2 space-y-1">
+        <CardContent className="p-1.5 sm:p-2 space-y-1">
           {/* Search Bar */}
           <SearchInput
             value={searchTerm}
@@ -122,7 +122,7 @@ export default function Devotees() {
           />
 
           {/* Filters */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 relative">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1.5 sm:gap-2 relative">
             <SearchableSelect
               value={filters.country || "All Countries"}
               onValueChange={(value) => handleFilterChange("country", value === "All Countries" ? "" : value)}
@@ -189,12 +189,12 @@ export default function Devotees() {
 
       {/* Sorting Controls */}
       <Card className="glass-card">
-        <CardContent className="p-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Sort by:</span>
+        <CardContent className="p-2 sm:p-3">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-0 sm:justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-3">
+              <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">Sort by:</span>
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-32 glass border-0">
+                <SelectTrigger className="w-full sm:w-32 text-xs sm:text-sm glass border-0">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -207,16 +207,16 @@ export default function Devotees() {
                 variant="outline"
                 size="sm"
                 onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
-                className="glass border-0"
+                className="glass border-0 text-xs sm:text-sm"
               >
-                {sortOrder === "asc" ? "↑ Ascending" : "↓ Descending"}
+                {sortOrder === "asc" ? "↑ Asc" : "↓ Desc"}
               </Button>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="text-sm text-gray-600 dark:text-gray-400">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-3">
+              <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                 {devotees?.total || 0} devotees found
               </div>
-              <div className="flex items-center gap-1 border border-gray-200 dark:border-gray-700 rounded-lg p-1">
+              <div className="flex items-center gap-0.5 sm:gap-1 border border-gray-200 dark:border-gray-700 rounded-lg p-0.5 sm:p-1">
                 <Button
                   variant={viewMode === 'grid' ? 'default' : 'ghost'}
                   size="sm"
@@ -224,10 +224,10 @@ export default function Devotees() {
                     setViewMode('grid');
                     sessionStorage.setItem('devotees-view-mode', 'grid');
                   }}
-                  className="h-8 px-3"
+                  className="h-7 sm:h-8 px-2 sm:px-3"
                   data-testid="button-grid-view"
                 >
-                  <Grid3X3 className="h-4 w-4" />
+                  <Grid3X3 className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>
                 <Button
                   variant={viewMode === 'list' ? 'default' : 'ghost'}
@@ -236,10 +236,10 @@ export default function Devotees() {
                     setViewMode('list');
                     sessionStorage.setItem('devotees-view-mode', 'list');
                   }}
-                  className="h-8 px-3"
+                  className="h-7 sm:h-8 px-2 sm:px-3"
                   data-testid="button-list-view"
                 >
-                  <List className="h-4 w-4" />
+                  <List className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>
               </div>
             </div>
@@ -249,8 +249,8 @@ export default function Devotees() {
 
       {/* Devotees Grid/List */}
       <div className={viewMode === 'grid' 
-        ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 relative z-10"
-        : "grid grid-cols-1 md:grid-cols-2 gap-3 relative z-10"
+        ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4 relative z-10"
+        : "grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3 relative z-10"
       }>
         {devotees?.data?.map((devotee: any) => (
           <DevoteeCard 

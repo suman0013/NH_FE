@@ -108,22 +108,22 @@ export default function Namahattas() {
   }
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-1 sm:space-y-2">
       {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-1 md:space-y-0">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Namahattas Management</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">Manage and monitor all Namahatta centers</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Namahattas Management</h1>
+          <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">Manage and monitor all Namahatta centers</p>
         </div>
-        <Button className="gradient-button" onClick={() => setShowForm(true)}>
-          <Plus className="mr-2 h-4 w-4" />
+        <Button className="gradient-button text-xs sm:text-sm" onClick={() => setShowForm(true)}>
+          <Plus className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
           Create New Namahatta
         </Button>
       </div>
 
       {/* Search and Filters Section */}
       <Card className="glass-card relative z-50">
-        <CardContent className="p-2 space-y-1">
+        <CardContent className="p-1.5 sm:p-2 space-y-1">
           {/* Search Bar */}
           <SearchInput
             value={searchTerm}
@@ -136,7 +136,7 @@ export default function Namahattas() {
           />
 
           {/* Filters */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-1.5 sm:gap-3 lg:gap-4">
             <SearchableSelect
               value={filters.country || "All Countries"}
               onValueChange={(value) => handleFilterChange("country", value === "All Countries" ? "" : value)}
@@ -219,13 +219,13 @@ export default function Namahattas() {
 
       {/* Sorting Controls */}
       <Card className="glass-card">
-        <CardContent className="p-3">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="text-sm text-gray-600 dark:text-gray-400">
+        <CardContent className="p-2 sm:p-3">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1.5 sm:gap-4">
+              <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                 {namahattas?.total ? `Showing ${namahattas.total} namahattas` : 'No namahattas found'}
               </div>
-              <div className="flex items-center gap-1 border border-gray-200 dark:border-gray-700 rounded-lg p-1">
+              <div className="flex items-center gap-0.5 sm:gap-1 border border-gray-200 dark:border-gray-700 rounded-lg p-0.5 sm:p-1">
                 <Button
                   variant={viewMode === 'grid' ? 'default' : 'ghost'}
                   size="sm"
@@ -233,10 +233,10 @@ export default function Namahattas() {
                     setViewMode('grid');
                     sessionStorage.setItem('namahattas-view-mode', 'grid');
                   }}
-                  className="h-8 px-3"
+                  className="h-7 sm:h-8 px-2 sm:px-3"
                   data-testid="button-grid-view"
                 >
-                  <Grid3X3 className="h-4 w-4" />
+                  <Grid3X3 className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>
                 <Button
                   variant={viewMode === 'list' ? 'default' : 'ghost'}
@@ -245,20 +245,20 @@ export default function Namahattas() {
                     setViewMode('list');
                     sessionStorage.setItem('namahattas-view-mode', 'list');
                   }}
-                  className="h-8 px-3"
+                  className="h-7 sm:h-8 px-2 sm:px-3"
                   data-testid="button-list-view"
                 >
-                  <List className="h-4 w-4" />
+                  <List className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Sort by:</span>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-3">
+              <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">Sort by:</span>
               <Select value={sortBy} onValueChange={(value) => {
                 setSortBy(value);
                 setPage(1);
               }}>
-                <SelectTrigger className="w-40 glass border-0">
+                <SelectTrigger className="w-full sm:w-40 text-xs sm:text-sm glass border-0">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -274,7 +274,7 @@ export default function Namahattas() {
                   setSortOrder(sortOrder === "asc" ? "desc" : "asc");
                   setPage(1);
                 }}
-                className="glass border-0 px-3"
+                className="glass border-0 px-2 sm:px-3"
               >
                 {sortOrder === "asc" ? "↑" : "↓"}
               </Button>
@@ -285,8 +285,8 @@ export default function Namahattas() {
 
       {/* Namahattas Grid/List */}
       <div className={viewMode === 'grid' 
-        ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 relative z-10"
-        : "grid grid-cols-1 md:grid-cols-2 gap-3 relative z-10"
+        ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4 relative z-10"
+        : "grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3 relative z-10"
       }>
         {namahattas?.data?.map((namahatta) => (
           <NamahattaCard key={namahatta.id} namahatta={namahatta} viewMode={viewMode} />
