@@ -18,7 +18,6 @@ interface District {
   state: string;
   country: string;
   namahattaCount: number;
-  devoteeCount: number;
 }
 
 interface ExportModalProps {
@@ -26,14 +25,13 @@ interface ExportModalProps {
   onClose: () => void;
 }
 
-type ExportFormat = "csv" | "excel" | "pdf";
+type ExportFormat = "excel" | "pdf";
 
 export function ExportModal({ open, onClose }: ExportModalProps) {
   const { toast } = useToast();
   const [selectedDistricts, setSelectedDistricts] = useState<Set<string>>(new Set());
   const [exportFormat, setExportFormat] = useState<ExportFormat>("excel");
   const [includeNamahattas, setIncludeNamahattas] = useState(true);
-  const [includeDevotees, setIncludeDevotees] = useState(true);
 
   const { data: districts = [], isLoading: districtsLoading } = useQuery<District[]>({
     queryKey: ["/api/reports/export/districts"],
@@ -64,8 +62,7 @@ export function ExportModal({ open, onClose }: ExportModalProps) {
 
       const response = await apiRequest("POST", "/api/reports/export/data", {
         districts: selectedDistrictsList,
-        includeNamahattas,
-        includeDevotees
+        includeNamahattas
       });
 
       return response.json();
@@ -110,7 +107,7 @@ export function ExportModal({ open, onClose }: ExportModalProps) {
     const timestamp = new Date().toISOString().split("T")[0];
     const filename = `namahatta-report-${timestamp}`;
 
-    if (format === "csv" || format === "excel") {
+    if (format === "excel") {
       const workbook = XLSX.utils.book_new();
 
       if (data.districts && data.districts.length > 0) {
@@ -120,16 +117,14 @@ export function ExportModal({ open, onClose }: ExportModalProps) {
               District: d.name,
               State: d.state,
               "Sub-District": sd.name,
-              "Namahatta Count": sd.namahattaCount,
-              "Devotee Count": sd.devoteeCount
+              "Namahatta Count": sd.namahattaCount
             }));
           }
           return [{
             District: d.name,
             State: d.state,
             "Sub-District": "-",
-            "Namahatta Count": d.namahattaCount,
-            "Devotee Count": d.devoteeCount
+            "Namahatta Count": d.namahattaCount
           }];
         });
         const districtSheet = XLSX.utils.json_to_sheet(districtRows);
@@ -159,30 +154,7 @@ export function ExportModal({ open, onClose }: ExportModalProps) {
         XLSX.utils.book_append_sheet(workbook, namahattaSheet, "Namahattas");
       }
 
-      if (includeDevotees && data.devotees && data.devotees.length > 0) {
-        const devoteeRows = data.devotees.map((d: any) => ({
-          Name: d.name,
-          Phone: d.phone,
-          Email: d.email,
-          District: d.district,
-          State: d.state,
-          "Sub-District": d.subDistrict,
-          Village: d.village,
-          Namahatta: d.namahatta,
-          "Initiation Name": d.initiationName,
-          "Leadership Role": d.leadershipRole,
-          Status: d.status
-        }));
-        const devoteeSheet = XLSX.utils.json_to_sheet(devoteeRows);
-        XLSX.utils.book_append_sheet(workbook, devoteeSheet, "Devotees");
-      }
-
-      if (format === "csv") {
-        const csvContent = XLSX.utils.sheet_to_csv(workbook.Sheets["Districts"] || workbook.Sheets[workbook.SheetNames[0]]);
-        downloadFile(csvContent, `${filename}.csv`, "text/csv");
-      } else {
-        XLSX.writeFile(workbook, `${filename}.xlsx`);
-      }
+      XLSX.writeFile(workbook, `${filename}.xlsx`);
     } else if (format === "pdf") {
       const doc = new jsPDF();
       let yPosition = 20;
@@ -245,52 +217,10 @@ export function ExportModal({ open, onClose }: ExportModalProps) {
           headStyles: { fillColor: [102, 51, 153] },
           styles: { fontSize: 8 },
         });
-
-        yPosition = (doc as any).lastAutoTable.finalY + 15;
-      }
-
-      if (includeDevotees && data.devotees && data.devotees.length > 0) {
-        if (yPosition > 250) {
-          doc.addPage();
-          yPosition = 20;
-        }
-
-        doc.setFontSize(14);
-        doc.text("Devotees", 14, yPosition);
-        yPosition += 5;
-
-        const devoteeTableData = data.devotees.map((d: any) => [
-          d.name,
-          d.phone,
-          d.district,
-          d.namahatta,
-          d.leadershipRole || "-"
-        ]);
-
-        autoTable(doc, {
-          startY: yPosition,
-          head: [["Name", "Phone", "District", "Namahatta", "Role"]],
-          body: devoteeTableData,
-          theme: "striped",
-          headStyles: { fillColor: [102, 51, 153] },
-          styles: { fontSize: 8 },
-        });
       }
 
       doc.save(`${filename}.pdf`);
     }
-  };
-
-  const downloadFile = (content: string, filename: string, type: string) => {
-    const blob = new Blob([content], { type });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
   };
 
   const groupedDistricts = districts.reduce((acc: Record<string, District[]>, district) => {
@@ -327,15 +257,6 @@ export function ExportModal({ open, onClose }: ExportModalProps) {
                 Excel
               </Button>
               <Button
-                variant={exportFormat === "csv" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setExportFormat("csv")}
-                data-testid="button-format-csv"
-              >
-                <FileText className="h-4 w-4 mr-1" />
-                CSV
-              </Button>
-              <Button
                 variant={exportFormat === "pdf" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setExportFormat("pdf")}
@@ -347,25 +268,14 @@ export function ExportModal({ open, onClose }: ExportModalProps) {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="include-namahattas"
-                checked={includeNamahattas}
-                onCheckedChange={(checked) => setIncludeNamahattas(checked === true)}
-                data-testid="checkbox-include-namahattas"
-              />
-              <Label htmlFor="include-namahattas" className="text-sm">Include Namahattas</Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="include-devotees"
-                checked={includeDevotees}
-                onCheckedChange={(checked) => setIncludeDevotees(checked === true)}
-                data-testid="checkbox-include-devotees"
-              />
-              <Label htmlFor="include-devotees" className="text-sm">Include Devotees</Label>
-            </div>
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="include-namahattas"
+              checked={includeNamahattas}
+              onCheckedChange={(checked) => setIncludeNamahattas(checked === true)}
+              data-testid="checkbox-include-namahattas"
+            />
+            <Label htmlFor="include-namahattas" className="text-sm">Include Namahattas</Label>
           </div>
 
           <div className="flex-1 min-h-0">
@@ -416,14 +326,9 @@ export function ExportModal({ open, onClose }: ExportModalProps) {
                               />
                               <span className="text-sm">{district.name}</span>
                             </div>
-                            <div className="flex gap-2">
-                              <Badge variant="secondary" className="text-xs">
-                                {district.namahattaCount} centers
-                              </Badge>
-                              <Badge variant="outline" className="text-xs">
-                                {district.devoteeCount} devotees
-                              </Badge>
-                            </div>
+                            <Badge variant="secondary" className="text-xs">
+                              {district.namahattaCount} centers
+                            </Badge>
                           </div>
                         );
                       })}
