@@ -223,7 +223,9 @@ function NamahattasModal({ selectedArea, onClose }: { selectedArea: SelectedArea
     enabled: !!selectedArea,
   });
 
-  const filteredNamahattas = namahattas.filter((n: any) => {
+  const namehattas_array = Array.isArray(namahattas) ? namahattas : [];
+  
+  const filteredNamahattas = namehattas_array.filter((n: any) => {
     if (selectedArea?.type === 'state') return n.address?.stateCode === selectedArea.state;
     if (selectedArea?.type === 'district') return n.address?.district === selectedArea.district;
     if (selectedArea?.type === 'sub-district') return n.address?.subDistrict === selectedArea.subDistrict;
