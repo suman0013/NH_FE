@@ -218,20 +218,38 @@ export default function Reports() {
 }
 
 function NamahattasModal({ selectedArea, onClose }: { selectedArea: SelectedArea | null; onClose: () => void }) {
-  const { data: namahattas = [], isLoading } = useQuery<any[]>({
-    queryKey: ['/api/namahattas', selectedArea?.state, selectedArea?.district, selectedArea?.subDistrict],
+  const buildQueryUrl = () => {
+    if (!selectedArea) return '';
+    
+    const params = new URLSearchParams();
+    params.append('page', '1');
+    params.append('size', '1000');
+    
+    if (selectedArea.type === 'state' && selectedArea.state) {
+      params.append('state', selectedArea.state);
+    } else if (selectedArea.type === 'district' && selectedArea.district) {
+      params.append('district', selectedArea.district);
+    } else if (selectedArea.type === 'sub-district' && selectedArea.subDistrict) {
+      params.append('subDistrict', selectedArea.subDistrict);
+    } else if (selectedArea.type === 'village' && selectedArea.name) {
+      params.append('village', selectedArea.name);
+    }
+    
+    return `/api/namahattas?${params.toString()}`;
+  };
+
+  const { data: queryResponse = { data: [] }, isLoading } = useQuery<{ data: any[] }>({
+    queryKey: ['/api/namahattas', selectedArea?.type, selectedArea?.state, selectedArea?.district, selectedArea?.subDistrict, selectedArea?.name],
+    queryFn: async () => {
+      const url = buildQueryUrl();
+      const res = await fetch(url, { credentials: 'include' });
+      if (!res.ok) throw new Error('Failed to fetch namahattas');
+      return res.json();
+    },
     enabled: !!selectedArea,
   });
 
-  const namehattas_array = Array.isArray(namahattas) ? namahattas : [];
-  
-  const filteredNamahattas = namehattas_array.filter((n: any) => {
-    if (selectedArea?.type === 'state') return n.address?.stateCode === selectedArea.state;
-    if (selectedArea?.type === 'district') return n.address?.district === selectedArea.district;
-    if (selectedArea?.type === 'sub-district') return n.address?.subDistrict === selectedArea.subDistrict;
-    if (selectedArea?.type === 'village') return n.address?.village === selectedArea.name;
-    return false;
-  });
+  const filteredNamahattas = Array.isArray(queryResponse.data) ? queryResponse.data : [];
 
   if (!selectedArea) return null;
 
