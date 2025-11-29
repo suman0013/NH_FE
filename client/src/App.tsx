@@ -59,7 +59,7 @@ function App() {
   
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="dark" storageKey="namhatta-ui-theme">
+      <ThemeProvider defaultTheme="light" storageKey="namhatta-ui-theme">
         <AuthProvider>
           <TooltipProvider>
             <Toaster />
