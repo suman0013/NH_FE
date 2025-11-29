@@ -348,7 +348,7 @@ function StateCard({
               <span className="text-slate-600 dark:text-purple-300 text-base">({state.country})</span>
             </div>
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1 text-green-600 dark:text-green-400 cursor-pointer hover:text-green-700 dark:hover:text-green-300" onClick={() => onSelectArea({ name: state.name, state: state.name, type: 'state' })} data-testid="button-state-namahattas">
+              <div className="flex items-center gap-1 text-green-600 dark:text-green-400 cursor-pointer hover:text-green-700 dark:hover:text-green-300" onClick={(e) => { e.stopPropagation(); if (state.namahattaCount > 0) onSelectArea({ name: state.name, state: state.name, type: 'state' }); }} data-testid="button-state-namahattas">
                 <Building2 className="h-3 w-3" />
                 <span className="text-base font-medium">{state.namahattaCount}</span>
               </div>
@@ -429,7 +429,7 @@ function DistrictCard({
               <span className="text-slate-800 dark:text-white text-base font-medium">{district.name}</span>
             </div>
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1 text-green-600 dark:text-green-400 cursor-pointer hover:text-green-700 dark:hover:text-green-300" onClick={() => onSelectArea({ name: district.name, state: district.state, district: district.name, type: 'district' })} data-testid="button-district-namahattas">
+              <div className="flex items-center gap-1 text-green-600 dark:text-green-400 cursor-pointer hover:text-green-700 dark:hover:text-green-300" onClick={(e) => { e.stopPropagation(); if (district.namahattaCount > 0) onSelectArea({ name: district.name, state: district.state, district: district.name, type: 'district' }); }} data-testid="button-district-namahattas">
                 <Building2 className="h-3 w-3" />
                 <span className="text-sm">{district.namahattaCount}</span>
               </div>
@@ -507,7 +507,7 @@ function SubDistrictCard({
               <span className="text-slate-800 dark:text-white text-base">{subDistrict.name}</span>
             </div>
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1 text-green-600 dark:text-green-400 cursor-pointer hover:text-green-700 dark:hover:text-green-300" onClick={() => onSelectArea({ name: subDistrict.name, state: districtState, district: subDistrict.district, subDistrict: subDistrict.name, type: 'sub-district' })} data-testid="button-subdistrict-namahattas">
+              <div className="flex items-center gap-1 text-green-600 dark:text-green-400 cursor-pointer hover:text-green-700 dark:hover:text-green-300" onClick={(e) => { e.stopPropagation(); if (subDistrict.namahattaCount > 0) onSelectArea({ name: subDistrict.name, state: districtState, district: subDistrict.district, subDistrict: subDistrict.name, type: 'sub-district' }); }} data-testid="button-subdistrict-namahattas">
                 <Home className="h-3 w-3" />
                 <span className="text-sm">{subDistrict.namahattaCount}</span>
               </div>
@@ -540,7 +540,7 @@ function SubDistrictCard({
                       <span className="text-slate-700 dark:text-white text-sm font-medium truncate" title={village.name}>{village.name}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1 text-green-600 dark:text-green-400 cursor-pointer hover:text-green-700 dark:hover:text-green-300" onClick={() => onSelectArea({ name: village.name, state: districtState, district: village.subDistrict, subDistrict: village.subDistrict, type: 'village' })} data-testid="button-village-namahattas">
+                      <div className="flex items-center gap-1 text-green-600 dark:text-green-400 cursor-pointer hover:text-green-700 dark:hover:text-green-300" onClick={(e) => { e.stopPropagation(); if (village.namahattaCount > 0) onSelectArea({ name: village.name, state: districtState, district: village.subDistrict, subDistrict: village.subDistrict, type: 'village' }); }} data-testid="button-village-namahattas">
                         <Building2 className="h-2 w-2" />
                         <span className="text-sm">{village.namahattaCount}</span>
                       </div>
