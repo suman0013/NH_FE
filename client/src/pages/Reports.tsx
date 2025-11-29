@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ChevronDown, ChevronRight, MapPin, Users, Home, BarChart3, RefreshCw, Loader2, TrendingUp, Building2, Globe, X } from "lucide-react";
+import { useLocation } from "wouter";
 
 // Helper function to get card background color based on counts
 // Standardized coloring:
@@ -218,6 +219,8 @@ export default function Reports() {
 }
 
 function NamahattasModal({ selectedArea, onClose }: { selectedArea: SelectedArea | null; onClose: () => void }) {
+  const [, setLocation] = useLocation();
+
   const buildQueryUrl = () => {
     if (!selectedArea) return '';
     
@@ -253,6 +256,15 @@ function NamahattasModal({ selectedArea, onClose }: { selectedArea: SelectedArea
 
   if (!selectedArea) return null;
 
+  const formatAddress = (namahatta: any) => {
+    const parts = [];
+    if (namahatta.address?.village) parts.push(namahatta.address.village);
+    if (namahatta.address?.subDistrict) parts.push(namahatta.address.subDistrict);
+    if (namahatta.address?.district) parts.push(namahatta.address.district);
+    if (namahatta.address?.state) parts.push(namahatta.address.state);
+    return parts.join(', ') || 'No address available';
+  };
+
   return (
     <Dialog open={!!selectedArea} onOpenChange={onClose}>
       <DialogContent className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -273,9 +285,17 @@ function NamahattasModal({ selectedArea, onClose }: { selectedArea: SelectedArea
             </div>
           ) : (
             filteredNamahattas.map((namahatta: any) => (
-              <div key={namahatta.id} className="p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900">
-                <div className="font-semibold">{namahatta.name}</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">Code: {namahatta.code}</div>
+              <div 
+                key={namahatta.id} 
+                className="p-3 border rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition-colors"
+                onClick={() => {
+                  onClose();
+                  setLocation(`/namahattas/${namahatta.id}`);
+                }}
+                data-testid={`namahatta-item-${namahatta.id}`}
+              >
+                <div className="font-semibold text-slate-900 dark:text-white">{namahatta.name}</div>
+                <div className="text-sm text-slate-600 dark:text-slate-400">{formatAddress(namahatta)}</div>
               </div>
             ))
           )}
