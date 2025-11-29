@@ -377,52 +377,70 @@ export default function NamhattaDetail() {
             </CardHeader>
             <CardContent className="pt-2">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                {namhatta.malaSenapoti && (
+                {(namhatta as any).malaSenapotiName && (
                   <div className="p-2 bg-gradient-to-br from-purple-50 to-indigo-100 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
                     <div className="flex items-center mb-1">
                       <Crown className="h-3 w-3 text-purple-600 dark:text-purple-400 mr-1" />
                       <p className="text-xs font-medium text-purple-600 dark:text-purple-400">Mala Senapoti</p>
                     </div>
-                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{namhatta.malaSenapoti}</p>
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namhatta as any).malaSenapotiName}</p>
                   </div>
                 )}
-                {namhatta.mahaChakraSenapoti && (
+                {(namhatta as any).mahaChakraSenapotiName && (
                   <div className="p-2 bg-gradient-to-br from-blue-50 to-cyan-100 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                     <div className="flex items-center mb-1">
                       <Users className="h-3 w-3 text-blue-600 dark:text-blue-400 mr-1" />
                       <p className="text-xs font-medium text-blue-600 dark:text-blue-400">Maha Chakra Senapoti</p>
                     </div>
-                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{namhatta.mahaChakraSenapoti}</p>
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namhatta as any).mahaChakraSenapotiName}</p>
                   </div>
                 )}
-                {namhatta.chakraSenapoti && (
+                {(namhatta as any).chakraSenapotiName && (
                   <div className="p-2 bg-gradient-to-br from-emerald-50 to-green-100 dark:from-emerald-900/20 dark:to-green-900/20 rounded-lg border border-emerald-200 dark:border-emerald-800">
                     <div className="flex items-center mb-1">
                       <Activity className="h-3 w-3 text-emerald-600 dark:text-emerald-400 mr-1" />
                       <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400">Chakra Senapoti</p>
                     </div>
-                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{namhatta.chakraSenapoti}</p>
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namhatta as any).chakraSenapotiName}</p>
                   </div>
                 )}
-                {namhatta.upaChakraSenapoti && (
+                {(namhatta as any).upaChakraSenapotiName && (
                   <div className="p-2 bg-gradient-to-br from-orange-50 to-amber-100 dark:from-orange-900/20 dark:to-amber-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
                     <div className="flex items-center mb-1">
                       <TrendingUp className="h-3 w-3 text-orange-600 dark:text-orange-400 mr-1" />
                       <p className="text-xs font-medium text-orange-600 dark:text-orange-400">Upa Chakra Senapoti</p>
                     </div>
-                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{namhatta.upaChakraSenapoti}</p>
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namhatta as any).upaChakraSenapotiName}</p>
                   </div>
                 )}
-                {namhatta.secretary && (
+                {(namhatta as any).secretaryName && (
                   <div className="p-2 bg-gradient-to-br from-pink-50 to-rose-100 dark:from-pink-900/20 dark:to-rose-900/20 rounded-lg border border-pink-200 dark:border-pink-800">
                     <div className="flex items-center mb-1">
                       <User className="h-3 w-3 text-pink-600 dark:text-pink-400 mr-1" />
                       <p className="text-xs font-medium text-pink-600 dark:text-pink-400">Secretary</p>
                     </div>
-                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{namhatta.secretary}</p>
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namhatta as any).secretaryName}</p>
                   </div>
                 )}
-                {!namhatta.malaSenapoti && !namhatta.mahaChakraSenapoti && !namhatta.chakraSenapoti && !namhatta.upaChakraSenapoti && !namhatta.secretary && (
+                {(namhatta as any).presidentName && (
+                  <div className="p-2 bg-gradient-to-br from-indigo-50 to-violet-100 dark:from-indigo-900/20 dark:to-violet-900/20 rounded-lg border border-indigo-200 dark:border-indigo-800">
+                    <div className="flex items-center mb-1">
+                      <User className="h-3 w-3 text-indigo-600 dark:text-indigo-400 mr-1" />
+                      <p className="text-xs font-medium text-indigo-600 dark:text-indigo-400">President</p>
+                    </div>
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namhatta as any).presidentName}</p>
+                  </div>
+                )}
+                {(namhatta as any).accountantName && (
+                  <div className="p-2 bg-gradient-to-br from-teal-50 to-cyan-100 dark:from-teal-900/20 dark:to-cyan-900/20 rounded-lg border border-teal-200 dark:border-teal-800">
+                    <div className="flex items-center mb-1">
+                      <Briefcase className="h-3 w-3 text-teal-600 dark:text-teal-400 mr-1" />
+                      <p className="text-xs font-medium text-teal-600 dark:text-teal-400">Accountant</p>
+                    </div>
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namhatta as any).accountantName}</p>
+                  </div>
+                )}
+                {!(namhatta as any).malaSenapotiName && !(namhatta as any).mahaChakraSenapotiName && !(namhatta as any).chakraSenapotiName && !(namhatta as any).upaChakraSenapotiName && !(namhatta as any).secretaryName && !(namhatta as any).presidentName && !(namhatta as any).accountantName && (
                   <div className="col-span-2 text-center py-12">
                     <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
                       <Crown className="h-8 w-8 text-gray-400" />
