@@ -104,30 +104,54 @@ export default function Hierarchy() {
     enabled: !!selectedChakraSenapoti,
   });
 
-  // Handler functions for clicking on each level
+  // Handler functions for clicking on each level - now toggle on/off
   const handleDistrictSupervisorClick = (supervisorId: number) => {
-    setSelectedDistrictSupervisor(supervisorId);
-    // Reset lower levels when selecting a district supervisor
+    if (selectedDistrictSupervisor === supervisorId) {
+      // If already selected, close it
+      setSelectedDistrictSupervisor(null);
+    } else {
+      // Select new one and reset lower levels
+      setSelectedDistrictSupervisor(supervisorId);
+    }
+    // Reset lower levels when changing district supervisor
     setSelectedMalaSenapoti(null);
     setSelectedMahaChakraSenapoti(null);
     setSelectedChakraSenapoti(null);
   };
 
   const handleMalaSenapotiClick = (malaSenapotiId: number) => {
-    setSelectedMalaSenapoti(malaSenapotiId);
-    // Reset lower levels when selecting a mala senapoti
+    if (selectedMalaSenapoti === malaSenapotiId) {
+      // If already selected, close it
+      setSelectedMalaSenapoti(null);
+    } else {
+      // Select new one
+      setSelectedMalaSenapoti(malaSenapotiId);
+    }
+    // Reset lower levels when changing mala senapoti
     setSelectedMahaChakraSenapoti(null);
     setSelectedChakraSenapoti(null);
   };
 
   const handleMahaChakraSenapotiClick = (mahaChakraSenapotiId: number) => {
-    setSelectedMahaChakraSenapoti(mahaChakraSenapotiId);
-    // Reset lower levels when selecting a maha chakra senapoti
+    if (selectedMahaChakraSenapoti === mahaChakraSenapotiId) {
+      // If already selected, close it
+      setSelectedMahaChakraSenapoti(null);
+    } else {
+      // Select new one
+      setSelectedMahaChakraSenapoti(mahaChakraSenapotiId);
+    }
+    // Reset lower levels when changing maha chakra senapoti
     setSelectedChakraSenapoti(null);
   };
 
   const handleChakraSenapotiClick = (chakraSenapotiId: number) => {
-    setSelectedChakraSenapoti(chakraSenapotiId);
+    if (selectedChakraSenapoti === chakraSenapotiId) {
+      // If already selected, close it
+      setSelectedChakraSenapoti(null);
+    } else {
+      // Select new one
+      setSelectedChakraSenapoti(chakraSenapotiId);
+    }
   };
 
   // Helper functions for role management
@@ -565,6 +589,11 @@ export default function Hierarchy() {
                               onClick={() => handleDistrictSupervisorClick(supervisor.id)}
                               data-testid={`card-district-supervisor-${supervisor.id}`}
                             >
+                              {selectedDistrictSupervisor === supervisor.id ? (
+                                <ChevronDown className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                              ) : (
+                                <ChevronRight className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                              )}
                               <Shield className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
                               <span className="text-sm font-medium truncate">{supervisor.fullName}</span>
                               {supervisor.districts && supervisor.districts.length > 0 && (
@@ -592,6 +621,11 @@ export default function Hierarchy() {
                                         onClick={() => handleMalaSenapotiClick(mala.id)}
                                         data-testid={`card-mala-senapoti-${mala.id}`}
                                       >
+                                        {selectedMalaSenapoti === mala.id ? (
+                                          <ChevronDown className="h-4 w-4 text-pink-600 dark:text-pink-400 flex-shrink-0" />
+                                        ) : (
+                                          <ChevronRight className="h-4 w-4 text-pink-600 dark:text-pink-400 flex-shrink-0" />
+                                        )}
                                         <Crown className="h-4 w-4 text-pink-600 dark:text-pink-400 flex-shrink-0" />
                                         <span className="text-sm font-medium truncate">{mala.legalName}{mala.name ? ` :: ${mala.name}` : ''}</span>
                                         <span className="text-xs text-slate-500 dark:text-slate-400">Mala</span>
@@ -617,6 +651,11 @@ export default function Hierarchy() {
                                                   onClick={() => handleMahaChakraSenapotiClick(mahaChakra.id)}
                                                   data-testid={`card-maha-chakra-senapoti-${mahaChakra.id}`}
                                                 >
+                                                  {selectedMahaChakraSenapoti === mahaChakra.id ? (
+                                                    <ChevronDown className="h-4 w-4 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
+                                                  ) : (
+                                                    <ChevronRight className="h-4 w-4 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
+                                                  )}
                                                   <UserCheck className="h-4 w-4 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
                                                   <span className="text-sm font-medium truncate">{mahaChakra.legalName}{mahaChakra.name ? ` :: ${mahaChakra.name}` : ''}</span>
                                                   <span className="text-xs text-slate-500 dark:text-slate-400">Maha Chakra</span>
@@ -642,6 +681,11 @@ export default function Hierarchy() {
                                                             onClick={() => handleChakraSenapotiClick(chakra.id)}
                                                             data-testid={`card-chakra-senapoti-${chakra.id}`}
                                                           >
+                                                            {selectedChakraSenapoti === chakra.id ? (
+                                                              <ChevronDown className="h-4 w-4 text-green-600 dark:text-green-400 flex-shrink-0" />
+                                                            ) : (
+                                                              <ChevronRight className="h-4 w-4 text-green-600 dark:text-green-400 flex-shrink-0" />
+                                                            )}
                                                             <Users className="h-4 w-4 text-green-600 dark:text-green-400 flex-shrink-0" />
                                                             <span className="text-sm font-medium truncate">{chakra.legalName}{chakra.name ? ` :: ${chakra.name}` : ''}</span>
                                                             <span className="text-xs text-slate-500 dark:text-slate-400">Chakra</span>
