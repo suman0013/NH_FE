@@ -44,7 +44,7 @@ function Router() {
       <Route path="/map" component={Map} />
       <Route path="/hierarchy" component={Hierarchy} />
       <Route path="/reports" component={Reports} />
-      <Route path="/admin/supervisors" component={AdminSupervisorRegistration} />
+      <Route path="/admin/register-user" component={AdminSupervisorRegistration} />
       <Route path="/more" component={More} />
       <Route path="/health" component={Health} />
       <Route path="/about" component={About} />

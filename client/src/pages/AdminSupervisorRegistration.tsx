@@ -96,7 +96,7 @@ export default function AdminSupervisorRegistration() {
     onSuccess: (data: any) => {
       toast({
         title: "Success!",
-        description: `District supervisor ${data.supervisor.fullName} has been created successfully.`
+        description: `User ${data.supervisor.fullName} has been created successfully.`
       });
       form.reset();
       setShowRegistrationForm(false);
@@ -105,7 +105,7 @@ export default function AdminSupervisorRegistration() {
     onError: (error: any) => {
       toast({
         title: "Registration Failed",
-        description: error.message || "Failed to create district supervisor",
+        description: error.message || "Failed to create user",
         variant: "destructive"
       });
     }
@@ -151,7 +151,7 @@ export default function AdminSupervisorRegistration() {
     onSuccess: () => {
       toast({
         title: "Success!",
-        description: "Supervisor updated successfully."
+        description: "User updated successfully."
       });
       setEditingUser(null);
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
@@ -159,7 +159,7 @@ export default function AdminSupervisorRegistration() {
     onError: (error: any) => {
       toast({
         title: "Update Failed",
-        description: error.message || "Failed to update supervisor",
+        description: error.message || "Failed to update user",
         variant: "destructive"
       });
     }
@@ -174,14 +174,14 @@ export default function AdminSupervisorRegistration() {
     onSuccess: () => {
       toast({
         title: "Success!",
-        description: "Supervisor deactivated successfully."
+        description: "User deactivated successfully."
       });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
     },
     onError: (error: any) => {
       toast({
         title: "Deactivation Failed",
-        description: error.message || "Failed to deactivate supervisor",
+        description: error.message || "Failed to deactivate user",
         variant: "destructive"
       });
     }
@@ -199,9 +199,9 @@ export default function AdminSupervisorRegistration() {
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold gradient-text">District Supervisor Management</h1>
+          <h1 className="text-3xl font-bold gradient-text">Register User</h1>
           <p className="text-muted-foreground mt-1">
-            Manage district supervisor registrations and assignments
+            Register and manage all senapatis and district supervisors
           </p>
         </div>
         <Button
@@ -209,7 +209,7 @@ export default function AdminSupervisorRegistration() {
           className="flex items-center gap-2"
         >
           <UserPlus className="h-4 w-4" />
-          {showRegistrationForm ? "Cancel" : "Register New Supervisor"}
+          {showRegistrationForm ? "Cancel" : "Register New User"}
         </Button>
       </div>
 
@@ -219,10 +219,10 @@ export default function AdminSupervisorRegistration() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Shield className="h-5 w-5" />
-              Register District Supervisor
+              Register New User
             </CardTitle>
             <CardDescription>
-              Create a new district supervisor account with assigned districts
+              Create a new senapati or supervisor account with assigned districts
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -354,7 +354,7 @@ export default function AdminSupervisorRegistration() {
                     className="flex items-center gap-2"
                   >
                     {registerMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-                    Register Supervisor
+                    Register User
                   </Button>
                 </div>
               </form>
@@ -363,21 +363,21 @@ export default function AdminSupervisorRegistration() {
         </Card>
       )}
 
-      {/* District-Grouped Supervisors */}
+      {/* District-Grouped Users */}
       <Card className="glass-card">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <MapPin className="h-5 w-5" />
-            Supervisors by District ({districtSupervisors.length} total)
+            Users by District ({districtSupervisors.length} total)
           </CardTitle>
           <CardDescription>
-            District supervisors organized by their assigned districts
+            Senapatis and supervisors organized by their assigned districts
           </CardDescription>
         </CardHeader>
         <CardContent>
           {groupedByDistrict.length === 0 ? (
             <p className="text-muted-foreground text-center py-8">
-              No district supervisors registered yet.
+              No users registered yet.
             </p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -421,7 +421,7 @@ export default function AdminSupervisorRegistration() {
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                   <AlertDialogHeader>
-                                    <AlertDialogTitle>Deactivate Supervisor</AlertDialogTitle>
+                                    <AlertDialogTitle>Deactivate User</AlertDialogTitle>
                                     <AlertDialogDescription>
                                       Are you sure you want to deactivate {user.fullName}? They will no longer be able to access the system, but their data will be preserved.
                                     </AlertDialogDescription>
@@ -472,7 +472,7 @@ export default function AdminSupervisorRegistration() {
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <Card className="w-full max-w-sm mx-4 p-4 bg-background border shadow-lg">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="font-semibold">Edit Supervisor</h3>
+              <h3 className="font-semibold">Edit User</h3>
               <Button
                 variant="ghost"
                 size="sm"

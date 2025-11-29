@@ -22,7 +22,7 @@ const navigationItems = [
 ];
 
 const adminNavigationItems = [
-  { href: "/admin/supervisors", label: "District Supervisors", icon: Shield },
+  { href: "/admin/register-user", label: "Register User", icon: Shield },
 ];
 
 export default function Sidebar({ onClose }: SidebarProps) {
