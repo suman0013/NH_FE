@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Calendar, User, Activity, X } from "lucide-react";
+import { ArrowRight, Calendar, User, Activity, X, Zap } from "lucide-react";
 import { format } from "date-fns";
 
 interface StatusHistoryViewProps {
