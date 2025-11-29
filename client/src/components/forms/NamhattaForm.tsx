@@ -423,8 +423,16 @@ export default function NamhattaForm({
   const handleDevoteeCreated = (newDevotee: Devotee) => {
     // Refresh appropriate devotee lists based on role
     const devoteeRole = createDevoteeModal.role;
-    if (['MALA_SENAPOTI', 'MAHA_CHAKRA_SENAPOTI', 'CHAKRA_SENAPOTI', 'UPA_CHAKRA_SENAPOTI'].includes(devoteeRole)) {
-      queryClient.invalidateQueries({ queryKey: ["/api/senapoti"] });
+    
+    // Invalidate specific senapoti queries based on role
+    if (devoteeRole === 'MALA_SENAPOTI') {
+      queryClient.invalidateQueries({ queryKey: ["/api/senapoti", "MALA_SENAPOTI"] });
+    } else if (devoteeRole === 'MAHA_CHAKRA_SENAPOTI') {
+      queryClient.invalidateQueries({ queryKey: ["/api/senapoti", "MAHA_CHAKRA_SENAPOTI"] });
+    } else if (devoteeRole === 'CHAKRA_SENAPOTI') {
+      queryClient.invalidateQueries({ queryKey: ["/api/senapoti", "CHAKRA_SENAPOTI"] });
+    } else if (devoteeRole === 'UPA_CHAKRA_SENAPOTI') {
+      queryClient.invalidateQueries({ queryKey: ["/api/senapoti", "UPA_CHAKRA_SENAPOTI"] });
     } else {
       queryClient.invalidateQueries({ queryKey: ["/api/devotees"] });
     }
@@ -445,7 +453,7 @@ export default function NamhattaForm({
 
     const fieldName = fieldMap[devoteeRole];
     if (fieldName) {
-      setValue(fieldName, newDevotee.id);
+      setValue(fieldName, newDevotee.id, { shouldValidate: true });
     }
 
     toast({
@@ -518,6 +526,29 @@ export default function NamhattaForm({
         return upaChakraSenapotisLoading;
       default:
         return availableOfficersLoading;
+    }
+  };
+
+  // Helper function to check if a senapoti role should be disabled based on hierarchy
+  const isRoleDisabled = (specificRole: string) => {
+    // Mala Senapoti is always enabled
+    if (specificRole === 'MALA_SENAPOTI') return false;
+    
+    // Get currently selected values
+    const malaSelected = watch('malaSenapotiId');
+    const mahaSelected = watch('mahaChakraSenapotiId');
+    const chakraSelected = watch('chakraSenapotiId');
+    
+    // Each level requires the previous level to be selected
+    switch (specificRole) {
+      case 'MAHA_CHAKRA_SENAPOTI':
+        return !malaSelected; // Disabled if Mala Senapoti not selected
+      case 'CHAKRA_SENAPOTI':
+        return !mahaSelected; // Disabled if Maha Chakra Senapoti not selected
+      case 'UPA_CHAKRA_SENAPOTI':
+        return !chakraSelected; // Disabled if Chakra Senapoti not selected
+      default:
+        return false;
     }
   };
 
@@ -760,7 +791,7 @@ export default function NamhattaForm({
                 setValue('upaChakraSenapotiId', null);
               }
             }}
-            disabled={isRoleLoading(role)}
+            disabled={isRoleLoading(role) || isRoleDisabled(role)}
           >
             <SelectTrigger className="flex-1">
               <SelectValue placeholder={isRoleLoading(role) ? "Loading..." : `Select ${label}`} />
