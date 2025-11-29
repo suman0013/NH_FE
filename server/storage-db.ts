@@ -369,6 +369,53 @@ export class DatabaseStorage implements IStorage {
     return updatedDevotee;
   }
 
+  async getDevoteeById(id: number): Promise<Devotee | undefined> {
+    return await this.getDevotee(id);
+  }
+
+  async getDevoteesWithLeadershipRoles(): Promise<any[]> {
+    // Get all devotees with leadership roles
+    const result = await db
+      .select({
+        id: devotees.id,
+        legalName: devotees.legalName,
+        name: devotees.name,
+        email: devotees.email,
+        phone: devotees.phone,
+        leadershipRole: devotees.leadershipRole,
+        hasSystemAccess: devotees.hasSystemAccess,
+        appointedDate: devotees.appointedDate,
+        reportingToDevoteeId: devotees.reportingToDevoteeId,
+        namhattaId: devotees.namhattaId
+      })
+      .from(devotees)
+      .where(isNotNull(devotees.leadershipRole));
+
+    // For each devotee, get their user account if they have one
+    const devoteesWithUserInfo = await Promise.all(
+      result.map(async (devotee) => {
+        const userInfo = await db
+          .select({
+            id: users.id,
+            username: users.username,
+            fullName: users.fullName,
+            email: users.email,
+            isActive: users.isActive
+          })
+          .from(users)
+          .where(eq(users.devoteeId, devotee.id))
+          .limit(1);
+
+        return {
+          ...devotee,
+          user: userInfo[0] || null
+        };
+      })
+    );
+
+    return devoteesWithUserInfo;
+  }
+
   async getDevoteesByNamhatta(namhattaId: number, page = 1, size = 10, statusId?: number): Promise<{ data: Devotee[], total: number }> {
     const offset = (page - 1) * size;
     

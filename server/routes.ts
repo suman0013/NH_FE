@@ -1261,7 +1261,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Update user (Admin only)
+  // Update user (Admin only) - supports partial updates including password-only changes
   app.put("/api/admin/users/:id", authenticateJWT, authorize(['ADMIN']), async (req, res) => {
     try {
       const userId = parseInt(req.params.id);
@@ -1270,8 +1270,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const { fullName, email, password } = req.body;
-      if (!fullName || !email) {
-        return res.status(400).json({ error: "Full name and email are required" });
+      
+      // Allow password-only updates
+      if (!fullName && !email && !password) {
+        return res.status(400).json({ error: "At least one field (fullName, email, or password) is required" });
       }
 
       const { getUser, updateUser } = await import('./storage-auth');
@@ -1280,8 +1282,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "User not found" });
       }
 
-      const updateData: any = { fullName, email };
-      // Only update password if provided
+      const updateData: any = {};
+      
+      // Only include fields that are provided
+      if (fullName) updateData.fullName = fullName;
+      if (email) updateData.email = email;
       if (password && password.trim()) {
         updateData.passwordHash = password; // Will be hashed in updateUser function
       }
@@ -1313,6 +1318,145 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deactivating user:", error);
       res.status(500).json({ error: "Failed to deactivate user" });
+    }
+  });
+
+  // Register Office user (Admin only)
+  app.post("/api/admin/register-office", sanitizeInput, modifyRateLimit, authenticateJWT, authorize(['ADMIN']), async (req, res) => {
+    try {
+      const { username, fullName, email, password, districts } = req.body;
+
+      if (!username || !fullName || !email || !password) {
+        return res.status(400).json({ error: "All fields are required" });
+      }
+
+      const { getUserByUsername, getUserByEmail, createUser, assignDistrictsToUser } = await import('./storage-auth');
+
+      const existingUsername = await getUserByUsername(username);
+      if (existingUsername) {
+        return res.status(400).json({ error: "Username already exists" });
+      }
+
+      const existingEmail = await getUserByEmail(email);
+      if (existingEmail) {
+        return res.status(400).json({ error: "Email already exists" });
+      }
+
+      const user = await createUser({
+        username,
+        fullName,
+        email,
+        passwordHash: password,
+        role: 'OFFICE'
+      });
+
+      // Assign districts if provided
+      if (districts && districts.length > 0) {
+        await assignDistrictsToUser(user.id, districts);
+      }
+
+      res.status(201).json({
+        message: "Office user created successfully",
+        user: {
+          id: user.id,
+          username: user.username,
+          fullName: user.fullName,
+          email: user.email,
+          role: 'OFFICE',
+          districts: districts || []
+        }
+      });
+    } catch (error) {
+      console.error("Error creating office user:", error);
+      res.status(500).json({ error: "Failed to create office user" });
+    }
+  });
+
+  // Get devotees with leadership roles (Senapatis) - properly secured
+  app.get("/api/admin/senapatis", authenticateJWT, authorize(['ADMIN']), async (req, res) => {
+    try {
+      const senapatis = await (storage as any).getDevoteesWithLeadershipRoles();
+      res.json(senapatis);
+    } catch (error) {
+      console.error("Error fetching senapatis:", error);
+      res.status(500).json({ error: "Failed to fetch senapatis" });
+    }
+  });
+
+  // Create user account for a senapati (devotee with leadership role)
+  app.post("/api/admin/senapati-user", sanitizeInput, modifyRateLimit, authenticateJWT, authorize(['ADMIN']), async (req, res) => {
+    try {
+      const { devoteeId, username, password } = req.body;
+
+      if (!devoteeId || !username || !password) {
+        return res.status(400).json({ error: "Devotee ID, username, and password are required" });
+      }
+
+      // Get the devotee
+      const devotee = await storage.getDevotee(devoteeId);
+      if (!devotee) {
+        return res.status(404).json({ error: "Devotee not found" });
+      }
+
+      if (!devotee.leadershipRole) {
+        return res.status(400).json({ error: "Devotee does not have a leadership role" });
+      }
+
+      const { getUserByUsername, createUser } = await import('./storage-auth');
+
+      const existingUsername = await getUserByUsername(username);
+      if (existingUsername) {
+        return res.status(400).json({ error: "Username already exists" });
+      }
+
+      // Create user with DISTRICT_SUPERVISOR role (they need login access)
+      const user = await createUser({
+        username,
+        fullName: devotee.legalName,
+        email: devotee.email || `${username}@namhatta.local`,
+        passwordHash: password,
+        role: 'DISTRICT_SUPERVISOR',
+        devoteeId
+      });
+
+      // Update devotee to have system access
+      await storage.updateDevotee(devoteeId, { hasSystemAccess: true });
+
+      res.status(201).json({
+        message: "Senapati user account created successfully",
+        user: {
+          id: user.id,
+          username: user.username,
+          fullName: user.fullName,
+          devoteeId,
+          leadershipRole: devotee.leadershipRole
+        }
+      });
+    } catch (error) {
+      console.error("Error creating senapati user:", error);
+      res.status(500).json({ error: "Failed to create senapati user account" });
+    }
+  });
+
+  // Reactivate a deactivated user
+  app.post("/api/admin/users/:id/reactivate", authenticateJWT, authorize(['ADMIN']), async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      if (isNaN(userId)) {
+        return res.status(400).json({ error: "Invalid user ID" });
+      }
+
+      const { reactivateUser } = await import('./storage-auth');
+      const success = await reactivateUser(userId);
+      
+      if (success) {
+        res.json({ message: "User reactivated successfully" });
+      } else {
+        res.status(404).json({ error: "User not found" });
+      }
+    } catch (error) {
+      console.error("Error reactivating user:", error);
+      res.status(500).json({ error: "Failed to reactivate user" });
     }
   });
 

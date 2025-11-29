@@ -134,6 +134,17 @@ export async function deactivateUser(id: number): Promise<boolean> {
   return !!result;
 }
 
+// Reactivate user
+export async function reactivateUser(id: number): Promise<boolean> {
+  const [result] = await db
+    .update(users)
+    .set({ isActive: true, updatedAt: new Date() })
+    .where(eq(users.id, id))
+    .returning();
+
+  return !!result;
+}
+
 // Get all users with their districts (excludes passwordHash for security)
 export async function getAllUsersWithDistricts(): Promise<UserWithDistricts[]> {
   const allUsers = await db.select({
