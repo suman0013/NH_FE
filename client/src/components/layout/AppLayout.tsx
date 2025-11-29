@@ -4,7 +4,6 @@ import Header from "./Header";
 import TopNav from "./TopNav";
 import { cn } from "@/lib/utils";
 import namhattaLogo from "@assets/namhatta_logo_1757690747029.png";
-import { Heart } from "lucide-react";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -55,24 +54,17 @@ export default function AppLayout({ children }: AppLayoutProps) {
               </button>
               
               <div className="flex items-center space-x-2">
-                {/* Mobile: Show icon only */}
-                <div className="lg:hidden flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 hover:scale-105 transition-transform duration-300">
-                  <Heart className="w-6 h-6 text-white fill-white" />
-                </div>
-                
-                {/* Desktop: Show full logo and text */}
-                <div className="hidden lg:flex items-center space-x-2">
-                  <img 
-                    src={namhattaLogo} 
-                    alt="Namhatta Logo" 
-                    className="w-20 h-20 object-contain drop-shadow-lg hover:scale-105 transition-transform duration-300"
-                    loading="eager"
-                    decoding="async"
-                  />
-                  <div className="block">
-                    <h1 className="text-xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent hover:scale-105 transition-transform duration-300">Namhatta</h1>
-                    <p className="text-xs font-medium bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">Management System</p>
-                  </div>
+                {/* Logo - Same for mobile and desktop */}
+                <img 
+                  src={namhattaLogo} 
+                  alt="Namhatta Logo" 
+                  className="w-12 sm:w-16 lg:w-20 h-12 sm:h-16 lg:h-20 object-contain drop-shadow-lg hover:scale-105 transition-transform duration-300"
+                  loading="eager"
+                  decoding="async"
+                />
+                <div className="block">
+                  <h1 className="text-sm sm:text-base lg:text-xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent hover:scale-105 transition-transform duration-300">Namhatta</h1>
+                  <p className="text-xs font-medium bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">Management System</p>
                 </div>
               </div>
             </div>

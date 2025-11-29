@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
 import { api } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
+import namhattaLogo from "@assets/namhatta_logo_1757690747029.png";
 
 interface SidebarProps {
   onClose?: () => void;
@@ -86,9 +87,13 @@ export default function Sidebar({ onClose }: SidebarProps) {
           </Button>
         )}
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
-            <span className="text-white text-lg font-bold">ॐ</span>
-          </div>
+          <img 
+            src={namhattaLogo} 
+            alt="Namhatta Logo" 
+            className="w-10 h-10 object-contain drop-shadow-lg"
+            loading="eager"
+            decoding="async"
+          />
           <div>
             <h1 className="text-xl font-bold gradient-text">Namhatta</h1>
             <p className="text-xs text-gray-500 dark:text-gray-400">Management System</p>
