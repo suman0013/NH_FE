@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, FileSpreadsheet, FileText, Download, X } from "lucide-react";
+import { Loader2, FileSpreadsheet, FileText, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import * as XLSX from "xlsx";
@@ -31,7 +31,6 @@ export function ExportModal({ open, onClose }: ExportModalProps) {
   const { toast } = useToast();
   const [selectedDistricts, setSelectedDistricts] = useState<Set<string>>(new Set());
   const [exportFormat, setExportFormat] = useState<ExportFormat>("excel");
-  const [includeNamahattas, setIncludeNamahattas] = useState(true);
 
   const { data: districts = [], isLoading: districtsLoading } = useQuery<District[]>({
     queryKey: ["/api/reports/export/districts"],
@@ -62,7 +61,7 @@ export function ExportModal({ open, onClose }: ExportModalProps) {
 
       const response = await apiRequest("POST", "/api/reports/export/data", {
         districts: selectedDistrictsList,
-        includeNamahattas
+        includeNamahattas: true
       });
 
       return response.json();
@@ -131,7 +130,7 @@ export function ExportModal({ open, onClose }: ExportModalProps) {
         XLSX.utils.book_append_sheet(workbook, districtSheet, "Districts");
       }
 
-      if (includeNamahattas && data.namahattas && data.namahattas.length > 0) {
+      if (data.namahattas && data.namahattas.length > 0) {
         const namahattaRows = data.namahattas.map((n: any) => ({
           Name: n.name,
           Code: n.code,
@@ -190,7 +189,7 @@ export function ExportModal({ open, onClose }: ExportModalProps) {
         yPosition = (doc as any).lastAutoTable.finalY + 15;
       }
 
-      if (includeNamahattas && data.namahattas && data.namahattas.length > 0) {
+      if (data.namahattas && data.namahattas.length > 0) {
         if (yPosition > 250) {
           doc.addPage();
           yPosition = 20;
@@ -266,16 +265,6 @@ export function ExportModal({ open, onClose }: ExportModalProps) {
                 PDF
               </Button>
             </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Checkbox
-              id="include-namahattas"
-              checked={includeNamahattas}
-              onCheckedChange={(checked) => setIncludeNamahattas(checked === true)}
-              data-testid="checkbox-include-namahattas"
-            />
-            <Label htmlFor="include-namahattas" className="text-sm">Include Namahattas</Label>
           </div>
 
           <div className="flex-1 min-h-0">
