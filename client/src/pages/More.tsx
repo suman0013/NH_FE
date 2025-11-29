@@ -120,9 +120,9 @@ export default function More() {
     },
     {
       title: "Register User",
-      description: "Register new district supervisors and manage users",
+      description: "Register new senapatis and manage users",
       icon: UserPlus,
-      href: "/admin/supervisors",
+      href: "/admin/register-user",
       color: "from-emerald-500 to-green-600",
       category: "Management"
     },
