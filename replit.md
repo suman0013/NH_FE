@@ -9,6 +9,15 @@ Navigation layout: Horizontal top navigation bar instead of left sidebar for des
 
 ## Recent Changes
 
+### November 29, 2025 - Mobile Navigation Simplified to 7 Tabs COMPLETED ✅
+- **Mobile Sidebar Updated**: Simplified navigation to show ONLY 7 tabs: Dashboard, Namahattas, Devotees, Map View, Reports, Statuses, More (admin only)
+- **Changes Made**: 
+  - Removed "Updates" tab from mobile navigation
+  - Added "Reports" tab to mobile navigation
+  - Changed admin section from "Register User" to "More"
+  - Removed "ADMINISTRATION" section header for cleaner look
+- **Consistency**: Mobile sidebar (Sidebar.tsx) now mirrors desktop navigation (TopNav.tsx) for consistency across devices
+
 ### November 29, 2025 - Complete Mobile Responsiveness For All Detail Pages COMPLETED ✅
 - **NamahattaDetail Page**: Responsive header layout (flex-col sm:flex-row), responsive heading (text-2xl sm:text-3xl md:text-4xl), responsive padding (p-2 sm:p-4 md:p-6), responsive button text with abbreviations on mobile, responsive grid stats (grid-cols-2 sm:grid-cols-3 md:grid-cols-4), scaled card icons (w-8 h-8 sm:w-12 sm:h-12), responsive tabs and spaces
 - **DevoteeDetail Page**: Responsive header layout (flex-col sm:flex-row), responsive avatar sizing (h-12 w-12 sm:h-16 sm:w-16), responsive heading (text-2xl sm:text-3xl md:text-4xl), responsive button text with abbreviations, responsive grid layouts (grid-cols-1 sm:grid-cols-2 lg:grid-cols-3), responsive card icons and spacing

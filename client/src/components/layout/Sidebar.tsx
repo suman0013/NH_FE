@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { X, Home, Users, Layers, Bell, Settings, MapPin, LogOut, Shield } from "lucide-react";
+import { X, Home, Users, Layers, MapPin, LogOut, MoreHorizontal, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -17,13 +17,13 @@ const navigationItems = [
   { href: "/dashboard", label: "Dashboard", icon: Home, active: true },
   { href: "/namahattas", label: "Namahattas", icon: Home },
   { href: "/devotees", label: "Devotees", icon: Users },
-  { href: "/updates", label: "Updates", icon: Bell },
   { href: "/map", label: "Map View", icon: MapPin },
+  { href: "/reports", label: "Reports", icon: BarChart3 },
   { href: "/statuses", label: "Statuses", icon: Layers },
 ];
 
 const adminNavigationItems = [
-  { href: "/admin/register-user", label: "Register User", icon: Shield },
+  { href: "/more", label: "More", icon: MoreHorizontal },
 ];
 
 export default function Sidebar({ onClose }: SidebarProps) {
@@ -133,9 +133,6 @@ export default function Sidebar({ onClose }: SidebarProps) {
           <>
             <div className="my-4 px-3">
               <hr className="border-white/20 dark:border-slate-700/50" />
-              <p className="text-xs font-medium uppercase tracking-wider mt-2 mb-2 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Administration
-              </p>
             </div>
             {adminNavigationItems.map((item) => {
               const isActive = location === item.href;
