@@ -424,18 +424,11 @@ export default function NamhattaForm({
     // Refresh appropriate devotee lists based on role
     const devoteeRole = createDevoteeModal.role;
     
-    // Invalidate specific senapoti queries based on role
-    if (devoteeRole === 'MALA_SENAPOTI') {
-      queryClient.invalidateQueries({ queryKey: ["/api/senapoti", "MALA_SENAPOTI"] });
-    } else if (devoteeRole === 'MAHA_CHAKRA_SENAPOTI') {
-      queryClient.invalidateQueries({ queryKey: ["/api/senapoti", "MAHA_CHAKRA_SENAPOTI"] });
-    } else if (devoteeRole === 'CHAKRA_SENAPOTI') {
-      queryClient.invalidateQueries({ queryKey: ["/api/senapoti", "CHAKRA_SENAPOTI"] });
-    } else if (devoteeRole === 'UPA_CHAKRA_SENAPOTI') {
-      queryClient.invalidateQueries({ queryKey: ["/api/senapoti", "UPA_CHAKRA_SENAPOTI"] });
-    } else {
-      queryClient.invalidateQueries({ queryKey: ["/api/devotees"] });
-    }
+    // Invalidate ALL senapoti queries to ensure fresh data from all levels
+    queryClient.invalidateQueries({ queryKey: ["/api/senapoti/MALA_SENAPOTI"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/senapoti/MAHA_CHAKRA_SENAPOTI"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/senapoti/CHAKRA_SENAPOTI"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/senapoti/UPA_CHAKRA_SENAPOTI"] });
     
     // Invalidate available officers list so dropdown updates with newly created devotee
     queryClient.invalidateQueries({ queryKey: ["/api/devotees/available-officers"] });
@@ -453,7 +446,10 @@ export default function NamhattaForm({
 
     const fieldName = fieldMap[devoteeRole];
     if (fieldName) {
-      setValue(fieldName, newDevotee.id, { shouldValidate: true });
+      // Add a small delay to ensure cache invalidation is processed before setting value
+      setTimeout(() => {
+        setValue(fieldName, newDevotee.id, { shouldValidate: true });
+      }, 100);
     }
 
     toast({
@@ -811,6 +807,7 @@ export default function NamhattaForm({
             onClick={() => openCreateDevoteeModal(role, getHierarchySetup(role).reportingToDevoteeId || undefined)}
             className="flex items-center gap-1 whitespace-nowrap"
             data-testid={`button-create-${role.toLowerCase()}`}
+            disabled={isRoleDisabled(role)}
           >
             <Plus className="h-4 w-4" />
             Create New
