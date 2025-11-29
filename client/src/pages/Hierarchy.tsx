@@ -552,30 +552,30 @@ export default function Hierarchy() {
                   )}
                 </Button>
               </CollapsibleTrigger>
-              <CollapsibleContent className="mt-4">
-                <div className="border-l-2 border-slate-200 dark:border-slate-700 ml-4 pl-4 space-y-2">
+              <CollapsibleContent className="mt-2 sm:mt-3 md:mt-4">
+                <div className="border-l-2 border-slate-200 dark:border-slate-700 ml-2 sm:ml-4 pl-2 sm:pl-4 space-y-1.5 sm:space-y-2">
                   {/* Search */}
-                  <div className="mb-4">
-                    <div className="relative max-w-md">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <div className="mb-2 sm:mb-3 md:mb-4">
+                    <div className="relative w-full sm:max-w-md">
+                      <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-slate-400" />
                       <input
                         type="text"
                         placeholder="Search supervisors..."
                         value={districtSearchTerm}
                         onChange={(e) => setDistrictSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full pl-7 sm:pl-10 pr-3 sm:pr-4 py-1.5 sm:py-2 text-xs sm:text-sm border border-slate-200 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         data-testid="input-district-search"
                       />
                     </div>
                   </div>
                   
                   {isLoadingDistrictSupervisors ? (
-                    <div className="flex items-center gap-2 py-4">
-                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
-                      <span className="text-sm text-slate-600 dark:text-slate-400">Loading district supervisors...</span>
+                    <div className="flex items-center gap-2 py-2 sm:py-4">
+                      <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-2 border-blue-600 border-t-transparent"></div>
+                      <span className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Loading district supervisors...</span>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 md:gap-4">
                       {(districtSupervisors as any[])
                         .filter((s: any) => 
                           s.fullName.toLowerCase().includes(districtSearchTerm.toLowerCase())
@@ -583,30 +583,30 @@ export default function Hierarchy() {
                         .map((supervisor: any) => (
                           <div key={supervisor.id}>
                             <div 
-                              className={`flex items-center gap-2 p-2 rounded-md cursor-pointer transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 ${
+                              className={`flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 rounded-md cursor-pointer transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 ${
                                 selectedDistrictSupervisor === supervisor.id ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800' : ''
                               }`}
                               onClick={() => handleDistrictSupervisorClick(supervisor.id)}
                               data-testid={`card-district-supervisor-${supervisor.id}`}
                             >
                               {selectedDistrictSupervisor === supervisor.id ? (
-                                <ChevronDown className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                                <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
                               ) : (
-                                <ChevronRight className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                                <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
                               )}
-                              <Shield className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
-                              <span className="text-sm font-medium truncate">{supervisor.fullName}</span>
+                              <Shield className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                              <span className="text-xs sm:text-sm font-medium truncate">{supervisor.fullName}</span>
                               {supervisor.districts && supervisor.districts.length > 0 && (
-                                <span className="text-xs text-slate-500 dark:text-slate-400">({supervisor.districts.join(", ")})</span>
+                                <span className="text-xs text-slate-500 dark:text-slate-400 truncate">({supervisor.districts.join(", ")})</span>
                               )}
                             </div>
                             
                             {/* Mala Senapotis for selected District Supervisor */}
                             {selectedDistrictSupervisor === supervisor.id && (
-                              <div className="ml-6 mt-2 border-l-2 border-slate-200 dark:border-slate-700 pl-4 space-y-1">
+                              <div className="ml-3 sm:ml-6 mt-1 sm:mt-2 border-l-2 border-slate-200 dark:border-slate-700 pl-2 sm:pl-4 space-y-0.5 sm:space-y-1">
                                 {!malaSenapotis ? (
-                                  <div className="flex items-center gap-2 py-2">
-                                    <div className="animate-spin rounded-full h-3 w-3 border-2 border-pink-600 border-t-transparent"></div>
+                                  <div className="flex items-center gap-2 py-1 sm:py-2">
+                                    <div className="animate-spin rounded-full h-2 w-2 sm:h-3 sm:w-3 border-2 border-pink-600 border-t-transparent"></div>
                                     <span className="text-xs text-slate-500 dark:text-slate-400">Loading mala senapotis...</span>
                                   </div>
                                 ) : malaSenapotis.length === 0 ? (
@@ -615,28 +615,28 @@ export default function Hierarchy() {
                                   malaSenapotis.map((mala: any) => (
                                     <div key={mala.id}>
                                       <div 
-                                        className={`flex items-center gap-2 p-2 rounded-md cursor-pointer transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 ${
+                                        className={`flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 rounded-md cursor-pointer transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 ${
                                           selectedMalaSenapoti === mala.id ? 'bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800' : ''
                                         }`}
                                         onClick={() => handleMalaSenapotiClick(mala.id)}
                                         data-testid={`card-mala-senapoti-${mala.id}`}
                                       >
                                         {selectedMalaSenapoti === mala.id ? (
-                                          <ChevronDown className="h-4 w-4 text-pink-600 dark:text-pink-400 flex-shrink-0" />
+                                          <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 text-pink-600 dark:text-pink-400 flex-shrink-0" />
                                         ) : (
-                                          <ChevronRight className="h-4 w-4 text-pink-600 dark:text-pink-400 flex-shrink-0" />
+                                          <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4 text-pink-600 dark:text-pink-400 flex-shrink-0" />
                                         )}
-                                        <Crown className="h-4 w-4 text-pink-600 dark:text-pink-400 flex-shrink-0" />
-                                        <span className="text-sm font-medium truncate">{mala.legalName}{mala.name ? ` :: ${mala.name}` : ''}</span>
-                                        <span className="text-xs text-slate-500 dark:text-slate-400">Mala</span>
+                                        <Crown className="h-3 w-3 sm:h-4 sm:w-4 text-pink-600 dark:text-pink-400 flex-shrink-0" />
+                                        <span className="text-xs sm:text-sm font-medium truncate">{mala.legalName}{mala.name ? ` :: ${mala.name}` : ''}</span>
+                                        <span className="text-xs text-slate-500 dark:text-slate-400 flex-shrink-0">Mala</span>
                                       </div>
                                       
                                       {/* Maha Chakra Senapotis for selected Mala Senapoti */}
                                       {selectedMalaSenapoti === mala.id && (
-                                        <div className="ml-6 mt-2 border-l-2 border-slate-200 dark:border-slate-700 pl-4 space-y-1">
+                                        <div className="ml-3 sm:ml-6 mt-1 sm:mt-2 border-l-2 border-slate-200 dark:border-slate-700 pl-2 sm:pl-4 space-y-0.5 sm:space-y-1">
                                           {!mahaChakraSenapotis ? (
-                                            <div className="flex items-center gap-2 py-2">
-                                              <div className="animate-spin rounded-full h-3 w-3 border-2 border-blue-600 border-t-transparent"></div>
+                                            <div className="flex items-center gap-2 py-1 sm:py-2">
+                                              <div className="animate-spin rounded-full h-2 w-2 sm:h-3 sm:w-3 border-2 border-blue-600 border-t-transparent"></div>
                                               <span className="text-xs text-slate-500 dark:text-slate-400">Loading maha chakra senapotis...</span>
                                             </div>
                                           ) : mahaChakraSenapotis.length === 0 ? (
@@ -645,28 +645,28 @@ export default function Hierarchy() {
                                             mahaChakraSenapotis.map((mahaChakra: any) => (
                                               <div key={mahaChakra.id}>
                                                 <div 
-                                                  className={`flex items-center gap-2 p-2 rounded-md cursor-pointer transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 ${
+                                                  className={`flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 rounded-md cursor-pointer transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 ${
                                                     selectedMahaChakraSenapoti === mahaChakra.id ? 'bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800' : ''
                                                   }`}
                                                   onClick={() => handleMahaChakraSenapotiClick(mahaChakra.id)}
                                                   data-testid={`card-maha-chakra-senapoti-${mahaChakra.id}`}
                                                 >
                                                   {selectedMahaChakraSenapoti === mahaChakra.id ? (
-                                                    <ChevronDown className="h-4 w-4 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
+                                                    <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
                                                   ) : (
-                                                    <ChevronRight className="h-4 w-4 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
+                                                    <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
                                                   )}
-                                                  <UserCheck className="h-4 w-4 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
-                                                  <span className="text-sm font-medium truncate">{mahaChakra.legalName}{mahaChakra.name ? ` :: ${mahaChakra.name}` : ''}</span>
-                                                  <span className="text-xs text-slate-500 dark:text-slate-400">Maha Chakra</span>
+                                                  <UserCheck className="h-3 w-3 sm:h-4 sm:w-4 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
+                                                  <span className="text-xs sm:text-sm font-medium truncate">{mahaChakra.legalName}{mahaChakra.name ? ` :: ${mahaChakra.name}` : ''}</span>
+                                                  <span className="text-xs text-slate-500 dark:text-slate-400 flex-shrink-0">Maha Chakra</span>
                                                 </div>
                                                 
                                                 {/* Chakra Senapotis for selected Maha Chakra Senapoti */}
                                                 {selectedMahaChakraSenapoti === mahaChakra.id && (
-                                                  <div className="ml-6 mt-2 border-l-2 border-slate-200 dark:border-slate-700 pl-4 space-y-1">
+                                                  <div className="ml-3 sm:ml-6 mt-1 sm:mt-2 border-l-2 border-slate-200 dark:border-slate-700 pl-2 sm:pl-4 space-y-0.5 sm:space-y-1">
                                                     {!chakraSenapotis ? (
-                                                      <div className="flex items-center gap-2 py-2">
-                                                        <div className="animate-spin rounded-full h-3 w-3 border-2 border-green-600 border-t-transparent"></div>
+                                                      <div className="flex items-center gap-2 py-1 sm:py-2">
+                                                        <div className="animate-spin rounded-full h-2 w-2 sm:h-3 sm:w-3 border-2 border-green-600 border-t-transparent"></div>
                                                         <span className="text-xs text-slate-500 dark:text-slate-400">Loading chakra senapotis...</span>
                                                       </div>
                                                     ) : chakraSenapotis.length === 0 ? (
@@ -675,38 +675,38 @@ export default function Hierarchy() {
                                                       chakraSenapotis.map((chakra: any) => (
                                                         <div key={chakra.id}>
                                                           <div 
-                                                            className={`flex items-center gap-2 p-2 rounded-md cursor-pointer transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 ${
+                                                            className={`flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 rounded-md cursor-pointer transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 ${
                                                               selectedChakraSenapoti === chakra.id ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800' : ''
                                                             }`}
                                                             onClick={() => handleChakraSenapotiClick(chakra.id)}
                                                             data-testid={`card-chakra-senapoti-${chakra.id}`}
                                                           >
                                                             {selectedChakraSenapoti === chakra.id ? (
-                                                              <ChevronDown className="h-4 w-4 text-green-600 dark:text-green-400 flex-shrink-0" />
+                                                              <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 text-green-600 dark:text-green-400 flex-shrink-0" />
                                                             ) : (
-                                                              <ChevronRight className="h-4 w-4 text-green-600 dark:text-green-400 flex-shrink-0" />
+                                                              <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4 text-green-600 dark:text-green-400 flex-shrink-0" />
                                                             )}
-                                                            <Users className="h-4 w-4 text-green-600 dark:text-green-400 flex-shrink-0" />
-                                                            <span className="text-sm font-medium truncate">{chakra.legalName}{chakra.name ? ` :: ${chakra.name}` : ''}</span>
-                                                            <span className="text-xs text-slate-500 dark:text-slate-400">Chakra</span>
+                                                            <Users className="h-3 w-3 sm:h-4 sm:w-4 text-green-600 dark:text-green-400 flex-shrink-0" />
+                                                            <span className="text-xs sm:text-sm font-medium truncate">{chakra.legalName}{chakra.name ? ` :: ${chakra.name}` : ''}</span>
+                                                            <span className="text-xs text-slate-500 dark:text-slate-400 flex-shrink-0">Chakra</span>
                                                           </div>
                                                           
                                                           {/* Upa Chakra Senapotis for selected Chakra Senapoti */}
                                                           {selectedChakraSenapoti === chakra.id && (
-                                                            <div className="ml-6 mt-2 border-l-2 border-slate-200 dark:border-slate-700 pl-4 space-y-1">
+                                                            <div className="ml-3 sm:ml-6 mt-1 sm:mt-2 border-l-2 border-slate-200 dark:border-slate-700 pl-2 sm:pl-4 space-y-0.5 sm:space-y-1">
                                                               {!upaChakraSenapotis ? (
-                                                                <div className="flex items-center gap-2 py-2">
-                                                                  <div className="animate-spin rounded-full h-3 w-3 border-2 border-yellow-600 border-t-transparent"></div>
+                                                                <div className="flex items-center gap-2 py-1 sm:py-2">
+                                                                  <div className="animate-spin rounded-full h-2 w-2 sm:h-3 sm:w-3 border-2 border-yellow-600 border-t-transparent"></div>
                                                                   <span className="text-xs text-slate-500 dark:text-slate-400">Loading upa chakra senapotis...</span>
                                                                 </div>
                                                               ) : upaChakraSenapotis.length === 0 ? (
                                                                 <span className="text-xs text-slate-500 dark:text-slate-400">No upa chakra senapotis found</span>
                                                               ) : (
                                                                 upaChakraSenapotis.map((upaChakra: any) => (
-                                                                  <div key={upaChakra.id} className="flex items-center gap-2 p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800">
-                                                                    <Circle className="h-4 w-4 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
-                                                                    <span className="text-sm font-medium truncate">{upaChakra.legalName}{upaChakra.name ? ` :: ${upaChakra.name}` : ''}</span>
-                                                                    <span className="text-xs text-slate-500 dark:text-slate-400">Upa Chakra</span>
+                                                                  <div key={upaChakra.id} className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800">
+                                                                    <Circle className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
+                                                                    <span className="text-xs sm:text-sm font-medium truncate">{upaChakra.legalName}{upaChakra.name ? ` :: ${upaChakra.name}` : ''}</span>
+                                                                    <span className="text-xs text-slate-500 dark:text-slate-400 flex-shrink-0">Upa Chakra</span>
                                                                   </div>
                                                                 ))
                                                               )}
