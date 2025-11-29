@@ -199,76 +199,76 @@ export default function Hierarchy() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-purple-100 to-slate-100 dark:from-slate-900 dark:via-purple-900 dark:to-slate-900 text-black dark:text-white overflow-x-auto">
-      <div className="container mx-auto p-6">
+      <div className="container mx-auto p-2 sm:p-4 md:p-6">
         {/* Header */}
-        <div className="text-center space-y-2 mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-purple-700 dark:text-purple-300" data-testid="text-header">
+        <div className="text-center space-y-1 sm:space-y-2 mb-4 sm:mb-6 md:mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-purple-700 dark:text-purple-300" data-testid="text-header">
             Leadership Hierarchy Tree
           </h1>
-          <p className="text-xl md:text-2xl text-slate-700 dark:text-slate-300" data-testid="text-organization">
+          <p className="text-base sm:text-lg md:text-2xl text-slate-700 dark:text-slate-300" data-testid="text-organization">
             International Society for Krishna Consciousness
           </p>
         </div>
 
         {/* Tree Container */}
-        <div className="relative min-w-[800px] mx-auto">
+        <div className="relative w-full sm:min-w-[600px] md:min-w-[800px] mx-auto">
 
           {/* Level 1: Founder Acharya - Root of the tree */}
-          <div className="flex justify-center mb-8">
+          <div className="flex justify-center mb-4 sm:mb-6 md:mb-8 overflow-x-auto">
             {hierarchy.founder && hierarchy.founder.map((founder) => (
               <motion.div
                 key={founder.id}
                 initial={{ opacity: 0, y: -50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
-                className="relative"
+                className="relative flex-shrink-0"
               >
-                <Card className="bg-gradient-to-br from-orange-400 to-orange-600 border-orange-300 dark:border-orange-500/30 shadow-2xl w-80" data-testid="card-founder-acharya">
-                  <CardContent className="p-6">
+                <Card className="bg-gradient-to-br from-orange-400 to-orange-600 border-orange-300 dark:border-orange-500/30 shadow-2xl w-72 sm:w-80" data-testid="card-founder-acharya">
+                  <CardContent className="p-3 sm:p-4 md:p-6">
                     <div className="text-center text-white">
-                      <div className="flex items-center justify-center gap-4 mb-4">
-                        <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+                      <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 mb-2 sm:mb-4">
+                        <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
                           <img 
                             src={iskconLogo} 
                             alt="ISKCON Logo" 
-                            className="w-12 h-12 object-contain filter brightness-0 invert"
+                            className="w-8 h-8 sm:w-12 sm:h-12 object-contain filter brightness-0 invert"
                             data-testid="img-founder-logo"
                           />
                         </div>
-                        <div className="w-16 h-16 rounded-full overflow-hidden shadow-lg ring-4 ring-white/30">
+                        <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full overflow-hidden shadow-lg ring-2 sm:ring-4 ring-white/30 flex-shrink-0">
                           <img 
                             src={prabhupadaImage} 
                             alt="Srila Prabhupada" 
-                            className="w-16 h-16 object-cover"
+                            className="w-12 h-12 sm:w-16 sm:h-16 object-cover"
                             data-testid="img-founder-prabhupada"
                           />
                         </div>
                       </div>
-                      <h2 className="text-xl font-bold mb-2" data-testid="text-founder-title">
+                      <h2 className="text-sm sm:text-lg md:text-xl font-bold mb-1 sm:mb-2" data-testid="text-founder-title">
                         ISKCON Founder Acharya
                       </h2>
-                      <p className="text-lg font-semibold" data-testid="text-founder-name">
+                      <p className="text-xs sm:text-base md:text-lg font-semibold" data-testid="text-founder-name">
                         {founder.name}
                       </p>
                     </div>
                   </CardContent>
                 </Card>
                 {/* Connecting line down */}
-                <div className="absolute top-full left-1/2 w-px h-12 bg-gradient-to-b from-orange-400 to-purple-400 transform -translate-x-1/2"></div>
+                <div className="absolute top-full left-1/2 w-px h-6 sm:h-8 md:h-12 bg-gradient-to-b from-orange-400 to-purple-400 transform -translate-x-1/2"></div>
               </motion.div>
             ))}
           </div>
 
           {/* Level 2: GBC, Regional Directors, Co-Regional Directors - First branches */}
-          <div className="relative mb-12">
-            {/* Horizontal connecting line */}
-            <div className="absolute top-0 left-1/4 right-1/4 h-px bg-gradient-to-r from-purple-400 via-blue-400 to-teal-400"></div>
-            {/* Vertical connecting lines */}
-            <div className="absolute top-0 left-1/4 w-px h-4 bg-purple-400 transform -translate-x-1/2"></div>
-            <div className="absolute top-0 left-1/2 w-px h-4 bg-blue-400 transform -translate-x-1/2"></div>
-            <div className="absolute top-0 right-1/4 w-px h-4 bg-teal-400 transform translate-x-1/2"></div>
+          <div className="relative mb-6 sm:mb-8 md:mb-12 overflow-x-auto">
+            {/* Horizontal connecting line - hidden on mobile */}
+            <div className="absolute top-0 left-1/4 right-1/4 h-px bg-gradient-to-r from-purple-400 via-blue-400 to-teal-400 hidden sm:block"></div>
+            {/* Vertical connecting lines - hidden on mobile */}
+            <div className="absolute top-0 left-1/4 w-px h-4 md:h-6 bg-purple-400 transform -translate-x-1/2 hidden sm:block"></div>
+            <div className="absolute top-0 left-1/2 w-px h-4 md:h-6 bg-blue-400 transform -translate-x-1/2 hidden sm:block"></div>
+            <div className="absolute top-0 right-1/4 w-px h-4 md:h-6 bg-teal-400 transform translate-x-1/2 hidden sm:block"></div>
             
-            <div className="grid grid-cols-3 gap-8 pt-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6 lg:gap-8 pt-2 sm:pt-4">
               {/* GBC Card */}
               <motion.div
                 initial={{ opacity: 0, x: -100 }}
@@ -276,23 +276,23 @@ export default function Hierarchy() {
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
                 <Card className="bg-gradient-to-br from-purple-400 to-purple-600 border-purple-300 dark:border-purple-500/30 shadow-xl" data-testid="card-gbc">
-                  <CardContent className="p-6">
+                  <CardContent className="p-3 sm:p-4 md:p-6">
                     <div className="text-center text-white">
-                      <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <div className="w-10 h-10 sm:w-14 sm:h-14 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-4">
                         <img 
                           src={iskconLogo} 
                           alt="ISKCON Logo" 
-                          className="w-10 h-10 object-contain filter brightness-0 invert"
+                          className="w-6 h-6 sm:w-10 sm:h-10 object-contain filter brightness-0 invert"
                           data-testid="img-gbc-logo"
                         />
                       </div>
-                      <h3 className="text-lg font-bold mb-2" data-testid="text-gbc-title">
+                      <h3 className="text-xs sm:text-base md:text-lg font-bold mb-1 sm:mb-2" data-testid="text-gbc-title">
                         GBC & Namahatta Minister
                       </h3>
-                      <div className="space-y-1">
+                      <div className="space-y-0.5 sm:space-y-1">
                         {hierarchy.gbc && hierarchy.gbc.map((gbcMember, index) => (
                           <div key={gbcMember.id}>
-                            <p className="text-sm font-semibold" data-testid={`text-gbc-name-${index}`}>
+                            <p className="text-xs sm:text-sm font-semibold" data-testid={`text-gbc-name-${index}`}>
                               {gbcMember.name}
                             </p>
                           </div>
@@ -310,23 +310,23 @@ export default function Hierarchy() {
                 transition={{ duration: 0.6, delay: 0.3 }}
               >
                 <Card className="bg-gradient-to-br from-blue-400 to-blue-600 border-blue-300 dark:border-blue-500/30 shadow-xl" data-testid="card-regional-director">
-                  <CardContent className="p-6">
+                  <CardContent className="p-3 sm:p-4 md:p-6">
                     <div className="text-center text-white">
-                      <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <div className="w-10 h-10 sm:w-14 sm:h-14 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-4">
                         <img 
                           src={iskconLogo} 
                           alt="ISKCON Logo" 
-                          className="w-10 h-10 object-contain filter brightness-0 invert"
+                          className="w-6 h-6 sm:w-10 sm:h-10 object-contain filter brightness-0 invert"
                           data-testid="img-regional-director-logo"
                         />
                       </div>
-                      <h3 className="text-lg font-bold mb-2" data-testid="text-regional-director-title">
+                      <h3 className="text-xs sm:text-base md:text-lg font-bold mb-1 sm:mb-2" data-testid="text-regional-director-title">
                         Regional Director
                       </h3>
-                      <div className="space-y-1">
+                      <div className="space-y-0.5 sm:space-y-1">
                         {hierarchy.regionalDirectors && hierarchy.regionalDirectors.map((director, index) => (
                           <div key={director.id}>
-                            <p className="text-sm font-semibold" data-testid={`text-regional-director-name-${index}`}>
+                            <p className="text-xs sm:text-sm font-semibold" data-testid={`text-regional-director-name-${index}`}>
                               {director.name}
                             </p>
                           </div>
@@ -344,23 +344,23 @@ export default function Hierarchy() {
                 transition={{ duration: 0.6, delay: 0.4 }}
               >
                 <Card className="bg-gradient-to-br from-teal-400 to-teal-600 border-teal-300 dark:border-teal-500/30 shadow-xl" data-testid="card-co-regional-director">
-                  <CardContent className="p-6">
+                  <CardContent className="p-3 sm:p-4 md:p-6">
                     <div className="text-center text-white">
-                      <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <div className="w-10 h-10 sm:w-14 sm:h-14 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-4">
                         <img 
                           src={iskconLogo} 
                           alt="ISKCON Logo" 
-                          className="w-10 h-10 object-contain filter brightness-0 invert"
+                          className="w-6 h-6 sm:w-10 sm:h-10 object-contain filter brightness-0 invert"
                           data-testid="img-co-regional-director-logo"
                         />
                       </div>
-                      <h3 className="text-lg font-bold mb-2" data-testid="text-co-regional-director-title">
+                      <h3 className="text-xs sm:text-base md:text-lg font-bold mb-1 sm:mb-2" data-testid="text-co-regional-director-title">
                         Co-Regional Director
                       </h3>
-                      <div className="space-y-1">
+                      <div className="space-y-0.5 sm:space-y-1">
                         {hierarchy.coRegionalDirectors && hierarchy.coRegionalDirectors.map((coDirector, index) => (
                           <div key={coDirector.id}>
-                            <p className="text-sm font-semibold" data-testid={`text-co-regional-director-name-${index}`}>
+                            <p className="text-xs sm:text-sm font-semibold" data-testid={`text-co-regional-director-name-${index}`}>
                               {coDirector.name}
                             </p>
                           </div>
@@ -382,39 +382,39 @@ export default function Hierarchy() {
             <CollapsibleTrigger asChild>
               <Button 
                 variant="ghost" 
-                className="w-full justify-between p-4 h-auto bg-white/70 dark:bg-slate-800/30 border border-slate-300 dark:border-slate-600/30 hover:bg-slate-100 dark:hover:bg-slate-800/50 text-black dark:text-white rounded-lg shadow-lg"
+                className="w-full justify-between p-2 sm:p-3 md:p-4 h-auto bg-white/70 dark:bg-slate-800/30 border border-slate-300 dark:border-slate-600/30 hover:bg-slate-100 dark:hover:bg-slate-800/50 text-black dark:text-white rounded-lg shadow-lg"
                 data-testid="button-additional-leaders-toggle"
               >
-                <div className="flex items-center">
-                  <Users className="mr-3 h-5 w-5 text-slate-600 dark:text-slate-300" />
-                  <span className="text-lg font-semibold">Additional Leadership Roles</span>
+                <div className="flex items-center gap-1.5 sm:gap-3">
+                  <Users className="mr-0 sm:mr-1 h-4 w-4 sm:h-5 sm:w-5 text-slate-600 dark:text-slate-300 flex-shrink-0" />
+                  <span className="text-xs sm:text-sm md:text-lg font-semibold">Additional Leadership Roles</span>
                 </div>
                 {isAdditionalLeadersOpen ? (
-                  <ChevronDown className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                  <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5 text-slate-600 dark:text-slate-400 flex-shrink-0" />
                 ) : (
-                  <ChevronRight className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                  <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 text-slate-600 dark:text-slate-400 flex-shrink-0" />
                 )}
               </Button>
             </CollapsibleTrigger>
-            <CollapsibleContent className="mt-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <CollapsibleContent className="mt-2 sm:mt-3 md:mt-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
                 {/* Mala Senapotis */}
                 {hierarchy.malaSenapotis && hierarchy.malaSenapotis.length > 0 && (
                   <Card className="bg-white/80 dark:bg-slate-800/50 border-red-300 dark:border-red-500/30 shadow-lg" data-testid="card-mala-senapotis">
-                    <CardContent className="p-4">
-                      <div className="text-center space-y-3">
-                        <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center mx-auto">
-                          <Crown className="h-5 w-5 text-white" />
+                    <CardContent className="p-2 sm:p-3 md:p-4">
+                      <div className="text-center space-y-1.5 sm:space-y-2 md:space-y-3">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-red-500 rounded-full flex items-center justify-center mx-auto">
+                          <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                         </div>
-                        <h4 className="text-sm font-bold text-red-700 dark:text-red-300">Mala Senapotis</h4>
-                        <div className="space-y-1 max-h-32 overflow-y-auto">
+                        <h4 className="text-xs sm:text-sm font-bold text-red-700 dark:text-red-300">Mala Senapotis</h4>
+                        <div className="space-y-0.5 sm:space-y-1 max-h-28 sm:max-h-32 overflow-y-auto">
                           {hierarchy.malaSenapotis.map((leader) => (
                             <div key={leader.id} className="text-xs relative group">
-                              <div className="flex items-center justify-between p-2 rounded hover:bg-red-50 dark:hover:bg-red-900/20">
-                                <div className="flex-1">
-                                  <p className="font-medium text-red-800 dark:text-red-200">{leader.name}</p>
+                              <div className="flex items-center justify-between p-1 sm:p-2 rounded hover:bg-red-50 dark:hover:bg-red-900/20">
+                                <div className="flex-1 min-w-0">
+                                  <p className="font-medium text-red-800 dark:text-red-200 text-xs truncate">{leader.name}</p>
                                   {leader.namahattaName && (
-                                    <p className="text-red-600 dark:text-red-400 truncate" title={leader.namahattaName}>
+                                    <p className="text-red-600 dark:text-red-400 truncate text-xs" title={leader.namahattaName}>
                                       {leader.namahattaName}
                                     </p>
                                   )}
@@ -425,7 +425,7 @@ export default function Hierarchy() {
                                       <Button
                                         variant="ghost"
                                         size="sm"
-                                        className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        className="h-5 w-5 sm:h-6 sm:w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
                                         data-testid={`button-role-menu-${leader.id}`}
                                       >
                                         <MoreVertical className="h-3 w-3" />
@@ -451,18 +451,18 @@ export default function Hierarchy() {
                 {/* Maha Chakra Senapotis */}
                 {hierarchy.mahaChakraSenapotis && hierarchy.mahaChakraSenapotis.length > 0 && (
                   <Card className="bg-white/80 dark:bg-slate-800/50 border-indigo-300 dark:border-indigo-500/30 shadow-lg" data-testid="card-maha-chakra-senapotis">
-                    <CardContent className="p-4">
-                      <div className="text-center space-y-3">
-                        <div className="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center mx-auto">
-                          <UserCheck className="h-5 w-5 text-white" />
+                    <CardContent className="p-2 sm:p-3 md:p-4">
+                      <div className="text-center space-y-1.5 sm:space-y-2 md:space-y-3">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-indigo-500 rounded-full flex items-center justify-center mx-auto">
+                          <UserCheck className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                         </div>
-                        <h4 className="text-sm font-bold text-indigo-700 dark:text-indigo-300">Maha Chakra Senapotis</h4>
-                        <div className="space-y-1 max-h-32 overflow-y-auto">
+                        <h4 className="text-xs sm:text-sm font-bold text-indigo-700 dark:text-indigo-300">Maha Chakra Senapotis</h4>
+                        <div className="space-y-0.5 sm:space-y-1 max-h-28 sm:max-h-32 overflow-y-auto">
                           {hierarchy.mahaChakraSenapotis.map((leader) => (
                             <div key={leader.id} className="text-xs">
-                              <p className="font-medium text-indigo-800 dark:text-indigo-200">{leader.name}</p>
+                              <p className="font-medium text-indigo-800 dark:text-indigo-200 text-xs truncate">{leader.name}</p>
                               {leader.namahattaName && (
-                                <p className="text-indigo-600 dark:text-indigo-400 truncate" title={leader.namahattaName}>
+                                <p className="text-indigo-600 dark:text-indigo-400 truncate text-xs" title={leader.namahattaName}>
                                   {leader.namahattaName}
                                 </p>
                               )}
@@ -477,18 +477,18 @@ export default function Hierarchy() {
                 {/* Chakra Senapotis */}
                 {hierarchy.chakraSenapotis && hierarchy.chakraSenapotis.length > 0 && (
                   <Card className="bg-white/80 dark:bg-slate-800/50 border-green-300 dark:border-green-500/30 shadow-lg" data-testid="card-chakra-senapotis">
-                    <CardContent className="p-4">
-                      <div className="text-center space-y-3">
-                        <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center mx-auto">
-                          <Users className="h-5 w-5 text-white" />
+                    <CardContent className="p-2 sm:p-3 md:p-4">
+                      <div className="text-center space-y-1.5 sm:space-y-2 md:space-y-3">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-500 rounded-full flex items-center justify-center mx-auto">
+                          <Users className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                         </div>
-                        <h4 className="text-sm font-bold text-green-700 dark:text-green-300">Chakra Senapotis</h4>
-                        <div className="space-y-1 max-h-32 overflow-y-auto">
+                        <h4 className="text-xs sm:text-sm font-bold text-green-700 dark:text-green-300">Chakra Senapotis</h4>
+                        <div className="space-y-0.5 sm:space-y-1 max-h-28 sm:max-h-32 overflow-y-auto">
                           {hierarchy.chakraSenapotis.map((leader) => (
                             <div key={leader.id} className="text-xs">
-                              <p className="font-medium text-green-800 dark:text-green-200">{leader.name}</p>
+                              <p className="font-medium text-green-800 dark:text-green-200 text-xs truncate">{leader.name}</p>
                               {leader.namahattaName && (
-                                <p className="text-green-600 dark:text-green-400 truncate" title={leader.namahattaName}>
+                                <p className="text-green-600 dark:text-green-400 truncate text-xs" title={leader.namahattaName}>
                                   {leader.namahattaName}
                                 </p>
                               )}
@@ -503,18 +503,18 @@ export default function Hierarchy() {
                 {/* Upa Chakra Senapotis */}
                 {hierarchy.upaChakraSenapotis && hierarchy.upaChakraSenapotis.length > 0 && (
                   <Card className="bg-white/80 dark:bg-slate-800/50 border-yellow-300 dark:border-yellow-500/30 shadow-lg" data-testid="card-upa-chakra-senapotis">
-                    <CardContent className="p-4">
-                      <div className="text-center space-y-3">
-                        <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center mx-auto">
-                          <MapPin className="h-5 w-5 text-white" />
+                    <CardContent className="p-2 sm:p-3 md:p-4">
+                      <div className="text-center space-y-1.5 sm:space-y-2 md:space-y-3">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-yellow-500 rounded-full flex items-center justify-center mx-auto">
+                          <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                         </div>
-                        <h4 className="text-sm font-bold text-yellow-700 dark:text-yellow-300">Upa Chakra Senapotis</h4>
-                        <div className="space-y-1 max-h-32 overflow-y-auto">
+                        <h4 className="text-xs sm:text-sm font-bold text-yellow-700 dark:text-yellow-300">Upa Chakra Senapotis</h4>
+                        <div className="space-y-0.5 sm:space-y-1 max-h-28 sm:max-h-32 overflow-y-auto">
                           {hierarchy.upaChakraSenapotis.map((leader) => (
                             <div key={leader.id} className="text-xs">
-                              <p className="font-medium text-yellow-800 dark:text-yellow-200">{leader.name}</p>
+                              <p className="font-medium text-yellow-800 dark:text-yellow-200 text-xs truncate">{leader.name}</p>
                               {leader.namahattaName && (
-                                <p className="text-yellow-600 dark:text-yellow-400 truncate" title={leader.namahattaName}>
+                                <p className="text-yellow-600 dark:text-yellow-400 truncate text-xs" title={leader.namahattaName}>
                                   {leader.namahattaName}
                                 </p>
                               )}
@@ -532,23 +532,23 @@ export default function Hierarchy() {
 
         {/* District Supervisors Tree - Simple Collapsible Structure */}
         {(districtSupervisors as any[]) && (districtSupervisors as any[]).length > 0 && (
-          <div className="mt-8">
+          <div className="mt-4 sm:mt-6 md:mt-8">
             <Collapsible open={isDistrictSupervisorsOpen} onOpenChange={setIsDistrictSupervisorsOpen}>
               <CollapsibleTrigger asChild>
                 <Button 
                   variant="ghost" 
-                  className="w-full justify-between p-4 h-auto bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-black dark:text-white rounded-lg"
+                  className="w-full justify-between p-2 sm:p-3 md:p-4 h-auto bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-black dark:text-white rounded-lg"
                   data-testid="button-district-supervisors-toggle"
                 >
-                  <div className="flex items-center gap-3">
-                    <TreePine className="h-5 w-5 text-slate-600 dark:text-slate-400" />
-                    <span className="text-lg font-semibold">District Supervisors Tree</span>
-                    <span className="text-sm text-slate-500 dark:text-slate-400">({(districtSupervisors as any[])?.length || 0})</span>
+                  <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3">
+                    <TreePine className="h-4 w-4 sm:h-5 sm:w-5 text-slate-600 dark:text-slate-400 flex-shrink-0" />
+                    <span className="text-xs sm:text-base md:text-lg font-semibold truncate">District Supervisors Tree</span>
+                    <span className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 flex-shrink-0">({(districtSupervisors as any[])?.length || 0})</span>
                   </div>
                   {isDistrictSupervisorsOpen ? (
-                    <ChevronDown className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                    <ChevronDown className="h-4 w-4 sm:h-5 sm:w-5 text-slate-600 dark:text-slate-400 flex-shrink-0" />
                   ) : (
-                    <ChevronRight className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                    <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 text-slate-600 dark:text-slate-400 flex-shrink-0" />
                   )}
                 </Button>
               </CollapsibleTrigger>
