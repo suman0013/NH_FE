@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { ChevronDown, ChevronRight, MapPin, Users, Home, BarChart3, RefreshCw, Loader2, TrendingUp, Building2, Globe, X } from "lucide-react";
+import { ChevronDown, ChevronRight, MapPin, Users, Home, BarChart3, RefreshCw, Loader2, TrendingUp, Building2, Globe, X, Download } from "lucide-react";
 import { useLocation } from "wouter";
+import { ExportModal } from "@/components/ExportModal";
 
 // Helper function to get card background color based on counts
 // Standardized coloring:
@@ -79,6 +80,7 @@ export default function Reports() {
   const [openDistricts, setOpenDistricts] = useState<Set<string>>(new Set());
   const [openSubDistricts, setOpenSubDistricts] = useState<Set<string>>(new Set());
   const [selectedArea, setSelectedArea] = useState<SelectedArea | null>(null);
+  const [exportModalOpen, setExportModalOpen] = useState(false);
 
   // Query to fetch all states
   const { data: statesData, isLoading: statesLoading, error: statesError, refetch: refetchStates, isFetching: statesFetching } = useQuery<StateData[]>({
@@ -180,6 +182,14 @@ export default function Reports() {
                 </p>
               </div>
             </div>
+            <Button
+              onClick={() => setExportModalOpen(true)}
+              className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white"
+              data-testid="button-export-reports"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Export
+            </Button>
           </div>
 
           {/* Compact States List */}
@@ -213,6 +223,7 @@ export default function Reports() {
           )}
         </div>
         <NamahattasModal selectedArea={selectedArea} onClose={() => setSelectedArea(null)} />
+        <ExportModal open={exportModalOpen} onClose={() => setExportModalOpen(false)} />
       </div>
     </div>
   );

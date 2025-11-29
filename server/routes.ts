@@ -427,6 +427,160 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Export API endpoints for reports
+  app.get("/api/reports/export/districts", authenticateJWT, authorize(['ADMIN', 'OFFICE', 'DISTRICT_SUPERVISOR']), validateDistrictAccess, async (req, res) => {
+    try {
+      const filters: { allowedDistricts?: string[] } = {};
+      
+      // Apply district filtering for supervisors
+      if (req.user?.role === 'DISTRICT_SUPERVISOR') {
+        filters.allowedDistricts = req.user.districts;
+      }
+
+      // Get only states that the user has access to
+      const states = await storage.getAllStatesWithCounts(filters);
+      
+      // Collect only districts the user has access to
+      const allDistricts: Array<{name: string; state: string; country: string; namahattaCount: number; devoteeCount: number}> = [];
+      
+      for (const state of states) {
+        const districts = await storage.getAllDistrictsWithCounts(state.name, filters);
+        for (const district of districts) {
+          // For supervisors, only include districts they have access to
+          if (req.user?.role === 'DISTRICT_SUPERVISOR') {
+            if (!filters.allowedDistricts?.includes(district.name)) {
+              continue;
+            }
+          }
+          allDistricts.push({
+            name: district.name,
+            state: state.name,
+            country: state.country,
+            namahattaCount: district.namahattaCount,
+            devoteeCount: district.devoteeCount
+          });
+        }
+      }
+      
+      res.json(allDistricts);
+    } catch (error) {
+      console.error('API Error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  app.post("/api/reports/export/data", authenticateJWT, authorize(['ADMIN', 'OFFICE', 'DISTRICT_SUPERVISOR']), validateDistrictAccess, async (req, res) => {
+    try {
+      const { districts, includeNamahattas, includeDevotees } = req.body;
+      
+      if (!districts || !Array.isArray(districts) || districts.length === 0) {
+        return res.status(400).json({ error: 'Please select at least one district' });
+      }
+
+      const filters: { allowedDistricts?: string[] } = {};
+      
+      // Apply district filtering for supervisors
+      if (req.user?.role === 'DISTRICT_SUPERVISOR') {
+        filters.allowedDistricts = req.user.districts;
+        
+        // Validate that all requested districts are in the supervisor's allowed districts
+        for (const districtInfo of districts) {
+          if (!filters.allowedDistricts?.includes(districtInfo.district)) {
+            return res.status(403).json({ error: `Access denied: You do not have permission to export data for district "${districtInfo.district}"` });
+          }
+        }
+      }
+
+      const exportData: any = {
+        districts: [],
+        namahattas: [],
+        devotees: [],
+        generatedAt: new Date().toISOString()
+      };
+
+      // Process each selected district
+      for (const districtInfo of districts) {
+        const { district, state } = districtInfo;
+        
+        // Get sub-districts for this district
+        const subDistricts = await storage.getAllSubDistrictsWithCounts(state, district, filters);
+        
+        const districtData = {
+          name: district,
+          state,
+          namahattaCount: subDistricts.reduce((sum: number, sd: any) => sum + sd.namahattaCount, 0),
+          devoteeCount: subDistricts.reduce((sum: number, sd: any) => sum + sd.devoteeCount, 0),
+          subDistricts: subDistricts.map((sd: any) => ({
+            name: sd.name,
+            namahattaCount: sd.namahattaCount,
+            devoteeCount: sd.devoteeCount
+          }))
+        };
+        exportData.districts.push(districtData);
+
+        // Fetch namahattas if requested
+        if (includeNamahattas) {
+          const namahattaResult = await storage.getNamahattas(1, 10000, {
+            district,
+            state,
+            allowedDistricts: filters.allowedDistricts
+          });
+          
+          for (const n of namahattaResult.data as any[]) {
+            exportData.namahattas.push({
+              name: n.name,
+              code: n.code || '',
+              district,
+              state,
+              subDistrict: n.address?.subDistrict || '',
+              village: n.address?.village || '',
+              meetingDay: n.meetingDay || '',
+              meetingTime: n.meetingTime || '',
+              status: n.status || '',
+              malaSenapoti: n.malaSenapoti || '',
+              mahaChakraSenapoti: n.mahaChakraSenapoti || '',
+              chakraSenapoti: n.chakraSenapoti || '',
+              upaChakraSenapoti: n.upaChakraSenapoti || '',
+              president: n.president || '',
+              secretary: n.secretary || '',
+              accountant: n.accountant || ''
+            });
+          }
+        }
+
+        // Fetch devotees if requested
+        if (includeDevotees) {
+          const devoteeResult = await storage.getDevotees(1, 10000, {
+            district,
+            state,
+            allowedDistricts: filters.allowedDistricts
+          });
+          
+          for (const d of devoteeResult.data as any[]) {
+            exportData.devotees.push({
+              name: d.name,
+              phone: d.phone || '',
+              email: d.email || '',
+              district,
+              state,
+              subDistrict: d.address?.subDistrict || '',
+              village: d.address?.village || '',
+              namahatta: d.namahatta?.name || '',
+              initiationName: d.initiatedName || '',
+              leadershipRole: d.leadershipRole || '',
+              status: d.devotionalStatus?.name || ''
+            });
+          }
+        }
+      }
+
+      res.json(exportData);
+    } catch (error) {
+      console.error('Export API Error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
   // Dashboard (requires authentication)
   app.get("/api/dashboard", authenticateJWT, async (req, res) => {
     const summary = await storage.getDashboardSummary();
