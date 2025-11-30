@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -67,21 +67,7 @@ const registrationSchema = z.object({
 }).refine(data => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"]
-}).refine(
-  async (data) => {
-    const res = await fetch('/api/auth/check-username', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: data.username })
-    });
-    const result = await res.json();
-    return result.available;
-  },
-  {
-    message: "Username already taken",
-    path: ["username"]
-  }
-);
+});
 
 const senapotiRegistrationSchema = z.object({
   username: z.string()
@@ -97,21 +83,7 @@ const senapotiRegistrationSchema = z.object({
 }).refine(data => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"]
-}).refine(
-  async (data) => {
-    const res = await fetch('/api/auth/check-username', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: data.username })
-    });
-    const result = await res.json();
-    return result.available;
-  },
-  {
-    message: "Username already taken",
-    path: ["username"]
-  }
-);
+});
 
 type RegistrationForm = z.infer<typeof registrationSchema>;
 type SenapotiRegistrationForm = z.infer<typeof senapotiRegistrationSchema>;
@@ -177,6 +149,21 @@ const ROLE_LABELS: Record<string, string> = {
   'UPA_CHAKRA_SENAPOTI': 'Upachakra Senapoti'
 };
 
+// Debounce hook for async validation
+function useDebounce<T>(value: T, delay: number) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  
+  useState(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+    
+    return () => clearTimeout(handler);
+  });
+  
+  return debouncedValue;
+}
+
 export default function AdminSupervisorRegistration() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -195,6 +182,27 @@ export default function AdminSupervisorRegistration() {
   
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  
+  // Debounce timers for username validation
+  const usernameCheckTimerRef = useRef<NodeJS.Timeout>();
+  const senapotiUsernameCheckTimerRef = useRef<NodeJS.Timeout>();
+  
+  // Async username validator with debouncing
+  const validateUsernameUnique = useCallback(async (username: string) => {
+    if (username.length < 5) return true; // Skip validation if too short
+    
+    try {
+      const res = await fetch('/api/auth/check-username', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username })
+      });
+      const result = await res.json();
+      return result.available ? true : "Username already taken";
+    } catch {
+      return true; // Allow on error
+    }
+  }, []);
 
   const form = useForm<RegistrationForm>({
     resolver: zodResolver(registrationSchema),
@@ -206,7 +214,8 @@ export default function AdminSupervisorRegistration() {
       password: "",
       confirmPassword: "",
       districts: []
-    }
+    },
+    mode: "onBlur"
   });
 
   const senapotiForm = useForm<SenapotiRegistrationForm>({
@@ -215,7 +224,8 @@ export default function AdminSupervisorRegistration() {
       username: "",
       password: "",
       confirmPassword: ""
-    }
+    },
+    mode: "onBlur"
   });
 
   const { data: districts = [], isLoading: loadingDistricts } = useQuery({
@@ -943,7 +953,18 @@ export default function AdminSupervisorRegistration() {
                       <FormItem>
                         <FormLabel>Username</FormLabel>
                         <FormControl>
-                          <Input placeholder="username" {...field} data-testid="input-senapoti-username" />
+                          <Input 
+                            placeholder="username" 
+                            {...field}
+                            onChange={(e) => {
+                              field.onChange(e);
+                              clearTimeout(senapotiUsernameCheckTimerRef.current);
+                              senapotiUsernameCheckTimerRef.current = setTimeout(() => {
+                                senapotiForm.trigger("username");
+                              }, 500);
+                            }}
+                            data-testid="input-senapoti-username" 
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -1049,7 +1070,18 @@ export default function AdminSupervisorRegistration() {
                       <FormItem>
                         <FormLabel>Username</FormLabel>
                         <FormControl>
-                          <Input placeholder="username" {...field} data-testid="input-username" />
+                          <Input 
+                            placeholder="username" 
+                            {...field}
+                            onChange={(e) => {
+                              field.onChange(e);
+                              clearTimeout(usernameCheckTimerRef.current);
+                              usernameCheckTimerRef.current = setTimeout(() => {
+                                form.trigger("username");
+                              }, 500);
+                            }}
+                            data-testid="input-username" 
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
