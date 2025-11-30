@@ -1346,7 +1346,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // District Supervisor Registration (Admin only)
-  app.post("/api/admin/register-supervisor", authenticateJWT, authorize(['ADMIN']), async (req, res) => {
+  app.post("/api/admin/register-supervisor", authenticateJWT, authorize(['ADMIN', 'OFFICE']), async (req, res) => {
     try {
       const { username, fullName, email, phone, password, districts } = req.body;
       
@@ -1397,7 +1397,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get all users (Admin only)
-  app.get("/api/admin/users", authenticateJWT, authorize(['ADMIN']), async (req, res) => {
+  app.get("/api/admin/users", authenticateJWT, authorize(['ADMIN', 'OFFICE']), async (req, res) => {
     try {
       const users = await storage.getAllUsers();
       res.json(users);
@@ -1417,7 +1417,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update user (Admin only) - supports partial updates including password-only changes
-  app.put("/api/admin/users/:id", authenticateJWT, authorize(['ADMIN']), async (req, res) => {
+  app.put("/api/admin/users/:id", authenticateJWT, authorize(['ADMIN', 'OFFICE']), async (req, res) => {
     try {
       const userId = parseInt(req.params.id);
       if (isNaN(userId)) {
@@ -1455,7 +1455,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Deactivate user (Admin only)
-  app.delete("/api/admin/users/:id", authenticateJWT, authorize(['ADMIN']), async (req, res) => {
+  app.delete("/api/admin/users/:id", authenticateJWT, authorize(['ADMIN', 'OFFICE']), async (req, res) => {
     try {
       const userId = parseInt(req.params.id);
       if (isNaN(userId)) {
@@ -1477,7 +1477,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Register Office user (Admin only)
-  app.post("/api/admin/register-office", sanitizeInput, modifyRateLimit, authenticateJWT, authorize(['ADMIN']), async (req, res) => {
+  app.post("/api/admin/register-office", sanitizeInput, modifyRateLimit, authenticateJWT, authorize(['ADMIN', 'OFFICE']), async (req, res) => {
     try {
       const { username, fullName, email, phone, password, districts } = req.body;
 
@@ -1607,7 +1607,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Reactivate a deactivated user
-  app.post("/api/admin/users/:id/reactivate", authenticateJWT, authorize(['ADMIN']), async (req, res) => {
+  app.post("/api/admin/users/:id/reactivate", authenticateJWT, authorize(['ADMIN', 'OFFICE']), async (req, res) => {
     try {
       const userId = parseInt(req.params.id);
       if (isNaN(userId)) {
