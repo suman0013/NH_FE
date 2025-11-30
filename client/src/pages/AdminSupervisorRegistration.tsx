@@ -627,7 +627,7 @@ export default function AdminSupervisorRegistration() {
                     {deactivateMutation.isPending ? (
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                     ) : (
-                      <PowerOff className="h-4 w-4 mr-2" />
+                      <Lock className="h-4 w-4 mr-2" />
                     )}
                     Disable Login
                   </Button>
@@ -642,7 +642,7 @@ export default function AdminSupervisorRegistration() {
                     {reactivateMutation.isPending ? (
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                     ) : (
-                      <Power className="h-4 w-4 mr-2" />
+                      <Unlock className="h-4 w-4 mr-2" />
                     )}
                     Enable Login
                   </Button>
