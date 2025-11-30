@@ -622,6 +622,17 @@ export class DatabaseStorage implements IStorage {
       orderBy = filters.sortOrder === 'desc' ? desc(namahattas.name) : asc(namahattas.name);
     }
 
+    // Subquery for devotee counts
+    const devoteeCountSubquery = db
+      .select({
+        namahattaId: devotees.namahattaId,
+        count: sql<number>`count(${devotees.id})`.mapWith(Number)
+      })
+      .from(devotees)
+      .where(isNotNull(devotees.namahattaId))
+      .groupBy(devotees.namahattaId)
+      .as('devotee_counts');
+
     const [data, totalResult] = await Promise.all([
       db.select({
         id: namahattas.id,
@@ -642,7 +653,7 @@ export class DatabaseStorage implements IStorage {
         registrationDate: namahattas.registrationDate,
         createdAt: namahattas.createdAt,
         updatedAt: namahattas.updatedAt,
-        devoteeCount: sql<number>`count(distinct ${devotees.id})`.mapWith(Number),
+        devoteeCount: sql<number>`COALESCE(${devoteeCountSubquery.count}, 0)`.mapWith(Number),
         // Include address information in main query to avoid N+1
         addressCountry: addresses.country,
         addressState: addresses.stateNameEnglish,
@@ -662,7 +673,7 @@ export class DatabaseStorage implements IStorage {
       }).from(namahattas)
         .leftJoin(namahattaAddresses, eq(namahattas.id, namahattaAddresses.namahattaId))
         .leftJoin(addresses, eq(namahattaAddresses.addressId, addresses.id))
-        .leftJoin(devotees, eq(namahattas.id, devotees.namahattaId))
+        .leftJoin(devoteeCountSubquery, eq(namahattas.id, devoteeCountSubquery.namahattaId))
         .leftJoin(sql`${devotees} as mala_devotee`, eq(namahattas.malaSenapotiId, sql`mala_devotee.id`))
         .leftJoin(sql`${devotees} as maha_chakra_devotee`, eq(namahattas.mahaChakraSenapotiId, sql`maha_chakra_devotee.id`))
         .leftJoin(sql`${devotees} as chakra_devotee`, eq(namahattas.chakraSenapotiId, sql`chakra_devotee.id`))
@@ -671,7 +682,7 @@ export class DatabaseStorage implements IStorage {
         .leftJoin(sql`${devotees} as president_devotee`, eq(namahattas.presidentId, sql`president_devotee.id`))
         .leftJoin(sql`${devotees} as accountant_devotee`, eq(namahattas.accountantId, sql`accountant_devotee.id`))
         .where(whereClause)
-        .groupBy(namahattas.id, addresses.id, namahattaAddresses.id, devotees.id, sql`mala_devotee.name`, sql`maha_chakra_devotee.name`, sql`chakra_devotee.name`, sql`upa_chakra_devotee.name`, sql`secretary_devotee.name`, sql`president_devotee.name`, sql`accountant_devotee.name`)
+        .groupBy(namahattas.id, addresses.id, namahattaAddresses.id, sql`mala_devotee.name`, sql`maha_chakra_devotee.name`, sql`chakra_devotee.name`, sql`upa_chakra_devotee.name`, sql`secretary_devotee.name`, sql`president_devotee.name`, sql`accountant_devotee.name`, devoteeCountSubquery.namahattaId)
         .limit(size)
         .offset(offset)
         .orderBy(orderBy),
