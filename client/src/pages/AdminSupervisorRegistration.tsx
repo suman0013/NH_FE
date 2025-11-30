@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { 
-  Loader2, UserPlus, Users, Shield, Key, Power, PowerOff, 
+  Loader2, UserPlus, Users, Shield, Key, Lock, Unlock, 
   Building2, MapPin, Search, Eye, EyeOff, ChevronDown,
   Clock, Mail, Phone, User as UserIcon
 } from "lucide-react";
@@ -530,7 +530,7 @@ export default function AdminSupervisorRegistration() {
                               title="Disable Login"
                               className="text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-950"
                             >
-                              <PowerOff className="h-4 w-4" />
+                              <Lock className="h-4 w-4" />
                             </Button>
                           ) : (
                             <Button
@@ -545,7 +545,7 @@ export default function AdminSupervisorRegistration() {
                               title="Enable Login"
                               className="text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-950"
                             >
-                              <Power className="h-4 w-4" />
+                              <Unlock className="h-4 w-4" />
                             </Button>
                           )}
                         </div>
