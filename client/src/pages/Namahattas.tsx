@@ -359,7 +359,7 @@ function NamahattaCard({ namahatta, viewMode = 'grid' }: { namahatta: Namahatta;
               />
               
               <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between">
+                <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-200 truncate">
                       {namahatta.name}
@@ -376,7 +376,13 @@ function NamahattaCard({ namahatta, viewMode = 'grid' }: { namahatta: Namahatta;
                     )}
                   </div>
                   
-                  {getStatusBadge(namahatta.status)}
+                  <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                    {getStatusBadge(namahatta.status)}
+                    <div className="text-xs text-gray-600 dark:text-gray-400 flex items-center gap-1">
+                      <Users className="h-3 w-3" />
+                      {namahatta.devoteeCount || 0} devotees
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
