@@ -40,7 +40,7 @@ export function ActiveFilters({
   searchTerm, 
   onClearSearch 
 }: ActiveFiltersProps) {
-  const activeFilters = Object.entries(filters).filter(([key, value]) => value);
+  const activeFilters = Object.entries(filters).filter(([key, value]) => value && !(key === "country" && value === "India"));
   const hasActiveFilters = activeFilters.length > 0 || searchTerm;
 
   if (!hasActiveFilters) return null;
