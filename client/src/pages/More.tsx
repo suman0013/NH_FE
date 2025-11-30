@@ -122,7 +122,7 @@ export default function More() {
       title: "User Management",
       description: "Manage user accounts and permissions",
       icon: UserPlus,
-      href: "/admin/user-management",
+      href: "/user-management",
       color: "from-emerald-500 to-green-600",
       category: "Management"
     },

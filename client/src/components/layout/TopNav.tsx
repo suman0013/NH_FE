@@ -18,7 +18,7 @@ const adminNavigationItems = [
 ];
 
 const officeNavigationItems = [
-  { href: "/admin/user-management", label: "Users", shortLabel: "Users", icon: UserPlus },
+  { href: "/user-management", label: "Users", shortLabel: "Users", icon: UserPlus },
 ];
 
 export default function TopNav() {

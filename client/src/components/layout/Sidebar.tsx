@@ -23,7 +23,7 @@ const navigationItems = [
 ];
 
 const officeNavigationItems = [
-  { href: "/admin/user-management", label: "Users", icon: UserPlus },
+  { href: "/user-management", label: "Users", icon: UserPlus },
 ];
 
 const adminNavigationItems = [
