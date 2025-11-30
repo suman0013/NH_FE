@@ -453,12 +453,13 @@ export default function AdminSupervisorRegistration() {
                   <TableHead>Email</TableHead>
                   <TableHead>Phone</TableHead>
                   <TableHead>Last Login</TableHead>
+                  <TableHead className="w-[100px]">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredUsers.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                       No users found
                     </TableCell>
                   </TableRow>
@@ -466,12 +467,13 @@ export default function AdminSupervisorRegistration() {
                   filteredUsers.map((user) => (
                     <TableRow 
                       key={user.id} 
-                      className="cursor-pointer hover:bg-accent/50"
-                      onClick={() => handleUserClick(user)}
                       data-testid={`row-user-${user.id}`}
                     >
                       <TableCell className="font-mono text-sm">{user.id}</TableCell>
-                      <TableCell>
+                      <TableCell 
+                        className="cursor-pointer hover:bg-accent/30"
+                        onClick={() => handleUserClick(user)}
+                      >
                         <div>
                           <p className="font-medium">{user.fullName}</p>
                           <p className="text-xs text-muted-foreground">@{user.username}</p>
@@ -497,6 +499,61 @@ export default function AdminSupervisorRegistration() {
                       <TableCell className="text-sm">{user.phone || "-"}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">
                         {formatLastLogin(user.lastLogin)}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              data-testid={`button-actions-${user.id}`}
+                            >
+                              <ChevronDown className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setSelectedUser(user);
+                                setShowPasswordDialog(true);
+                                setNewPassword("");
+                                setConfirmNewPassword("");
+                              }}
+                              data-testid={`menu-change-password-${user.id}`}
+                            >
+                              <Key className="h-4 w-4 mr-2" />
+                              Change Password
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            {user.isActive ? (
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setSelectedUser(user);
+                                  deactivateMutation.mutate(user.id);
+                                }}
+                                disabled={deactivateMutation.isPending}
+                                data-testid={`menu-disable-login-${user.id}`}
+                                className="text-red-600 dark:text-red-400"
+                              >
+                                <PowerOff className="h-4 w-4 mr-2" />
+                                Disable Login
+                              </DropdownMenuItem>
+                            ) : (
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setSelectedUser(user);
+                                  reactivateMutation.mutate(user.id);
+                                }}
+                                disabled={reactivateMutation.isPending}
+                                data-testid={`menu-enable-login-${user.id}`}
+                                className="text-green-600 dark:text-green-400"
+                              >
+                                <Power className="h-4 w-4 mr-2" />
+                                Enable Login
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </TableCell>
                     </TableRow>
                   ))
