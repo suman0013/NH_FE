@@ -488,11 +488,11 @@ export default function AdminSupervisorRegistration() {
                       <TableCell>
                         {user.isActive ? (
                           <Badge variant="default" className="bg-green-600 no-default-hover-elevate no-default-active-elevate">
-                            Active
+                            Enabled
                           </Badge>
                         ) : (
                           <Badge variant="secondary" className="no-default-hover-elevate no-default-active-elevate">
-                            Inactive
+                            Disabled
                           </Badge>
                         )}
                       </TableCell>
@@ -598,9 +598,9 @@ export default function AdminSupervisorRegistration() {
                     {ROLE_LABELS[selectedUser.role] || selectedUser.role}
                   </Badge>
                   {selectedUser.isActive ? (
-                    <Badge variant="default" className="bg-green-600 no-default-hover-elevate no-default-active-elevate">Active</Badge>
+                    <Badge variant="default" className="bg-green-600 no-default-hover-elevate no-default-active-elevate">Enabled</Badge>
                   ) : (
-                    <Badge variant="secondary" className="no-default-hover-elevate no-default-active-elevate">Inactive</Badge>
+                    <Badge variant="secondary" className="no-default-hover-elevate no-default-active-elevate">Disabled</Badge>
                   )}
                 </div>
               </div>
