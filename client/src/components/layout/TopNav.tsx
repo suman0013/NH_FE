@@ -28,7 +28,7 @@ export default function TopNav() {
   // Combine regular and role-specific navigation items based on user role
   const allNavigationItems = [
     ...navigationItems,
-    ...(user?.role === 'OFFICE' ? officeNavigationItems : []),
+    ...((user?.role === 'OFFICE' || user?.role === 'ADMIN') ? officeNavigationItems : []),
     ...(user?.role === 'ADMIN' ? adminNavigationItems : [])
   ];
 

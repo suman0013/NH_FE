@@ -132,8 +132,8 @@ export default function Sidebar({ onClose }: SidebarProps) {
           );
         })}
 
-        {/* Office Section */}
-        {user?.role === 'OFFICE' && (
+        {/* Management Section (Office & Admin) */}
+        {(user?.role === 'OFFICE' || user?.role === 'ADMIN') && (
           <>
             <div className="my-4 px-3">
               <hr className="border-white/20 dark:border-slate-700/50" />
