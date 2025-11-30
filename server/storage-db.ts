@@ -653,7 +653,7 @@ export class DatabaseStorage implements IStorage {
         registrationDate: namahattas.registrationDate,
         createdAt: namahattas.createdAt,
         updatedAt: namahattas.updatedAt,
-        devoteeCount: sql<number>`COALESCE(${devoteeCountSubquery.count}, 0)`,
+        devoteeCount: sql<number>`COALESCE(${devoteeCountSubquery.count}, 0)`.as('devoteeCount'),
         // Include address information in main query to avoid N+1
         addressCountry: addresses.country,
         addressState: addresses.stateNameEnglish,
