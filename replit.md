@@ -9,6 +9,18 @@ Navigation layout: Horizontal top navigation bar instead of left sidebar for des
 
 ## Recent Changes
 
+### November 30, 2025 - User Management Page Revamp COMPLETED ✅
+- **Database Schema**: Added `phone` and `lastLogin` fields to users table
+- **User Table Display**: Revamped Admin Register User page with table layout showing all non-admin users with columns: ID, Name, User Type, Status, Email, Phone, Last Login
+- **User Actions**: Added action dialogs for Enable/Disable login and Change Password functionality
+- **Multi-step Registration Flow**: 
+  - Step 1: Select user type (Office, District Supervisor, or Senapoti)
+  - Step 2: Show appropriate registration form based on type
+  - Senapoti registration includes searchable list of devotees with leadership roles who don't have login credentials
+- **New API Endpoint**: Created `/api/admin/senapatis-without-login` to fetch eligible senapatis for account creation
+- **Login Tracking**: Login endpoint now updates `lastLogin` timestamp for audit purposes
+- **Phone Support**: All registration forms now accept optional phone numbers
+
 ### November 29, 2025 - Reports Export Functionality COMPLETED ✅
 - **Export Modal**: Created streamlined ExportModal component with district selection and format options (Excel, PDF)
 - **Data Simplified**: Export includes only Namahatta centers (no devotee data)
