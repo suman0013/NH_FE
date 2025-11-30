@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -10,19 +10,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { Loader2, UserPlus, Users, Shield, Edit, Trash2, Key, Power, PowerOff, ChevronDown, ChevronRight, Building2, MapPin } from "lucide-react";
+import { 
+  Loader2, UserPlus, Users, Shield, Key, Power, PowerOff, 
+  Building2, MapPin, Search, Eye, EyeOff, ChevronDown,
+  Clock, Mail, Phone, User as UserIcon
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import {
   Dialog,
   DialogContent,
@@ -32,15 +25,35 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { format, formatDistanceToNow } from "date-fns";
 
 const registrationSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
   fullName: z.string().min(2, "Full name is required"),
   email: z.string().email("Valid email is required"),
+  phone: z.string().optional(),
   password: z.string()
     .min(10, "Password must be at least 10 characters")
     .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
@@ -54,7 +67,22 @@ const registrationSchema = z.object({
   path: ["confirmPassword"]
 });
 
+const senapotiRegistrationSchema = z.object({
+  username: z.string().min(3, "Username must be at least 3 characters"),
+  password: z.string()
+    .min(10, "Password must be at least 10 characters")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number")
+    .regex(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/, "Password must contain at least one special character"),
+  confirmPassword: z.string(),
+}).refine(data => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"]
+});
+
 type RegistrationForm = z.infer<typeof registrationSchema>;
+type SenapotiRegistrationForm = z.infer<typeof senapotiRegistrationSchema>;
 
 interface District {
   code: string;
@@ -66,8 +94,10 @@ interface User {
   username: string;
   fullName: string;
   email: string;
+  phone?: string | null;
   role: string;
   isActive: boolean;
+  lastLogin?: string | null;
   districts: string[];
   devoteeId?: number;
 }
@@ -80,21 +110,14 @@ interface Senapati {
   phone: string | null;
   leadershipRole: string;
   hasSystemAccess: boolean;
-  user: {
-    id: number;
-    username: string;
-    fullName: string;
-    email: string;
-    isActive: boolean;
-  } | null;
 }
 
-type UserType = 'OFFICE' | 'DISTRICT_SUPERVISOR' | 'MALA_SENAPOTI' | 'MAHA_CHAKRA_SENAPOTI' | 'CHAKRA_SENAPOTI' | 'UPA_CHAKRA_SENAPOTI';
+type UserType = 'OFFICE' | 'DISTRICT_SUPERVISOR' | 'SENAPOTI';
 
 const USER_TYPE_CONFIG: Record<UserType, { label: string; description: string; icon: React.ReactNode; color: string }> = {
   'OFFICE': {
     label: 'Office Staff',
-    description: 'Administrative staff with system access',
+    description: 'Administrative staff with full system access',
     icon: <Building2 className="h-5 w-5" />,
     color: 'from-blue-500 to-indigo-600'
   },
@@ -104,46 +127,39 @@ const USER_TYPE_CONFIG: Record<UserType, { label: string; description: string; i
     icon: <MapPin className="h-5 w-5" />,
     color: 'from-green-500 to-emerald-600'
   },
-  'MALA_SENAPOTI': {
-    label: 'Mala Senapoti',
-    description: 'Spiritual leaders managing mala programs',
+  'SENAPOTI': {
+    label: 'Senapoti',
+    description: 'Spiritual leaders with leadership roles',
     icon: <Users className="h-5 w-5" />,
     color: 'from-purple-500 to-pink-600'
-  },
-  'MAHA_CHAKRA_SENAPOTI': {
-    label: 'Maha Senapoti',
-    description: 'Senior senapatis managing chakra senapotis',
-    icon: <Users className="h-5 w-5" />,
-    color: 'from-amber-500 to-orange-600'
-  },
-  'CHAKRA_SENAPOTI': {
-    label: 'Chakra Senapoti',
-    description: 'Senapatis managing upachakra senapotis',
-    icon: <Users className="h-5 w-5" />,
-    color: 'from-teal-500 to-cyan-600'
-  },
-  'UPA_CHAKRA_SENAPOTI': {
-    label: 'Upachakra Senapoti',
-    description: 'Local senapatis supporting namahatta activities',
-    icon: <Users className="h-5 w-5" />,
-    color: 'from-rose-500 to-red-600'
   }
+};
+
+const ROLE_LABELS: Record<string, string> = {
+  'ADMIN': 'Admin',
+  'OFFICE': 'Office Staff',
+  'DISTRICT_SUPERVISOR': 'District Supervisor',
+  'MALA_SENAPOTI': 'Mala Senapoti',
+  'MAHA_CHAKRA_SENAPOTI': 'Maha Senapoti',
+  'CHAKRA_SENAPOTI': 'Chakra Senapoti',
+  'UPA_CHAKRA_SENAPOTI': 'Upachakra Senapoti'
 };
 
 export default function AdminSupervisorRegistration() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    'OFFICE': true,
-    'DISTRICT_SUPERVISOR': true,
-    'MALA_SENAPOTI': false,
-    'MAHA_CHAKRA_SENAPOTI': false,
-    'CHAKRA_SENAPOTI': false,
-    'UPA_CHAKRA_SENAPOTI': false
-  });
-  const [showRegistrationForm, setShowRegistrationForm] = useState<UserType | null>(null);
-  const [editingUser, setEditingUser] = useState<User | null>(null);
-  const [changePasswordUser, setChangePasswordUser] = useState<User | null>(null);
+  
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [showUserDialog, setShowUserDialog] = useState(false);
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const [showRegisterDialog, setShowRegisterDialog] = useState(false);
+  const [registerUserType, setRegisterUserType] = useState<UserType | null>(null);
+  const [selectedSenapoti, setSelectedSenapoti] = useState<Senapati | null>(null);
+  const [senapotiSearchQuery, setSenapotiSearchQuery] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
 
@@ -153,9 +169,19 @@ export default function AdminSupervisorRegistration() {
       username: "",
       fullName: "",
       email: "",
+      phone: "",
       password: "",
       confirmPassword: "",
       districts: []
+    }
+  });
+
+  const senapotiForm = useForm<SenapotiRegistrationForm>({
+    resolver: zodResolver(senapotiRegistrationSchema),
+    defaultValues: {
+      username: "",
+      password: "",
+      confirmPassword: ""
     }
   });
 
@@ -167,9 +193,41 @@ export default function AdminSupervisorRegistration() {
     queryKey: ["/api/admin/users"]
   });
 
-  const { data: senapatis = [], isLoading: loadingSenapatis } = useQuery<Senapati[]>({
-    queryKey: ["/api/admin/senapatis"]
+  const { data: senapotisWithoutLogin = [], isLoading: loadingSenapotis } = useQuery<Senapati[]>({
+    queryKey: ["/api/admin/senapatis-without-login"]
   });
+
+  const filteredUsers = useMemo(() => {
+    if (!Array.isArray(users)) return [];
+    return users
+      .filter((user: User) => user.role !== 'ADMIN')
+      .filter((user: User) => {
+        if (!searchQuery) return true;
+        const query = searchQuery.toLowerCase();
+        return (
+          user.fullName?.toLowerCase().includes(query) ||
+          user.username?.toLowerCase().includes(query) ||
+          user.email?.toLowerCase().includes(query) ||
+          user.phone?.toLowerCase().includes(query) ||
+          user.role?.toLowerCase().includes(query)
+        );
+      });
+  }, [users, searchQuery]);
+
+  const filteredSenapotis = useMemo(() => {
+    if (!Array.isArray(senapotisWithoutLogin)) return [];
+    return senapotisWithoutLogin.filter((senapoti: Senapati) => {
+      if (!senapotiSearchQuery) return true;
+      const query = senapotiSearchQuery.toLowerCase();
+      return (
+        senapoti.legalName?.toLowerCase().includes(query) ||
+        senapoti.name?.toLowerCase().includes(query) ||
+        senapoti.email?.toLowerCase().includes(query) ||
+        senapoti.phone?.toLowerCase().includes(query) ||
+        senapoti.leadershipRole?.toLowerCase().includes(query)
+      );
+    });
+  }, [senapotisWithoutLogin, senapotiSearchQuery]);
 
   const registerOfficeMutation = useMutation({
     mutationFn: async (data: RegistrationForm) => {
@@ -177,9 +235,10 @@ export default function AdminSupervisorRegistration() {
       return res.json();
     },
     onSuccess: () => {
-      toast({ title: "Success!", description: "Office user created successfully." });
+      toast({ title: "Success", description: "Office user created successfully." });
       form.reset();
-      setShowRegistrationForm(null);
+      setShowRegisterDialog(false);
+      setRegisterUserType(null);
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
     },
     onError: (error: any) => {
@@ -193,9 +252,10 @@ export default function AdminSupervisorRegistration() {
       return res.json();
     },
     onSuccess: () => {
-      toast({ title: "Success!", description: "District supervisor created successfully." });
+      toast({ title: "Success", description: "District supervisor created successfully." });
       form.reset();
-      setShowRegistrationForm(null);
+      setShowRegisterDialog(false);
+      setRegisterUserType(null);
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
     },
     onError: (error: any) => {
@@ -203,18 +263,22 @@ export default function AdminSupervisorRegistration() {
     }
   });
 
-  const editMutation = useMutation({
-    mutationFn: async (userData: Partial<User>) => {
-      const res = await apiRequest("PUT", `/api/admin/users/${userData.id}`, userData);
+  const registerSenapotiMutation = useMutation({
+    mutationFn: async (data: { devoteeId: number; username: string; password: string }) => {
+      const res = await apiRequest("POST", "/api/admin/senapati-user", data);
       return res.json();
     },
     onSuccess: () => {
-      toast({ title: "Success!", description: "User updated successfully." });
-      setEditingUser(null);
+      toast({ title: "Success", description: "Senapoti login created successfully." });
+      senapotiForm.reset();
+      setSelectedSenapoti(null);
+      setShowRegisterDialog(false);
+      setRegisterUserType(null);
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/senapatis-without-login"] });
     },
     onError: (error: any) => {
-      toast({ title: "Update Failed", description: error.message || "Failed to update user", variant: "destructive" });
+      toast({ title: "Registration Failed", description: error.message || "Failed to create senapoti login", variant: "destructive" });
     }
   });
 
@@ -224,12 +288,11 @@ export default function AdminSupervisorRegistration() {
       return res.json();
     },
     onSuccess: () => {
-      toast({ title: "Success!", description: "Password changed successfully." });
-      setChangePasswordUser(null);
+      toast({ title: "Success", description: "Password changed successfully." });
+      setShowPasswordDialog(false);
+      setSelectedUser(null);
       setNewPassword("");
       setConfirmNewPassword("");
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/senapatis"] });
     },
     onError: (error: any) => {
       toast({ title: "Password Change Failed", description: error.message || "Failed to change password", variant: "destructive" });
@@ -242,9 +305,10 @@ export default function AdminSupervisorRegistration() {
       return res.json();
     },
     onSuccess: () => {
-      toast({ title: "Success!", description: "User login disabled successfully." });
+      toast({ title: "Success", description: "User login disabled successfully." });
+      setShowUserDialog(false);
+      setSelectedUser(null);
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/senapatis"] });
     },
     onError: (error: any) => {
       toast({ title: "Deactivation Failed", description: error.message || "Failed to disable login", variant: "destructive" });
@@ -257,9 +321,10 @@ export default function AdminSupervisorRegistration() {
       return res.json();
     },
     onSuccess: () => {
-      toast({ title: "Success!", description: "User login enabled successfully." });
+      toast({ title: "Success", description: "User login enabled successfully." });
+      setShowUserDialog(false);
+      setSelectedUser(null);
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/senapatis"] });
     },
     onError: (error: any) => {
       toast({ title: "Reactivation Failed", description: error.message || "Failed to enable login", variant: "destructive" });
@@ -267,566 +332,780 @@ export default function AdminSupervisorRegistration() {
   });
 
   const onSubmit = (data: RegistrationForm) => {
-    if (showRegistrationForm === 'OFFICE') {
+    if (registerUserType === 'OFFICE') {
       registerOfficeMutation.mutate(data);
-    } else if (showRegistrationForm === 'DISTRICT_SUPERVISOR') {
+    } else if (registerUserType === 'DISTRICT_SUPERVISOR') {
       registerSupervisorMutation.mutate(data);
     }
   };
 
-  const toggleSection = (type: string) => {
-    setExpandedSections(prev => ({ ...prev, [type]: !prev[type] }));
+  const onSenapotiSubmit = (data: SenapotiRegistrationForm) => {
+    if (selectedSenapoti) {
+      registerSenapotiMutation.mutate({
+        devoteeId: selectedSenapoti.id,
+        username: data.username,
+        password: data.password
+      });
+    }
   };
 
-  const officeUsers = Array.isArray(users) ? users.filter((user: User) => user.role === 'OFFICE') : [];
-  const districtSupervisors = Array.isArray(users) ? users.filter((user: User) => user.role === 'DISTRICT_SUPERVISOR' && !user.devoteeId) : [];
-
-  const getSenapatisByRole = (role: string) => {
-    return Array.isArray(senapatis) ? senapatis.filter((s: Senapati) => s.leadershipRole === role) : [];
+  const handleChangePassword = () => {
+    if (!selectedUser) return;
+    if (newPassword.length < 10) {
+      toast({ title: "Error", description: "Password must be at least 10 characters", variant: "destructive" });
+      return;
+    }
+    if (newPassword !== confirmNewPassword) {
+      toast({ title: "Error", description: "Passwords don't match", variant: "destructive" });
+      return;
+    }
+    changePasswordMutation.mutate({ userId: selectedUser.id, password: newPassword });
   };
 
-  if (loadingDistricts || loadingUsers || loadingSenapatis) {
+  const handleUserClick = (user: User) => {
+    setSelectedUser(user);
+    setShowUserDialog(true);
+  };
+
+  const handleOpenPasswordDialog = () => {
+    setShowUserDialog(false);
+    setShowPasswordDialog(true);
+    setNewPassword("");
+    setConfirmNewPassword("");
+  };
+
+  const getRoleBadgeColor = (role: string) => {
+    switch (role) {
+      case 'OFFICE': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100';
+      case 'DISTRICT_SUPERVISOR': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100';
+      default: return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100';
+    }
+  };
+
+  const formatLastLogin = (lastLogin?: string | null) => {
+    if (!lastLogin) return "Never";
+    try {
+      const date = new Date(lastLogin);
+      return formatDistanceToNow(date, { addSuffix: true });
+    } catch {
+      return "Never";
+    }
+  };
+
+  if (loadingDistricts || loadingUsers) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
+      <div className="flex items-center justify-center min-h-[400px]" data-testid="loading-spinner">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
   }
 
-  const renderUserCard = (user: User) => (
-    <div
-      key={user.id}
-      data-testid={`user-card-${user.id}`}
-      className="p-3 bg-accent/30 rounded-md hover:bg-accent/50 transition-colors"
-    >
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h4 className="font-medium text-sm truncate">{user.fullName}</h4>
-            {!user.isActive && (
-              <Badge variant="secondary" className="text-xs">Inactive</Badge>
-            )}
-          </div>
-          <p className="text-xs text-muted-foreground truncate">@{user.username}</p>
-          <p className="text-xs text-muted-foreground truncate">{user.email}</p>
-          {user.districts && user.districts.length > 0 && (
-            <p className="text-xs text-muted-foreground mt-1">
-              Districts: {user.districts.join(", ")}
-            </p>
-          )}
-        </div>
-        <div className="flex items-center gap-1 flex-shrink-0">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setEditingUser(user)}
-            data-testid={`button-edit-user-${user.id}`}
-          >
-            <Edit className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setChangePasswordUser(user)}
-            data-testid={`button-change-password-${user.id}`}
-          >
-            <Key className="h-4 w-4" />
-          </Button>
-          {user.isActive ? (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-destructive hover:text-destructive"
-                  data-testid={`button-disable-user-${user.id}`}
-                >
-                  <PowerOff className="h-4 w-4" />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Disable Login</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Are you sure you want to disable login for {user.fullName}? They will no longer be able to access the system.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={() => deactivateMutation.mutate(user.id)}
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                  >
-                    Disable Login
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          ) : (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-green-600 hover:text-green-600"
-              onClick={() => reactivateMutation.mutate(user.id)}
-              data-testid={`button-enable-user-${user.id}`}
-            >
-              <Power className="h-4 w-4" />
-            </Button>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderSenapatiCard = (senapati: Senapati) => (
-    <div
-      key={senapati.id}
-      data-testid={`senapati-card-${senapati.id}`}
-      className="p-3 bg-accent/30 rounded-md hover:bg-accent/50 transition-colors"
-    >
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h4 className="font-medium text-sm truncate">{senapati.legalName}</h4>
-            {senapati.user ? (
-              senapati.user.isActive ? (
-                <Badge variant="default" className="text-xs bg-green-600">Has Login</Badge>
-              ) : (
-                <Badge variant="secondary" className="text-xs">Login Disabled</Badge>
-              )
-            ) : (
-              <Badge variant="outline" className="text-xs">No Login</Badge>
-            )}
-          </div>
-          {senapati.user && (
-            <p className="text-xs text-muted-foreground truncate">@{senapati.user.username}</p>
-          )}
-          <p className="text-xs text-muted-foreground truncate">{senapati.email || senapati.phone || "No contact info"}</p>
-        </div>
-        {senapati.user && (
-          <div className="flex items-center gap-1 flex-shrink-0">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setChangePasswordUser({
-                id: senapati.user!.id,
-                username: senapati.user!.username,
-                fullName: senapati.user!.fullName,
-                email: senapati.user!.email,
-                role: 'DISTRICT_SUPERVISOR',
-                isActive: senapati.user!.isActive,
-                districts: []
-              })}
-              data-testid={`button-change-password-senapati-${senapati.id}`}
-            >
-              <Key className="h-4 w-4" />
-            </Button>
-            {senapati.user.isActive ? (
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-destructive hover:text-destructive"
-                    data-testid={`button-disable-senapati-${senapati.id}`}
-                  >
-                    <PowerOff className="h-4 w-4" />
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Disable Login</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Are you sure you want to disable login for {senapati.legalName}?
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() => deactivateMutation.mutate(senapati.user!.id)}
-                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                    >
-                      Disable Login
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            ) : (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-green-600 hover:text-green-600"
-                onClick={() => reactivateMutation.mutate(senapati.user!.id)}
-                data-testid={`button-enable-senapati-${senapati.id}`}
-              >
-                <Power className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-
-  const renderUserTypeSection = (type: UserType) => {
-    const config = USER_TYPE_CONFIG[type];
-    const isExpanded = expandedSections[type];
-    
-    let users: User[] | Senapati[] = [];
-    let isSenapatiType = false;
-    
-    if (type === 'OFFICE') {
-      users = officeUsers;
-    } else if (type === 'DISTRICT_SUPERVISOR') {
-      users = districtSupervisors;
-    } else {
-      users = getSenapatisByRole(type);
-      isSenapatiType = true;
-    }
-
-    const canAddUser = type === 'OFFICE' || type === 'DISTRICT_SUPERVISOR';
-
-    return (
-      <Card key={type} className="glass-card" data-testid={`section-${type.toLowerCase()}`}>
-        <Collapsible open={isExpanded} onOpenChange={() => toggleSection(type)}>
-          <CollapsibleTrigger asChild>
-            <CardHeader className="cursor-pointer hover:bg-accent/30 transition-colors">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 bg-gradient-to-br ${config.color} rounded-lg flex items-center justify-center text-white`}>
-                    {config.icon}
-                  </div>
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      {config.label}
-                      <Badge variant="outline" className="ml-2">{users.length}</Badge>
-                    </CardTitle>
-                    <CardDescription>{config.description}</CardDescription>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  {canAddUser && (
-                    <Button
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowRegistrationForm(type);
-                      }}
-                      data-testid={`button-add-${type.toLowerCase()}`}
-                    >
-                      <UserPlus className="h-4 w-4 mr-1" />
-                      Add
-                    </Button>
-                  )}
-                  {isExpanded ? <ChevronDown className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
-                </div>
-              </div>
-            </CardHeader>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <CardContent>
-              {users.length === 0 ? (
-                <p className="text-muted-foreground text-center py-4">
-                  No {config.label.toLowerCase()} registered yet.
-                </p>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {isSenapatiType
-                    ? (users as Senapati[]).map(senapati => renderSenapatiCard(senapati))
-                    : (users as User[]).map(user => renderUserCard(user))
-                  }
-                </div>
-              )}
-            </CardContent>
-          </CollapsibleContent>
-        </Collapsible>
-      </Card>
-    );
-  };
-
   return (
     <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-3xl font-bold gradient-text" data-testid="text-page-title">Register User</h1>
+          <h1 className="text-3xl font-bold gradient-text" data-testid="text-page-title">User Management</h1>
           <p className="text-muted-foreground mt-1">
-            Register and manage all senapatis and supervisors
+            Manage user accounts and permissions
           </p>
         </div>
+        <Button
+          onClick={() => setShowRegisterDialog(true)}
+          data-testid="button-register-new-user"
+        >
+          <UserPlus className="h-4 w-4 mr-2" />
+          Register New User
+        </Button>
       </div>
 
-      <div className="space-y-4">
-        {(['OFFICE', 'DISTRICT_SUPERVISOR', 'MALA_SENAPOTI', 'MAHA_CHAKRA_SENAPOTI', 'CHAKRA_SENAPOTI', 'UPA_CHAKRA_SENAPOTI'] as UserType[]).map(type => 
-          renderUserTypeSection(type)
-        )}
-      </div>
+      <Card className="glass-card">
+        <CardHeader>
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                All Users
+                <Badge variant="outline" className="ml-2">{filteredUsers.length}</Badge>
+              </CardTitle>
+              <CardDescription>Click on a user to manage their account</CardDescription>
+            </div>
+            <div className="relative w-full sm:w-64">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search users..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+                data-testid="input-search-users"
+              />
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-md border overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[60px]">ID</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>User Type</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Phone</TableHead>
+                  <TableHead>Last Login</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredUsers.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                      No users found
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  filteredUsers.map((user) => (
+                    <TableRow 
+                      key={user.id} 
+                      className="cursor-pointer hover:bg-accent/50"
+                      onClick={() => handleUserClick(user)}
+                      data-testid={`row-user-${user.id}`}
+                    >
+                      <TableCell className="font-mono text-sm">{user.id}</TableCell>
+                      <TableCell>
+                        <div>
+                          <p className="font-medium">{user.fullName}</p>
+                          <p className="text-xs text-muted-foreground">@{user.username}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={`${getRoleBadgeColor(user.role)} no-default-hover-elevate no-default-active-elevate`}>
+                          {ROLE_LABELS[user.role] || user.role}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {user.isActive ? (
+                          <Badge variant="default" className="bg-green-600 no-default-hover-elevate no-default-active-elevate">
+                            Active
+                          </Badge>
+                        ) : (
+                          <Badge variant="secondary" className="no-default-hover-elevate no-default-active-elevate">
+                            Inactive
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-sm">{user.email}</TableCell>
+                      <TableCell className="text-sm">{user.phone || "-"}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {formatLastLogin(user.lastLogin)}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
 
-      {/* Registration Dialog */}
-      <Dialog open={showRegistrationForm !== null} onOpenChange={() => setShowRegistrationForm(null)}>
+      {/* User Action Dialog */}
+      <Dialog open={showUserDialog} onOpenChange={setShowUserDialog}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5" />
-              {showRegistrationForm === 'OFFICE' ? 'Register Office Staff' : 'Register District Supervisor'}
+              <UserIcon className="h-5 w-5" />
+              User Actions
             </DialogTitle>
             <DialogDescription>
-              {showRegistrationForm === 'OFFICE'
-                ? 'Create a new office staff account with system access'
-                : 'Create a new district supervisor account with assigned districts'
-              }
+              Manage account for {selectedUser?.fullName}
             </DialogDescription>
           </DialogHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Username</FormLabel>
-                    <FormControl>
-                      <Input placeholder="username" {...field} data-testid="input-username" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+          
+          {selectedUser && (
+            <div className="space-y-4">
+              <div className="bg-accent/30 rounded-lg p-4 space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">Username:</span>
+                  <span className="font-medium">@{selectedUser.username}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Mail className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm">{selectedUser.email}</span>
+                </div>
+                {selectedUser.phone && (
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm">{selectedUser.phone}</span>
+                  </div>
                 )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="fullName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Full Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Full Name" {...field} data-testid="input-fullname" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input type="email" placeholder="user@namahatta.org" {...field} data-testid="input-email" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input type="password" placeholder="Password" {...field} data-testid="input-password" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Confirm Password</FormLabel>
-                    <FormControl>
-                      <Input type="password" placeholder="Confirm Password" {...field} data-testid="input-confirm-password" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {showRegistrationForm === 'DISTRICT_SUPERVISOR' && (
-                <FormField
-                  control={form.control}
-                  name="districts"
-                  render={() => (
-                    <FormItem>
-                      <FormLabel>Assigned Districts</FormLabel>
-                      <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto p-3 border rounded-md">
-                        {Array.isArray(districts) && districts.map((district: District) => (
-                          <FormField
-                            key={district.code}
-                            control={form.control}
-                            name="districts"
-                            render={({ field }) => (
-                              <FormItem className="flex flex-row items-start space-x-2 space-y-0">
-                                <FormControl>
-                                  <Checkbox
-                                    checked={field.value?.includes(district.code)}
-                                    onCheckedChange={(checked) => {
-                                      const updatedValue = checked
-                                        ? [...(field.value || []), district.code]
-                                        : (field.value || []).filter(value => value !== district.code);
-                                      field.onChange(updatedValue);
-                                    }}
-                                    data-testid={`checkbox-district-${district.code}`}
-                                  />
-                                </FormControl>
-                                <FormLabel className="text-xs font-normal cursor-pointer">
-                                  {district.name}
-                                </FormLabel>
-                              </FormItem>
-                            )}
-                          />
-                        ))}
-                      </div>
-                      <FormMessage />
-                    </FormItem>
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm">Last login: {formatLastLogin(selectedUser.lastLogin)}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge className={`${getRoleBadgeColor(selectedUser.role)} no-default-hover-elevate no-default-active-elevate`}>
+                    {ROLE_LABELS[selectedUser.role] || selectedUser.role}
+                  </Badge>
+                  {selectedUser.isActive ? (
+                    <Badge variant="default" className="bg-green-600 no-default-hover-elevate no-default-active-elevate">Active</Badge>
+                  ) : (
+                    <Badge variant="secondary" className="no-default-hover-elevate no-default-active-elevate">Inactive</Badge>
                   )}
-                />
-              )}
+                </div>
+              </div>
 
-              <DialogFooter>
+              <div className="flex flex-col gap-2">
                 <Button
-                  type="button"
                   variant="outline"
-                  onClick={() => setShowRegistrationForm(null)}
+                  onClick={handleOpenPasswordDialog}
+                  className="w-full justify-start"
+                  data-testid="button-change-password"
                 >
-                  Cancel
+                  <Key className="h-4 w-4 mr-2" />
+                  Change Password
                 </Button>
-                <Button
-                  type="submit"
-                  disabled={registerOfficeMutation.isPending || registerSupervisorMutation.isPending}
-                  data-testid="button-submit-registration"
-                >
-                  {(registerOfficeMutation.isPending || registerSupervisorMutation.isPending) && (
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  )}
-                  Register
-                </Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit User Dialog */}
-      <Dialog open={editingUser !== null} onOpenChange={() => setEditingUser(null)}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle>Edit User</DialogTitle>
-            <DialogDescription>Update user details</DialogDescription>
-          </DialogHeader>
-          {editingUser && (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const formData = new FormData(e.target as HTMLFormElement);
-                editMutation.mutate({
-                  id: editingUser.id,
-                  fullName: formData.get('fullName') as string,
-                  email: formData.get('email') as string,
-                });
-              }}
-              className="space-y-4"
-            >
-              <div>
-                <label className="text-sm font-medium">Full Name</label>
-                <Input
-                  name="fullName"
-                  defaultValue={editingUser.fullName}
-                  className="mt-1"
-                  data-testid="input-edit-fullname"
-                />
+                
+                {selectedUser.isActive ? (
+                  <Button
+                    variant="destructive"
+                    onClick={() => deactivateMutation.mutate(selectedUser.id)}
+                    disabled={deactivateMutation.isPending}
+                    className="w-full justify-start"
+                    data-testid="button-disable-login"
+                  >
+                    {deactivateMutation.isPending ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <PowerOff className="h-4 w-4 mr-2" />
+                    )}
+                    Disable Login
+                  </Button>
+                ) : (
+                  <Button
+                    variant="default"
+                    onClick={() => reactivateMutation.mutate(selectedUser.id)}
+                    disabled={reactivateMutation.isPending}
+                    className="w-full justify-start bg-green-600 hover:bg-green-700"
+                    data-testid="button-enable-login"
+                  >
+                    {reactivateMutation.isPending ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <Power className="h-4 w-4 mr-2" />
+                    )}
+                    Enable Login
+                  </Button>
+                )}
               </div>
-              <div>
-                <label className="text-sm font-medium">Email</label>
-                <Input
-                  name="email"
-                  type="email"
-                  defaultValue={editingUser.email}
-                  className="mt-1"
-                  data-testid="input-edit-email"
-                />
-              </div>
-              <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setEditingUser(null)}>
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={editMutation.isPending} data-testid="button-save-edit">
-                  {editMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-                  Save
-                </Button>
-              </DialogFooter>
-            </form>
+            </div>
           )}
         </DialogContent>
       </Dialog>
 
       {/* Change Password Dialog */}
-      <Dialog open={changePasswordUser !== null} onOpenChange={() => {
-        setChangePasswordUser(null);
-        setNewPassword("");
-        setConfirmNewPassword("");
-      }}>
-        <DialogContent className="max-w-sm">
+      <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
+        <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Change Password</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <Key className="h-5 w-5" />
+              Change Password
+            </DialogTitle>
             <DialogDescription>
-              Set a new password for {changePasswordUser?.fullName}
+              Set a new password for {selectedUser?.fullName}
             </DialogDescription>
           </DialogHeader>
+          
           <div className="space-y-4">
-            <div>
+            <div className="space-y-2">
               <label className="text-sm font-medium">New Password</label>
-              <Input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                className="mt-1"
-                placeholder="Enter new password"
-                data-testid="input-new-password"
-              />
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Enter new password"
+                  data-testid="input-new-password"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-0 top-0 h-full"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Minimum 10 characters with uppercase, lowercase, number, and special character
+              </p>
             </div>
-            <div>
-              <label className="text-sm font-medium">Confirm New Password</label>
-              <Input
-                type="password"
-                value={confirmNewPassword}
-                onChange={(e) => setConfirmNewPassword(e.target.value)}
-                className="mt-1"
-                placeholder="Confirm new password"
-                data-testid="input-confirm-new-password"
-              />
+            
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Confirm Password</label>
+              <div className="relative">
+                <Input
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={confirmNewPassword}
+                  onChange={(e) => setConfirmNewPassword(e.target.value)}
+                  placeholder="Confirm new password"
+                  data-testid="input-confirm-new-password"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-0 top-0 h-full"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+              </div>
             </div>
-            {newPassword && confirmNewPassword && newPassword !== confirmNewPassword && (
-              <p className="text-sm text-destructive">Passwords don't match</p>
-            )}
           </div>
+
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => {
-              setChangePasswordUser(null);
-              setNewPassword("");
-              setConfirmNewPassword("");
-            }}>
+            <Button variant="outline" onClick={() => setShowPasswordDialog(false)}>
               Cancel
             </Button>
-            <Button
-              onClick={() => {
-                if (newPassword && newPassword === confirmNewPassword && changePasswordUser) {
-                  changePasswordMutation.mutate({ userId: changePasswordUser.id, password: newPassword });
-                }
-              }}
-              disabled={!newPassword || newPassword !== confirmNewPassword || changePasswordMutation.isPending}
-              data-testid="button-save-password"
+            <Button 
+              onClick={handleChangePassword}
+              disabled={changePasswordMutation.isPending}
+              data-testid="button-submit-password"
             >
-              {changePasswordMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+              {changePasswordMutation.isPending ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : null}
               Change Password
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Register New User Dialog */}
+      <Dialog open={showRegisterDialog} onOpenChange={(open) => {
+        setShowRegisterDialog(open);
+        if (!open) {
+          setRegisterUserType(null);
+          setSelectedSenapoti(null);
+          setSenapotiSearchQuery("");
+          form.reset();
+          senapotiForm.reset();
+        }
+      }}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <UserPlus className="h-5 w-5" />
+              Register New User
+            </DialogTitle>
+            <DialogDescription>
+              {!registerUserType 
+                ? "Select the type of user you want to register"
+                : registerUserType === 'SENAPOTI' && !selectedSenapoti
+                  ? "Select a senapoti to create login for"
+                  : `Fill in the details to create a new ${USER_TYPE_CONFIG[registerUserType].label} account`
+              }
+            </DialogDescription>
+          </DialogHeader>
+
+          {/* Step 1: Select User Type */}
+          {!registerUserType && (
+            <div className="grid grid-cols-1 gap-3">
+              {(['OFFICE', 'DISTRICT_SUPERVISOR', 'SENAPOTI'] as UserType[]).map((type) => {
+                const config = USER_TYPE_CONFIG[type];
+                return (
+                  <Card 
+                    key={type}
+                    className="cursor-pointer hover:bg-accent/50 transition-colors"
+                    onClick={() => setRegisterUserType(type)}
+                    data-testid={`card-select-${type.toLowerCase()}`}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 bg-gradient-to-br ${config.color} rounded-lg flex items-center justify-center text-white`}>
+                          {config.icon}
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-medium">{config.label}</h4>
+                          <p className="text-sm text-muted-foreground">{config.description}</p>
+                        </div>
+                        <ChevronDown className="h-4 w-4 -rotate-90" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Step 2a: Select Senapoti (for SENAPOTI type) */}
+          {registerUserType === 'SENAPOTI' && !selectedSenapoti && (
+            <div className="space-y-4">
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => setRegisterUserType(null)}
+                className="mb-2"
+              >
+                Back
+              </Button>
+              
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search senapotis..."
+                  value={senapotiSearchQuery}
+                  onChange={(e) => setSenapotiSearchQuery(e.target.value)}
+                  className="pl-10"
+                  data-testid="input-search-senapotis"
+                />
+              </div>
+
+              <ScrollArea className="h-[300px] rounded-md border">
+                {loadingSenapotis ? (
+                  <div className="flex items-center justify-center h-full">
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                  </div>
+                ) : filteredSenapotis.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    No senapotis without login found
+                  </div>
+                ) : (
+                  <div className="p-2 space-y-2">
+                    {filteredSenapotis.map((senapoti) => (
+                      <Card
+                        key={senapoti.id}
+                        className="cursor-pointer hover:bg-accent/50 transition-colors"
+                        onClick={() => setSelectedSenapoti(senapoti)}
+                        data-testid={`card-senapoti-${senapoti.id}`}
+                      >
+                        <CardContent className="p-3">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="font-medium">{senapoti.legalName}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {ROLE_LABELS[senapoti.leadershipRole] || senapoti.leadershipRole}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {senapoti.email || senapoti.phone || "No contact info"}
+                              </p>
+                            </div>
+                            <ChevronDown className="h-4 w-4 -rotate-90 text-muted-foreground" />
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </ScrollArea>
+            </div>
+          )}
+
+          {/* Step 2b: Senapoti Registration Form */}
+          {registerUserType === 'SENAPOTI' && selectedSenapoti && (
+            <div className="space-y-4">
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => setSelectedSenapoti(null)}
+                className="mb-2"
+              >
+                Back
+              </Button>
+
+              <div className="bg-accent/30 rounded-lg p-4 space-y-1">
+                <p className="font-medium">{selectedSenapoti.legalName}</p>
+                <p className="text-sm text-muted-foreground">
+                  {ROLE_LABELS[selectedSenapoti.leadershipRole] || selectedSenapoti.leadershipRole}
+                </p>
+                {selectedSenapoti.email && (
+                  <p className="text-xs text-muted-foreground">{selectedSenapoti.email}</p>
+                )}
+              </div>
+
+              <Form {...senapotiForm}>
+                <form onSubmit={senapotiForm.handleSubmit(onSenapotiSubmit)} className="space-y-4">
+                  <FormField
+                    control={senapotiForm.control}
+                    name="username"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Username</FormLabel>
+                        <FormControl>
+                          <Input placeholder="username" {...field} data-testid="input-senapoti-username" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={senapotiForm.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Input 
+                              type={showPassword ? "text" : "password"} 
+                              placeholder="Enter password" 
+                              {...field} 
+                              data-testid="input-senapoti-password"
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="absolute right-0 top-0 h-full"
+                              onClick={() => setShowPassword(!showPassword)}
+                            >
+                              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            </Button>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={senapotiForm.control}
+                    name="confirmPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Confirm Password</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Input 
+                              type={showConfirmPassword ? "text" : "password"} 
+                              placeholder="Confirm password" 
+                              {...field}
+                              data-testid="input-senapoti-confirm-password"
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="absolute right-0 top-0 h-full"
+                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            >
+                              {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            </Button>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <DialogFooter>
+                    <Button type="button" variant="outline" onClick={() => setShowRegisterDialog(false)}>
+                      Cancel
+                    </Button>
+                    <Button 
+                      type="submit" 
+                      disabled={registerSenapotiMutation.isPending}
+                      data-testid="button-create-senapoti-login"
+                    >
+                      {registerSenapotiMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                      Create Login
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </Form>
+            </div>
+          )}
+
+          {/* Step 2c: Office/Supervisor Registration Form */}
+          {(registerUserType === 'OFFICE' || registerUserType === 'DISTRICT_SUPERVISOR') && (
+            <div className="space-y-4">
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => setRegisterUserType(null)}
+                className="mb-2"
+              >
+                Back
+              </Button>
+
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="username"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Username</FormLabel>
+                        <FormControl>
+                          <Input placeholder="username" {...field} data-testid="input-username" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="fullName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Full Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Full Name" {...field} data-testid="input-fullname" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input type="email" placeholder="email@example.com" {...field} data-testid="input-email" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone (Optional)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="+1234567890" {...field} data-testid="input-phone" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Input 
+                              type={showPassword ? "text" : "password"} 
+                              placeholder="Enter password" 
+                              {...field} 
+                              data-testid="input-password"
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="absolute right-0 top-0 h-full"
+                              onClick={() => setShowPassword(!showPassword)}
+                            >
+                              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            </Button>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="confirmPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Confirm Password</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Input 
+                              type={showConfirmPassword ? "text" : "password"} 
+                              placeholder="Confirm password" 
+                              {...field}
+                              data-testid="input-confirm-password"
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="absolute right-0 top-0 h-full"
+                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            >
+                              {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            </Button>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {registerUserType === 'DISTRICT_SUPERVISOR' && Array.isArray(districts) && districts.length > 0 && (
+                    <FormField
+                      control={form.control}
+                      name="districts"
+                      render={() => (
+                        <FormItem>
+                          <FormLabel>Assigned Districts</FormLabel>
+                          <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-2 border rounded-md">
+                            {(districts as District[]).map((district) => (
+                              <FormField
+                                key={district.code}
+                                control={form.control}
+                                name="districts"
+                                render={({ field }) => (
+                                  <FormItem className="flex items-center space-x-2 space-y-0">
+                                    <FormControl>
+                                      <Checkbox
+                                        checked={field.value?.includes(district.code)}
+                                        onCheckedChange={(checked) => {
+                                          const current = field.value || [];
+                                          if (checked) {
+                                            field.onChange([...current, district.code]);
+                                          } else {
+                                            field.onChange(current.filter((d: string) => d !== district.code));
+                                          }
+                                        }}
+                                      />
+                                    </FormControl>
+                                    <span className="text-sm">{district.name}</span>
+                                  </FormItem>
+                                )}
+                              />
+                            ))}
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+
+                  <DialogFooter>
+                    <Button type="button" variant="outline" onClick={() => setShowRegisterDialog(false)}>
+                      Cancel
+                    </Button>
+                    <Button 
+                      type="submit" 
+                      disabled={registerOfficeMutation.isPending || registerSupervisorMutation.isPending}
+                      data-testid="button-create-user"
+                    >
+                      {(registerOfficeMutation.isPending || registerSupervisorMutation.isPending) && (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      )}
+                      Create User
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </Form>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>

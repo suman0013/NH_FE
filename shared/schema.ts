@@ -178,10 +178,12 @@ export const users = pgTable("users", {
   passwordHash: text("password_hash").notNull(),
   fullName: text("full_name").notNull(),
   email: text("email").notNull().unique(),
+  phone: text("phone"),
   role: text("role").notNull(), // 'ADMIN', 'OFFICE', 'DISTRICT_SUPERVISOR'
   devoteeId: integer("devotee_id"), // References devotees.id - links user account to devotee
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+  lastLogin: timestamp("last_login"),
   isActive: boolean("is_active").default(true),
 });
 

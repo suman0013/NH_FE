@@ -80,6 +80,7 @@ export interface IStorage {
     username: string;
     fullName: string;
     email: string;
+    phone?: string | null;
     password: string;
     districts: string[];
   }): Promise<{

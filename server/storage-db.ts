@@ -2383,6 +2383,7 @@ export class DatabaseStorage implements IStorage {
     username: string;
     fullName: string;
     email: string;
+    phone?: string | null;
     password: string;
     districts: string[];
   }): Promise<{ user: any; districts: string[] }> {
@@ -2395,6 +2396,7 @@ export class DatabaseStorage implements IStorage {
         passwordHash: data.password, // Will be hashed in createUser
         fullName: data.fullName,
         email: data.email,
+        phone: data.phone || null,
         role: 'DISTRICT_SUPERVISOR',
         isActive: true
       });

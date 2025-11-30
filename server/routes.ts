@@ -1348,7 +1348,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // District Supervisor Registration (Admin only)
   app.post("/api/admin/register-supervisor", authenticateJWT, authorize(['ADMIN']), async (req, res) => {
     try {
-      const { username, fullName, email, password, districts } = req.body;
+      const { username, fullName, email, phone, password, districts } = req.body;
       
       // Validate required fields
       if (!username || !fullName || !email || !password || !districts || !Array.isArray(districts) || districts.length === 0) {
@@ -1375,6 +1375,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         username,
         fullName,
         email,
+        phone: phone || null,
         password,
         districts
       });
@@ -1478,7 +1479,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Register Office user (Admin only)
   app.post("/api/admin/register-office", sanitizeInput, modifyRateLimit, authenticateJWT, authorize(['ADMIN']), async (req, res) => {
     try {
-      const { username, fullName, email, password, districts } = req.body;
+      const { username, fullName, email, phone, password, districts } = req.body;
 
       if (!username || !fullName || !email || !password) {
         return res.status(400).json({ error: "All fields are required" });
@@ -1500,6 +1501,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         username,
         fullName,
         email,
+        phone: phone || null,
         passwordHash: password,
         role: 'OFFICE'
       });
@@ -1534,6 +1536,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching senapatis:", error);
       res.status(500).json({ error: "Failed to fetch senapatis" });
+    }
+  });
+
+  // Get senapatis without login (for registration)
+  app.get("/api/admin/senapatis-without-login", authenticateJWT, authorize(['ADMIN']), async (req, res) => {
+    try {
+      const allSenapatis = await (storage as any).getDevoteesWithLeadershipRoles();
+      const senapotisWithoutLogin = allSenapatis.filter((s: any) => !s.user);
+      res.json(senapotisWithoutLogin);
+    } catch (error) {
+      console.error("Error fetching senapatis without login:", error);
+      res.status(500).json({ error: "Failed to fetch senapatis without login" });
     }
   });
 

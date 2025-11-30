@@ -615,6 +615,7 @@ export class MemStorage implements IStorage {
     username: string;
     fullName: string;
     email: string;
+    phone?: string | null;
     password: string;
     districts: string[];
   }): Promise<{ user: any; districts: string[] }> {
@@ -624,15 +625,15 @@ export class MemStorage implements IStorage {
       passwordHash: `hashed_${data.password}`,
       fullName: data.fullName,
       email: data.email,
+      phone: data.phone || null,
       role: "DISTRICT_SUPERVISOR",
       devoteeId: null,
       isActive: true,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
+      lastLogin: null
     };
     this.users.push(newUser);
-    // For memory storage, we'll simulate district management by returning the districts array
-    // In a real implementation, this would be stored in a separate userDistricts table
     return { user: newUser, districts: data.districts };
   }
 

@@ -13,13 +13,15 @@ export async function getUser(id: number): Promise<User | undefined> {
   const [user] = await db.select({
     id: users.id,
     username: users.username,
-    passwordHash: users.passwordHash, // Keep for compatibility with User type, but don't use in API responses
+    passwordHash: users.passwordHash,
     fullName: users.fullName,
     email: users.email,
+    phone: users.phone,
     role: users.role,
     devoteeId: users.devoteeId,
     createdAt: users.createdAt,
     updatedAt: users.updatedAt,
+    lastLogin: users.lastLogin,
     isActive: users.isActive
   }).from(users).where(eq(users.id, id));
   return user;
@@ -32,10 +34,12 @@ export async function getUserSafe(id: number): Promise<Omit<User, 'passwordHash'
     username: users.username,
     fullName: users.fullName,
     email: users.email,
+    phone: users.phone,
     role: users.role,
     devoteeId: users.devoteeId,
     createdAt: users.createdAt,
     updatedAt: users.updatedAt,
+    lastLogin: users.lastLogin,
     isActive: users.isActive
   }).from(users).where(eq(users.id, id));
   return user;
@@ -49,10 +53,12 @@ export async function getUserByUsername(username: string): Promise<User | undefi
     passwordHash: users.passwordHash,
     fullName: users.fullName,
     email: users.email,
+    phone: users.phone,
     role: users.role,
     devoteeId: users.devoteeId,
     createdAt: users.createdAt,
     updatedAt: users.updatedAt,
+    lastLogin: users.lastLogin,
     isActive: users.isActive
   }).from(users).where(eq(users.username, username));
   return user;
@@ -66,13 +72,22 @@ export async function getUserByEmail(email: string): Promise<User | undefined> {
     passwordHash: users.passwordHash,
     fullName: users.fullName,
     email: users.email,
+    phone: users.phone,
     role: users.role,
     devoteeId: users.devoteeId,
     createdAt: users.createdAt,
     updatedAt: users.updatedAt,
+    lastLogin: users.lastLogin,
     isActive: users.isActive
   }).from(users).where(eq(users.email, email));
   return user;
+}
+
+// Update lastLogin timestamp for a user
+export async function updateUserLastLogin(userId: number): Promise<void> {
+  await db.update(users)
+    .set({ lastLogin: new Date() })
+    .where(eq(users.id, userId));
 }
 
 // Get user with their assigned districts
@@ -153,12 +168,14 @@ export async function getAllUsersWithDistricts(): Promise<UserWithDistricts[]> {
     passwordHash: "" as string, // Excluded for security, but keep for type compatibility
     fullName: users.fullName,
     email: users.email,
+    phone: users.phone,
     role: users.role,
     devoteeId: users.devoteeId,
     createdAt: users.createdAt,
     updatedAt: users.updatedAt,
+    lastLogin: users.lastLogin,
     isActive: users.isActive
-  }).from(users).where(eq(users.isActive, true));
+  }).from(users);
   
   const usersWithDistricts: UserWithDistricts[] = [];
   
@@ -241,10 +258,12 @@ export async function getUsersByDistrict(districtCode: string): Promise<UserWith
       passwordHash: "" as string, // Excluded for security, but keep for type compatibility
       fullName: users.fullName,
       email: users.email,
+      phone: users.phone,
       role: users.role,
       devoteeId: users.devoteeId,
       createdAt: users.createdAt,
       updatedAt: users.updatedAt,
+      lastLogin: users.lastLogin,
       isActive: users.isActive
     })
     .from(users)

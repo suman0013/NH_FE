@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import cookieParser from 'cookie-parser';
 import { z } from 'zod';
-import { getUserByUsername, getUserWithDistricts } from '../storage-auth';
+import { getUserByUsername, getUserWithDistricts, updateUserLastLogin } from '../storage-auth';
 import { createSession, removeSession } from './session';
 import { verifyPassword } from './password';
 import { generateToken, blacklistToken, verifyToken, isTokenBlacklisted } from './jwt';
@@ -42,6 +42,9 @@ router.post('/login', loginRateLimit, async (req, res) => {
 
     // Create new session (removes any existing session for single login)
     const sessionToken = await createSession(user.id);
+
+    // Update last login timestamp
+    await updateUserLastLogin(user.id);
 
     // Generate JWT token
     const token = generateToken({
