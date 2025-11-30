@@ -949,6 +949,22 @@ export default function AdminSupervisorRegistration() {
                   <FormField
                     control={senapotiForm.control}
                     name="username"
+                    rules={{
+                      validate: async (value) => {
+                        if (!value || value.length < 5) return true;
+                        try {
+                          const res = await fetch('/api/auth/check-username', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ username: value })
+                          });
+                          const result = await res.json();
+                          return result.available || "Username already taken";
+                        } catch {
+                          return true;
+                        }
+                      }
+                    }}
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Username</FormLabel>
@@ -956,12 +972,9 @@ export default function AdminSupervisorRegistration() {
                           <Input 
                             placeholder="username" 
                             {...field}
-                            onChange={(e) => {
-                              field.onChange(e);
-                              clearTimeout(senapotiUsernameCheckTimerRef.current);
-                              senapotiUsernameCheckTimerRef.current = setTimeout(() => {
-                                senapotiForm.trigger("username");
-                              }, 500);
+                            onBlur={() => {
+                              field.onBlur();
+                              setTimeout(() => senapotiForm.trigger("username"), 100);
                             }}
                             data-testid="input-senapoti-username" 
                           />
@@ -1066,6 +1079,22 @@ export default function AdminSupervisorRegistration() {
                   <FormField
                     control={form.control}
                     name="username"
+                    rules={{
+                      validate: async (value) => {
+                        if (!value || value.length < 5) return true;
+                        try {
+                          const res = await fetch('/api/auth/check-username', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ username: value })
+                          });
+                          const result = await res.json();
+                          return result.available || "Username already taken";
+                        } catch {
+                          return true;
+                        }
+                      }
+                    }}
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Username</FormLabel>
@@ -1073,12 +1102,9 @@ export default function AdminSupervisorRegistration() {
                           <Input 
                             placeholder="username" 
                             {...field}
-                            onChange={(e) => {
-                              field.onChange(e);
-                              clearTimeout(usernameCheckTimerRef.current);
-                              usernameCheckTimerRef.current = setTimeout(() => {
-                                form.trigger("username");
-                              }, 500);
+                            onBlur={() => {
+                              field.onBlur();
+                              setTimeout(() => form.trigger("username"), 100);
                             }}
                             data-testid="input-username" 
                           />
