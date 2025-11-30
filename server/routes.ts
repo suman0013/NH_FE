@@ -1413,9 +1413,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         );
         res.json(filteredUsers);
       } else {
-        // Admin can see all non-admin users
-        const filteredUsers = users.filter((u: any) => u.role !== 'ADMIN');
-        res.json(filteredUsers);
+        // Admin can see all users (including other admins and office staff)
+        res.json(users);
       }
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch users" });
