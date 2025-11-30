@@ -119,10 +119,10 @@ export default function More() {
       category: "Management"
     },
     {
-      title: "Register User",
-      description: "Register new senapatis and manage users",
+      title: "User Management",
+      description: "Manage user accounts and permissions",
       icon: UserPlus,
-      href: "/admin/register-user",
+      href: "/admin/user-management",
       color: "from-emerald-500 to-green-600",
       category: "Management"
     },
