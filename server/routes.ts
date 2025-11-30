@@ -1396,11 +1396,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get all users (Admin only)
+  // Get all users (Admin and Office)
   app.get("/api/admin/users", authenticateJWT, authorize(['ADMIN', 'OFFICE']), async (req, res) => {
     try {
       const users = await storage.getAllUsers();
-      res.json(users);
+      // Filter users based on role
+      const user = (req as any).user;
+      if (user.role === 'OFFICE') {
+        // Office users can only see district supervisors and senapotis
+        const filteredUsers = users.filter((u: any) => 
+          u.role === 'DISTRICT_SUPERVISOR' || 
+          u.role === 'MALA_SENAPOTI' ||
+          u.role === 'MAHA_CHAKRA_SENAPOTI' ||
+          u.role === 'CHAKRA_SENAPOTI' ||
+          u.role === 'UPA_CHAKRA_SENAPOTI'
+        );
+        res.json(filteredUsers);
+      } else {
+        // Admin can see all non-admin users
+        const filteredUsers = users.filter((u: any) => u.role !== 'ADMIN');
+        res.json(filteredUsers);
+      }
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch users" });
     }
@@ -1540,7 +1556,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get senapatis without login (for registration)
-  app.get("/api/admin/senapatis-without-login", authenticateJWT, authorize(['ADMIN']), async (req, res) => {
+  app.get("/api/admin/senapatis-without-login", authenticateJWT, authorize(['ADMIN', 'OFFICE']), async (req, res) => {
     try {
       const allSenapatis = await (storage as any).getDevoteesWithLeadershipRoles();
       const senapotisWithoutLogin = allSenapatis.filter((s: any) => !s.user);
@@ -1552,7 +1568,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Create user account for a senapati (devotee with leadership role)
-  app.post("/api/admin/senapati-user", sanitizeInput, modifyRateLimit, authenticateJWT, authorize(['ADMIN']), async (req, res) => {
+  app.post("/api/admin/senapati-user", sanitizeInput, modifyRateLimit, authenticateJWT, authorize(['ADMIN', 'OFFICE']), async (req, res) => {
     try {
       const { devoteeId, username, password } = req.body;
 
