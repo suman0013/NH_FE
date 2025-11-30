@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -167,6 +168,7 @@ function useDebounce<T>(value: T, delay: number) {
 export default function AdminSupervisorRegistration() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -811,7 +813,15 @@ export default function AdminSupervisorRegistration() {
           {/* Step 1: Select User Type */}
           {!registerUserType && (
             <div className="grid grid-cols-1 gap-3">
-              {(['OFFICE', 'DISTRICT_SUPERVISOR', 'SENAPOTI'] as UserType[]).map((type) => {
+              {(['OFFICE', 'DISTRICT_SUPERVISOR', 'SENAPOTI'] as UserType[])
+                .filter((type) => {
+                  // Office users can only register district supervisors and senapotis
+                  if (user?.role === 'OFFICE' && type === 'OFFICE') {
+                    return false;
+                  }
+                  return true;
+                })
+                .map((type) => {
                 const config = USER_TYPE_CONFIG[type];
                 return (
                   <Card 
