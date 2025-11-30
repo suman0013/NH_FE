@@ -12,7 +12,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { 
   Loader2, UserPlus, Users, Shield, Key, Lock, Unlock, 
-  Building2, MapPin, Search, Eye, EyeOff, ChevronDown,
+  Building2, MapPin, Search, Eye, EyeOff, ChevronDown, ChevronLeft,
   Clock, Mail, Phone, User as UserIcon
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -156,6 +156,7 @@ export default function AdminSupervisorRegistration() {
   const [showRegisterDialog, setShowRegisterDialog] = useState(false);
   const [registerUserType, setRegisterUserType] = useState<UserType | null>(null);
   const [selectedSenapoti, setSelectedSenapoti] = useState<Senapati | null>(null);
+  const [selectedSenapotiType, setSelectedSenapotiType] = useState<string>("");
   const [senapotiSearchQuery, setSenapotiSearchQuery] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -217,6 +218,11 @@ export default function AdminSupervisorRegistration() {
   const filteredSenapotis = useMemo(() => {
     if (!Array.isArray(senapotisWithoutLogin)) return [];
     return senapotisWithoutLogin.filter((senapoti: Senapati) => {
+      // Filter by selected type first
+      if (selectedSenapotiType && senapoti.leadershipRole !== selectedSenapotiType) {
+        return false;
+      }
+      // Then filter by search query
       if (!senapotiSearchQuery) return true;
       const query = senapotiSearchQuery.toLowerCase();
       return (
@@ -227,7 +233,7 @@ export default function AdminSupervisorRegistration() {
         senapoti.leadershipRole?.toLowerCase().includes(query)
       );
     });
-  }, [senapotisWithoutLogin, senapotiSearchQuery]);
+  }, [senapotisWithoutLogin, senapotiSearchQuery, selectedSenapotiType]);
 
   const registerOfficeMutation = useMutation({
     mutationFn: async (data: RegistrationForm) => {
@@ -790,17 +796,37 @@ export default function AdminSupervisorRegistration() {
             </div>
           )}
 
-          {/* Step 2a: Select Senapoti (for SENAPOTI type) */}
+          {/* Step 2a: Select Senapoti Type & Senapoti (for SENAPOTI type) */}
           {registerUserType === 'SENAPOTI' && !selectedSenapoti && (
             <div className="space-y-4">
               <Button 
                 variant="ghost" 
                 size="sm"
                 onClick={() => setRegisterUserType(null)}
-                className="mb-2"
+                className="mb-2 px-2"
+                title="Back"
               >
-                Back
+                <ChevronLeft className="h-4 w-4" />
               </Button>
+
+              <div className="space-y-3 border rounded-lg p-4 bg-accent/20">
+                <h4 className="font-medium">Select Senapoti Type</h4>
+                <div className="space-y-2">
+                  {["MALA_SENAPOTI", "MAHA_CHAKRA_SENAPOTI", "CHAKRA_SENAPOTI", "UPA_CHAKRA_SENAPOTI"].map((type) => (
+                    <label key={type} className="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="senapoti-type"
+                        value={type}
+                        checked={selectedSenapotiType === type}
+                        onChange={(e) => setSelectedSenapotiType(e.target.value)}
+                        data-testid={`radio-senapoti-type-${type}`}
+                      />
+                      <span className="text-sm">{ROLE_LABELS[type] || type}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
               
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -860,9 +886,10 @@ export default function AdminSupervisorRegistration() {
                 variant="ghost" 
                 size="sm"
                 onClick={() => setSelectedSenapoti(null)}
-                className="mb-2"
+                className="mb-2 px-2"
+                title="Back"
               >
-                Back
+                <ChevronLeft className="h-4 w-4" />
               </Button>
 
               <div className="bg-accent/30 rounded-lg p-4 space-y-1">
