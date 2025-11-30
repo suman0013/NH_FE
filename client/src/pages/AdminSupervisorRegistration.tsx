@@ -50,7 +50,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { format, formatDistanceToNow } from "date-fns";
 
 const registrationSchema = z.object({
-  username: z.string().min(3, "Username must be at least 3 characters"),
+  username: z.string()
+    .min(5, "Username must be at least 5 characters")
+    .max(30, "Username must be less than 30 characters"),
   fullName: z.string().min(2, "Full name is required"),
   email: z.string().email("Valid email is required"),
   phone: z.string().optional(),
@@ -65,10 +67,26 @@ const registrationSchema = z.object({
 }).refine(data => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"]
-});
+}).refine(
+  async (data) => {
+    const res = await fetch('/api/auth/check-username', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: data.username })
+    });
+    const result = await res.json();
+    return result.available;
+  },
+  {
+    message: "Username already taken",
+    path: ["username"]
+  }
+);
 
 const senapotiRegistrationSchema = z.object({
-  username: z.string().min(3, "Username must be at least 3 characters"),
+  username: z.string()
+    .min(5, "Username must be at least 5 characters")
+    .max(30, "Username must be less than 30 characters"),
   password: z.string()
     .min(10, "Password must be at least 10 characters")
     .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
@@ -79,7 +97,21 @@ const senapotiRegistrationSchema = z.object({
 }).refine(data => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"]
-});
+}).refine(
+  async (data) => {
+    const res = await fetch('/api/auth/check-username', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: data.username })
+    });
+    const result = await res.json();
+    return result.available;
+  },
+  {
+    message: "Username already taken",
+    path: ["username"]
+  }
+);
 
 type RegistrationForm = z.infer<typeof registrationSchema>;
 type SenapotiRegistrationForm = z.infer<typeof senapotiRegistrationSchema>;

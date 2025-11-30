@@ -178,4 +178,27 @@ if (process.env.NODE_ENV === 'development') {
   });
 }
 
+// POST /api/auth/check-username
+// Check if username is available
+router.post('/check-username', async (req, res) => {
+  try {
+    const { username } = req.body;
+
+    if (!username || typeof username !== 'string') {
+      return res.status(400).json({ error: 'Username is required' });
+    }
+
+    // Check if username exists
+    const existingUser = await getUserByUsername(username);
+    
+    res.json({
+      available: !existingUser,
+      username: username
+    });
+  } catch (error) {
+    console.error('Username check error:', error);
+    res.status(500).json({ error: 'Failed to check username availability' });
+  }
+});
+
 export { router as authRoutes };
