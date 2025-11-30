@@ -653,7 +653,7 @@ export class DatabaseStorage implements IStorage {
         registrationDate: namahattas.registrationDate,
         createdAt: namahattas.createdAt,
         updatedAt: namahattas.updatedAt,
-        devoteeCount: devoteeCountSubquery.count,
+        devoteeCount: sql<number>`COALESCE(${devoteeCountSubquery.count}, 0)`,
         // Include address information in main query to avoid N+1
         addressCountry: addresses.country,
         addressState: addresses.stateNameEnglish,
@@ -662,62 +662,47 @@ export class DatabaseStorage implements IStorage {
         addressVillage: addresses.villageNameEnglish,
         addressPostalCode: addresses.pincode,
         addressLandmark: namahattaAddresses.landmark,
-        // Include devotee names for leadership positions for backward compatibility
-        malaSenapotiName: sql`mala_devotee.name`,
-        mahaChakraSenapotiName: sql`maha_chakra_devotee.name`,
-        chakraSenapotiName: sql`chakra_devotee.name`,
-        upaChakraSenapotiName: sql`upa_chakra_devotee.name`,
-        secretaryName: sql`secretary_devotee.name`,
-        presidentName: sql`president_devotee.name`,
-        accountantName: sql`accountant_devotee.name`
       }).from(namahattas)
         .leftJoin(namahattaAddresses, eq(namahattas.id, namahattaAddresses.namahattaId))
         .leftJoin(addresses, eq(namahattaAddresses.addressId, addresses.id))
         .leftJoin(devoteeCountSubquery, eq(namahattas.id, devoteeCountSubquery.namahattaId))
-        .leftJoin(sql`${devotees} as mala_devotee`, eq(namahattas.malaSenapotiId, sql`mala_devotee.id`))
-        .leftJoin(sql`${devotees} as maha_chakra_devotee`, eq(namahattas.mahaChakraSenapotiId, sql`maha_chakra_devotee.id`))
-        .leftJoin(sql`${devotees} as chakra_devotee`, eq(namahattas.chakraSenapotiId, sql`chakra_devotee.id`))
-        .leftJoin(sql`${devotees} as upa_chakra_devotee`, eq(namahattas.upaChakraSenapotiId, sql`upa_chakra_devotee.id`))
-        .leftJoin(sql`${devotees} as secretary_devotee`, eq(namahattas.secretaryId, sql`secretary_devotee.id`))
-        .leftJoin(sql`${devotees} as president_devotee`, eq(namahattas.presidentId, sql`president_devotee.id`))
-        .leftJoin(sql`${devotees} as accountant_devotee`, eq(namahattas.accountantId, sql`accountant_devotee.id`))
         .where(whereClause)
-        .groupBy(namahattas.id, addresses.id, namahattaAddresses.id, sql`mala_devotee.name`, sql`maha_chakra_devotee.name`, sql`chakra_devotee.name`, sql`upa_chakra_devotee.name`, sql`secretary_devotee.name`, sql`president_devotee.name`, sql`accountant_devotee.name`, devoteeCountSubquery.namahattaId)
+        .groupBy(namahattas.id, addresses.id, namahattaAddresses.id)
         .limit(size)
         .offset(offset)
         .orderBy(orderBy),
       db.select({ count: count() }).from(namahattas).where(whereClause)
     ]);
 
-    // Transform the data to include address as nested object and leadership names
+    // Transform the data to include address as nested object
     const namahattasWithAddresses = data.map((namahatta) => ({
       id: namahatta.id,
       code: namahatta.code,
       name: namahatta.name,
       meetingDay: namahatta.meetingDay,
       meetingTime: namahatta.meetingTime,
-      // Include both FK IDs and names for backward compatibility
+      // Include FK IDs for backward compatibility
       malaSenapotiId: namahatta.malaSenapotiId,
-      malaSenapoti: namahatta.malaSenapotiName || null,
+      malaSenapoti: null,
       mahaChakraSenapotiId: namahatta.mahaChakraSenapotiId,
-      mahaChakraSenapoti: namahatta.mahaChakraSenapotiName || null,
+      mahaChakraSenapoti: null,
       chakraSenapotiId: namahatta.chakraSenapotiId,
-      chakraSenapoti: namahatta.chakraSenapotiName || null,
+      chakraSenapoti: null,
       upaChakraSenapotiId: namahatta.upaChakraSenapotiId,
-      upaChakraSenapoti: namahatta.upaChakraSenapotiName || null,
+      upaChakraSenapoti: null,
       secretaryId: namahatta.secretaryId,
-      secretary: namahatta.secretaryName || null,
+      secretary: null,
       presidentId: namahatta.presidentId,
-      president: namahatta.presidentName || null,
+      president: null,
       accountantId: namahatta.accountantId,
-      accountant: namahatta.accountantName || null,
+      accountant: null,
       districtSupervisorId: namahatta.districtSupervisorId,
       status: namahatta.status,
       registrationNo: namahatta.registrationNo || undefined,
       registrationDate: namahatta.registrationDate || undefined,
       createdAt: namahatta.createdAt,
       updatedAt: namahatta.updatedAt,
-      devoteeCount: namahatta.devoteeCount,
+      devoteeCount: Number(namahatta.devoteeCount) || 0,
       address: namahatta.addressCountry ? {
         country: namahatta.addressCountry,
         state: namahatta.addressState,
