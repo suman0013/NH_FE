@@ -468,6 +468,7 @@ export default function AdminSupervisorRegistration() {
                     <TableRow 
                       key={user.id} 
                       data-testid={`row-user-${user.id}`}
+                      className="group"
                     >
                       <TableCell className="font-mono text-sm">{user.id}</TableCell>
                       <TableCell 
@@ -500,60 +501,54 @@ export default function AdminSupervisorRegistration() {
                       <TableCell className="text-sm text-muted-foreground">
                         {formatLastLogin(user.lastLogin)}
                       </TableCell>
-                      <TableCell className="text-center">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
+                      <TableCell className="text-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex gap-1 justify-center">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setShowPasswordDialog(true);
+                              setNewPassword("");
+                              setConfirmNewPassword("");
+                            }}
+                            data-testid={`button-change-password-${user.id}`}
+                            title="Change Password"
+                          >
+                            <Key className="h-4 w-4" />
+                          </Button>
+                          {user.isActive ? (
                             <Button
                               variant="ghost"
                               size="sm"
-                              data-testid={`button-actions-${user.id}`}
-                            >
-                              <ChevronDown className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
                               onClick={() => {
                                 setSelectedUser(user);
-                                setShowPasswordDialog(true);
-                                setNewPassword("");
-                                setConfirmNewPassword("");
+                                deactivateMutation.mutate(user.id);
                               }}
-                              data-testid={`menu-change-password-${user.id}`}
+                              disabled={deactivateMutation.isPending}
+                              data-testid={`button-disable-login-${user.id}`}
+                              title="Disable Login"
+                              className="text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-950"
                             >
-                              <Key className="h-4 w-4 mr-2" />
-                              Change Password
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            {user.isActive ? (
-                              <DropdownMenuItem
-                                onClick={() => {
-                                  setSelectedUser(user);
-                                  deactivateMutation.mutate(user.id);
-                                }}
-                                disabled={deactivateMutation.isPending}
-                                data-testid={`menu-disable-login-${user.id}`}
-                                className="text-red-600 dark:text-red-400"
-                              >
-                                <PowerOff className="h-4 w-4 mr-2" />
-                                Disable Login
-                              </DropdownMenuItem>
-                            ) : (
-                              <DropdownMenuItem
-                                onClick={() => {
-                                  setSelectedUser(user);
-                                  reactivateMutation.mutate(user.id);
-                                }}
-                                disabled={reactivateMutation.isPending}
-                                data-testid={`menu-enable-login-${user.id}`}
-                                className="text-green-600 dark:text-green-400"
-                              >
-                                <Power className="h-4 w-4 mr-2" />
-                                Enable Login
-                              </DropdownMenuItem>
-                            )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                              <PowerOff className="h-4 w-4" />
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedUser(user);
+                                reactivateMutation.mutate(user.id);
+                              }}
+                              disabled={reactivateMutation.isPending}
+                              data-testid={`button-enable-login-${user.id}`}
+                              title="Enable Login"
+                              className="text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-950"
+                            >
+                              <Power className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))
