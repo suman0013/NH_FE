@@ -24,7 +24,7 @@ export default function Namahattas() {
   const [showForm, setShowForm] = useState(false);
   const [editingNamahatta, setEditingNamahatta] = useState<Namahatta | undefined>();
   const [filters, setFilters] = useState({
-    country: "",
+    country: "India",
     state: "",
     district: "",
     subDistrict: "",
@@ -205,7 +205,7 @@ export default function Namahattas() {
             searchTerm={searchTerm}
             onRemoveFilter={(key) => handleFilterChange(key, "")}
             onClearAll={() => {
-              setFilters({ country: "", state: "", district: "", subDistrict: "", village: "", postalCode: "", status: "" });
+              setFilters({ country: "India", state: "", district: "", subDistrict: "", village: "", postalCode: "", status: "" });
               setSearchTerm("");
               setPage(1);
             }}

@@ -37,7 +37,7 @@ export default function Devotees() {
 
   const [editingDevotee, setEditingDevotee] = useState<Devotee | undefined>();
   const [filters, setFilters] = useState({
-    country: "",
+    country: "India",
     state: "",
     district: "",
     statusId: "",
@@ -175,7 +175,7 @@ export default function Devotees() {
             searchTerm={searchTerm}
             onRemoveFilter={(key) => handleFilterChange(key, "")}
             onClearAll={() => {
-              setFilters({ country: "", state: "", district: "", statusId: "" });
+              setFilters({ country: "India", state: "", district: "", statusId: "" });
               setSearchTerm("");
               setPage(1);
             }}
