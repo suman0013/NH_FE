@@ -365,9 +365,13 @@ function NamahattaCard({ namahatta, viewMode = 'grid' }: { namahatta: Namahatta;
                       {namahatta.name}
                     </h3>
                     {namahatta.address && (
-                      <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
-                        <MapPin className="inline h-3 w-3 mr-1" />
-                        {namahatta.address.district || namahatta.address.state}
+                      <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                        <MapPin className="inline h-3 w-3 mr-1 flex-shrink-0" />
+                        {[
+                          namahatta.address.village,
+                          namahatta.address.district,
+                          namahatta.address.state
+                        ].filter(Boolean).join(", ")}
                       </p>
                     )}
                   </div>
