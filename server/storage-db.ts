@@ -626,7 +626,7 @@ export class DatabaseStorage implements IStorage {
     const devoteeCountSubquery = db
       .select({
         namahattaId: devotees.namahattaId,
-        count: sql<number>`count(${devotees.id})`.mapWith(Number)
+        count: sql<number>`count(${devotees.id})`.as('count')
       })
       .from(devotees)
       .where(isNotNull(devotees.namahattaId))
@@ -653,7 +653,7 @@ export class DatabaseStorage implements IStorage {
         registrationDate: namahattas.registrationDate,
         createdAt: namahattas.createdAt,
         updatedAt: namahattas.updatedAt,
-        devoteeCount: sql<number>`COALESCE(${devoteeCountSubquery.count}, 0)`.mapWith(Number),
+        devoteeCount: devoteeCountSubquery.count,
         // Include address information in main query to avoid N+1
         addressCountry: addresses.country,
         addressState: addresses.stateNameEnglish,
