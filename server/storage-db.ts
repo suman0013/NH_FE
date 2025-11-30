@@ -667,7 +667,7 @@ export class DatabaseStorage implements IStorage {
         .leftJoin(addresses, eq(namahattaAddresses.addressId, addresses.id))
         .leftJoin(devoteeCountSubquery, eq(namahattas.id, devoteeCountSubquery.namahattaId))
         .where(whereClause)
-        .groupBy(namahattas.id, addresses.id, namahattaAddresses.id)
+        .groupBy(namahattas.id, addresses.id, namahattaAddresses.id, devoteeCountSubquery.count)
         .limit(size)
         .offset(offset)
         .orderBy(orderBy),
