@@ -501,7 +501,7 @@ export default function AdminSupervisorRegistration() {
                       <TableCell className="text-sm text-muted-foreground">
                         {formatLastLogin(user.lastLogin)}
                       </TableCell>
-                      <TableCell className="text-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <TableCell className="text-center">
                         <div className="flex gap-1 justify-center">
                           <Button
                             variant="ghost"
