@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Home, Users, Layers, MapPin, MoreHorizontal, BarChart3 } from "lucide-react";
+import { Home, Users, Layers, MapPin, MoreHorizontal, BarChart3, UserPlus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
@@ -17,13 +17,18 @@ const adminNavigationItems = [
   { href: "/more", label: "More", shortLabel: "More", icon: MoreHorizontal },
 ];
 
+const officeNavigationItems = [
+  { href: "/admin/user-management", label: "Users", shortLabel: "Users", icon: UserPlus },
+];
+
 export default function TopNav() {
   const [location] = useLocation();
   const { user } = useAuth();
   
-  // Combine regular and admin navigation items based on user role
+  // Combine regular and role-specific navigation items based on user role
   const allNavigationItems = [
     ...navigationItems,
+    ...(user?.role === 'OFFICE' ? officeNavigationItems : []),
     ...(user?.role === 'ADMIN' ? adminNavigationItems : [])
   ];
 

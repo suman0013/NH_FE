@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { X, Home, Users, Layers, MapPin, LogOut, MoreHorizontal, BarChart3 } from "lucide-react";
+import { X, Home, Users, Layers, MapPin, LogOut, MoreHorizontal, BarChart3, UserPlus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +20,10 @@ const navigationItems = [
   { href: "/map", label: "Map View", icon: MapPin },
   { href: "/reports", label: "Reports", icon: BarChart3 },
   { href: "/statuses", label: "Statuses", icon: Layers },
+];
+
+const officeNavigationItems = [
+  { href: "/admin/user-management", label: "Users", icon: UserPlus },
 ];
 
 const adminNavigationItems = [
@@ -127,6 +131,39 @@ export default function Sidebar({ onClose }: SidebarProps) {
             </Link>
           );
         })}
+
+        {/* Office Section */}
+        {user?.role === 'OFFICE' && (
+          <>
+            <div className="my-4 px-3">
+              <hr className="border-white/20 dark:border-slate-700/50" />
+            </div>
+            {officeNavigationItems.map((item) => {
+              const isActive = location === item.href;
+              const Icon = item.icon;
+              
+              return (
+                <Link key={item.href} href={item.href}>
+                  <div
+                    className={cn(
+                      "flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-300 relative whitespace-nowrap group overflow-hidden",
+                      isActive
+                        ? "bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-700/50 shadow-lg scale-105"
+                        : "text-gray-600 dark:text-gray-300 hover:bg-gradient-to-r hover:from-white/60 hover:to-white/40 dark:hover:from-slate-800/60 dark:hover:to-slate-700/40 hover:text-gray-900 dark:hover:text-white hover:scale-105 hover:shadow-md"
+                    )}
+                    onClick={onClose}
+                  >
+                    {/* Background shimmer effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                    
+                    <Icon className="mr-3 h-5 w-5 flex-shrink-0 relative z-10" />
+                    <span className="relative z-10">{item.label}</span>
+                  </div>
+                </Link>
+              );
+            })}
+          </>
+        )}
 
         {/* Admin Section */}
         {user?.role === 'ADMIN' && (
