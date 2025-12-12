@@ -135,9 +135,9 @@ export default function ChangeNamahattaModal({
     setSelectedNamahattaId(null);
   };
 
-  // Filter out current namahatta from results
+  // Filter out current namahatta from results (ensure type match with Number conversion)
   const filteredNamahattas = namahattasData?.data.filter(namahatta => 
-    namahatta.id !== devotee.namahattaId
+    Number(namahatta.id) !== Number(devotee.namahattaId)
   ) || [];
 
   const updateDevoteeMutation = useMutation({
