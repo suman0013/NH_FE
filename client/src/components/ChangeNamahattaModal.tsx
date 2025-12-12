@@ -13,7 +13,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
+import { SearchableSelect } from "@/components/ui/searchable-select";
+import { SearchInput } from "@/components/ui/search-input";
 import {
   Select,
   SelectContent,
@@ -21,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, Search } from "lucide-react";
+import { Loader2, Search, MapPin } from "lucide-react";
 import type { Devotee, Namahatta } from "@/lib/types";
 
 interface ChangeNamahattaModalProps {
@@ -42,11 +43,67 @@ export default function ChangeNamahattaModal({
   const [reason, setReason] = useState("");
   const [isValid, setIsValid] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  
+  // Location filters
+  const [filters, setFilters] = useState({
+    country: "India",
+    state: "",
+    district: "",
+    subDistrict: "",
+    village: "",
+    postalCode: "",
+  });
 
-  // Fetch all namahattas
+  // Fetch location data for cascading filters
+  const { data: countries } = useQuery({
+    queryKey: ["/api/countries"],
+    queryFn: () => api.getCountries(),
+    enabled: isOpen,
+  });
+
+  const { data: states } = useQuery({
+    queryKey: ["/api/states", filters.country],
+    queryFn: () => api.getStates(filters.country),
+    enabled: isOpen && !!filters.country,
+  });
+
+  const { data: districts } = useQuery({
+    queryKey: ["/api/districts", filters.state],
+    queryFn: () => api.getDistricts(filters.state),
+    enabled: isOpen && !!filters.state,
+  });
+
+  const { data: subDistricts } = useQuery({
+    queryKey: ["/api/sub-districts", filters.district],
+    queryFn: () => api.getSubDistricts(filters.district),
+    enabled: isOpen && !!filters.district,
+  });
+
+  const { data: villages } = useQuery({
+    queryKey: ["/api/villages", filters.subDistrict],
+    queryFn: () => api.getVillages(filters.subDistrict),
+    enabled: isOpen && !!filters.subDistrict,
+  });
+
+  const { data: pincodes } = useQuery({
+    queryKey: ["/api/pincodes", filters.village, filters.district, filters.subDistrict],
+    queryFn: () => api.getPincodes(filters.village, filters.district, filters.subDistrict),
+    enabled: isOpen && !!filters.subDistrict,
+  });
+
+  // Fetch namahattas with server-side filtering
   const { data: namahattasData, isLoading: isLoadingNamahattas } = useQuery({
-    queryKey: ["/api/namahattas"],
-    queryFn: () => api.getNamahattas(1, 1000, { status: "APPROVED" }),
+    queryKey: ["/api/namahattas/search", searchTerm, filters],
+    queryFn: () => api.getNamahattas(1, 50, { 
+      status: "APPROVED",
+      search: searchTerm,
+      country: filters.country,
+      state: filters.state,
+      district: filters.district,
+      subDistrict: filters.subDistrict,
+      village: filters.village,
+      postalCode: filters.postalCode,
+    }),
     enabled: isOpen,
   });
 
@@ -66,14 +123,35 @@ export default function ChangeNamahattaModal({
       setSelectedNamahattaId(null);
       setReason("");
       setIsValid(false);
+      setFilters({
+        country: "India",
+        state: "",
+        district: "",
+        subDistrict: "",
+        village: "",
+        postalCode: "",
+      });
     }
   }, [isOpen]);
 
-  // Filter namahattas based on search term
+  const handleFilterChange = (key: string, value: string) => {
+    setFilters(prev => ({
+      ...prev,
+      [key]: value,
+      // Reset dependent filters
+      ...(key === "country" && { state: "", district: "", subDistrict: "", village: "", postalCode: "" }),
+      ...(key === "state" && { district: "", subDistrict: "", village: "", postalCode: "" }),
+      ...(key === "district" && { subDistrict: "", village: "", postalCode: "" }),
+      ...(key === "subDistrict" && { village: "", postalCode: "" }),
+      ...(key === "village" && { postalCode: "" }),
+    }));
+    // Clear selection when filters change
+    setSelectedNamahattaId(null);
+  };
+
+  // Filter out current namahatta from results
   const filteredNamahattas = namahattasData?.data.filter(namahatta => 
-    namahatta.id !== devotee.namahattaId && // Exclude current namahatta
-    (namahatta.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-     namahatta.code.toLowerCase().includes(searchTerm.toLowerCase()))
+    namahatta.id !== devotee.namahattaId
   ) || [];
 
   const updateDevoteeMutation = useMutation({
@@ -117,7 +195,7 @@ export default function ChangeNamahattaModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Change Namahatta Assignment</DialogTitle>
           <DialogDescription>
@@ -136,50 +214,146 @@ export default function ChangeNamahattaModal({
             </p>
           </div>
 
+          {/* Location Filters */}
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2">
+              <MapPin className="h-4 w-4" />
+              Filter by Location
+            </Label>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <SearchableSelect
+                value={filters.country || "All Countries"}
+                onValueChange={(value) => handleFilterChange("country", value === "All Countries" ? "" : value)}
+                options={["All Countries", ...(countries || [])]}
+                placeholder="Country"
+                className="text-sm"
+                data-testid="select-country"
+              />
+
+              <SearchableSelect
+                value={filters.state || "All States"}
+                onValueChange={(value) => handleFilterChange("state", value === "All States" ? "" : value)}
+                options={["All States", ...(states || [])]}
+                placeholder="State"
+                disabled={!filters.country}
+                className="text-sm"
+                data-testid="select-state"
+              />
+
+              <SearchableSelect
+                value={filters.district || "All Districts"}
+                onValueChange={(value) => handleFilterChange("district", value === "All Districts" ? "" : value)}
+                options={["All Districts", ...(districts || [])]}
+                placeholder="District"
+                disabled={!filters.state}
+                className="text-sm"
+                data-testid="select-district"
+              />
+
+              <SearchableSelect
+                value={filters.subDistrict || "All Sub-Districts"}
+                onValueChange={(value) => handleFilterChange("subDistrict", value === "All Sub-Districts" ? "" : value)}
+                options={["All Sub-Districts", ...(subDistricts || [])]}
+                placeholder="Sub-District"
+                disabled={!filters.district}
+                className="text-sm"
+                data-testid="select-sub-district"
+              />
+
+              <SearchableSelect
+                value={filters.village || "All Villages"}
+                onValueChange={(value) => handleFilterChange("village", value === "All Villages" ? "" : value)}
+                options={["All Villages", ...(villages || [])]}
+                placeholder="Village"
+                disabled={!filters.subDistrict}
+                className="text-sm"
+                data-testid="select-village"
+              />
+
+              <SearchableSelect
+                value={filters.postalCode || "All Postal Codes"}
+                onValueChange={(value) => handleFilterChange("postalCode", value === "All Postal Codes" ? "" : value)}
+                options={["All Postal Codes", ...(pincodes || [])]}
+                placeholder="Postal Code"
+                disabled={!filters.subDistrict}
+                className="text-sm"
+                data-testid="select-postal-code"
+              />
+            </div>
+          </div>
+
           {/* Search and Select Namahatta */}
           <div className="space-y-2">
             <Label htmlFor="namahatta-select">Search and Select New Namahatta *</Label>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 z-10" />
-              <Select 
-                value={selectedNamahattaId?.toString() || ""} 
-                onValueChange={(value) => setSelectedNamahattaId(parseInt(value))}
-              >
-                <SelectTrigger data-testid="select-namahatta" className="pl-10">
-                  <SelectValue placeholder="Search and select a namahatta..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <div className="sticky top-0 bg-white dark:bg-gray-950 border-b p-2 z-10">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                      <Input
-                        type="text"
-                        placeholder="Type to search..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10 h-8"
-                        data-testid="input-namahatta-search"
-                      />
+            
+            {/* Search Input */}
+            <SearchInput
+              value={searchTerm}
+              onChange={(value) => {
+                setSearchTerm(value);
+                setSelectedNamahattaId(null);
+              }}
+              placeholder="Search by name, code, or leaders..."
+              debounceMs={300}
+              data-testid="input-namahatta-search"
+            />
+
+            {/* Namahatta Results */}
+            <div className="border rounded-lg max-h-48 overflow-y-auto">
+              {isLoadingNamahattas ? (
+                <div className="flex items-center justify-center p-4">
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  <span className="text-sm text-gray-500">Loading namahattas...</span>
+                </div>
+              ) : filteredNamahattas.length === 0 ? (
+                <div className="p-4 text-center text-gray-500 text-sm">
+                  {searchTerm || Object.values(filters).some(v => v) 
+                    ? "No namahattas match your search or filters" 
+                    : "No namahattas found"}
+                </div>
+              ) : (
+                <div className="divide-y">
+                  {filteredNamahattas.map((namahatta) => (
+                    <div
+                      key={namahatta.id}
+                      onClick={() => setSelectedNamahattaId(namahatta.id)}
+                      className={`p-3 cursor-pointer transition-colors hover-elevate ${
+                        selectedNamahattaId === namahatta.id
+                          ? "bg-primary/10 border-l-2 border-l-primary"
+                          : ""
+                      }`}
+                      data-testid={`namahatta-option-${namahatta.id}`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0 flex-1">
+                          <p className="font-medium text-sm truncate">
+                            {namahatta.name}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            Code: {namahatta.code}
+                          </p>
+                          {(namahatta.address?.village || namahatta.address?.district) && (
+                            <p className="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1 mt-1">
+                              <MapPin className="h-3 w-3" />
+                              {[namahatta.address?.village, namahatta.address?.district, namahatta.address?.state].filter(Boolean).join(", ")}
+                            </p>
+                          )}
+                        </div>
+                        {selectedNamahattaId === namahatta.id && (
+                          <div className="text-primary text-xs font-medium">Selected</div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  {isLoadingNamahattas ? (
-                    <div className="flex items-center justify-center p-4">
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    </div>
-                  ) : filteredNamahattas.length === 0 ? (
-                    <div className="p-4 text-center text-gray-500">
-                      {searchTerm ? "No namahattas match your search" : "No namahattas found"}
-                    </div>
-                  ) : (
-                    filteredNamahattas.map((namahatta) => (
-                      <SelectItem key={namahatta.id} value={namahatta.id.toString()}>
-                        {namahatta.name} ({namahatta.code})
-                      </SelectItem>
-                    ))
-                  )}
-                </SelectContent>
-              </Select>
+                  ))}
+                </div>
+              )}
             </div>
+            
+            {namahattasData && namahattasData.total > 50 && (
+              <p className="text-xs text-gray-500 text-center">
+                Showing top 50 results. Use filters to narrow down your search.
+              </p>
+            )}
           </div>
 
           {/* Selected Namahatta Preview */}
