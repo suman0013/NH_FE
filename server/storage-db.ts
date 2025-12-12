@@ -527,7 +527,13 @@ export class DatabaseStorage implements IStorage {
     }
     
     if (filters.status) {
-      whereConditions.push(eq(namahattas.status, filters.status));
+      // Support comma-separated status values (e.g., "APPROVED,PENDING_APPROVAL")
+      const statusValues = filters.status.split(',').map((s: string) => s.trim());
+      if (statusValues.length === 1) {
+        whereConditions.push(eq(namahattas.status, statusValues[0]));
+      } else {
+        whereConditions.push(inArray(namahattas.status, statusValues));
+      }
     }
 
     // Address-based filtering

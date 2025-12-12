@@ -82,7 +82,7 @@ export default function ChangeNamahattaModal({
   const { data: namahattasData, isLoading: isLoadingNamahattas } = useQuery({
     queryKey: ["/api/namahattas/search", searchTerm, filters],
     queryFn: () => api.getNamahattas(1, 50, { 
-      status: "APPROVED",
+      status: "APPROVED,PENDING_APPROVAL",
       search: searchTerm,
       country: filters.country,
       state: filters.state,
