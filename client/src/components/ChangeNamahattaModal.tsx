@@ -12,17 +12,10 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { SearchableSelect } from "@/components/ui/searchable-select";
 import { SearchInput } from "@/components/ui/search-input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Loader2, Search, MapPin } from "lucide-react";
+import { Loader2, MapPin } from "lucide-react";
 import type { Devotee, Namahatta } from "@/lib/types";
 
 interface ChangeNamahattaModalProps {
@@ -44,7 +37,7 @@ export default function ChangeNamahattaModal({
   const [isValid, setIsValid] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   
-  // Location filters
+  // Location filters - India is always selected but hidden from UI
   const [filters, setFilters] = useState({
     country: "India",
     state: "",
@@ -55,12 +48,6 @@ export default function ChangeNamahattaModal({
   });
 
   // Fetch location data for cascading filters
-  const { data: countries } = useQuery({
-    queryKey: ["/api/countries"],
-    queryFn: () => api.getCountries(),
-    enabled: isOpen,
-  });
-
   const { data: states } = useQuery({
     queryKey: ["/api/states", filters.country],
     queryFn: () => api.getStates(filters.country),
@@ -139,7 +126,6 @@ export default function ChangeNamahattaModal({
       ...prev,
       [key]: value,
       // Reset dependent filters
-      ...(key === "country" && { state: "", district: "", subDistrict: "", village: "", postalCode: "" }),
       ...(key === "state" && { district: "", subDistrict: "", village: "", postalCode: "" }),
       ...(key === "district" && { subDistrict: "", village: "", postalCode: "" }),
       ...(key === "subDistrict" && { village: "", postalCode: "" }),
@@ -196,46 +182,32 @@ export default function ChangeNamahattaModal({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Change Namahatta Assignment</DialogTitle>
-          <DialogDescription>
-            Change the namahatta assignment for {devotee.legalName}
-          </DialogDescription>
+        <DialogHeader className="flex flex-row items-start justify-between gap-4">
+          <div className="flex-1">
+            <DialogTitle>Change Namahatta Assignment</DialogTitle>
+            <DialogDescription>
+              Change the namahatta assignment for {devotee.legalName}
+            </DialogDescription>
+          </div>
+          <div className="text-right shrink-0">
+            <span className="text-xs text-muted-foreground">Current:</span>
+            <p className="text-sm font-semibold">{currentNamahattaName || "None"}</p>
+          </div>
         </DialogHeader>
         
-        <div className="space-y-4">
-          {/* Current Assignment */}
-          <div className="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
-            <Label className="text-sm font-medium text-gray-600 dark:text-gray-400">
-              Current Assignment
-            </Label>
-            <p className="text-sm font-semibold text-gray-900 dark:text-white">
-              {currentNamahattaName || "No namahatta assigned"}
-            </p>
-          </div>
-
-          {/* Location Filters */}
+        <div className="space-y-3">
+          {/* Location Filters - Country hidden, India is always selected */}
           <div className="space-y-2">
-            <Label className="flex items-center gap-2">
+            <Label className="flex items-center gap-2 text-sm">
               <MapPin className="h-4 w-4" />
               Filter by Location
             </Label>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              <SearchableSelect
-                value={filters.country || "All Countries"}
-                onValueChange={(value) => handleFilterChange("country", value === "All Countries" ? "" : value)}
-                options={["All Countries", ...(countries || [])]}
-                placeholder="Country"
-                className="text-sm"
-                data-testid="select-country"
-              />
-
+            <div className="grid grid-cols-5 gap-2">
               <SearchableSelect
                 value={filters.state || "All States"}
                 onValueChange={(value) => handleFilterChange("state", value === "All States" ? "" : value)}
                 options={["All States", ...(states || [])]}
                 placeholder="State"
-                disabled={!filters.country}
                 className="text-sm"
                 data-testid="select-state"
               />
@@ -284,7 +256,7 @@ export default function ChangeNamahattaModal({
 
           {/* Search and Select Namahatta */}
           <div className="space-y-2">
-            <Label htmlFor="namahatta-select">Search and Select New Namahatta *</Label>
+            <Label htmlFor="namahatta-select" className="text-sm">Search and Select New Namahatta *</Label>
             
             {/* Search Input */}
             <SearchInput
@@ -298,8 +270,8 @@ export default function ChangeNamahattaModal({
               data-testid="input-namahatta-search"
             />
 
-            {/* Namahatta Results */}
-            <div className="border rounded-lg max-h-48 overflow-y-auto">
+            {/* Namahatta Results - Increased height */}
+            <div className="border rounded-lg max-h-72 overflow-y-auto">
               {isLoadingNamahattas ? (
                 <div className="flex items-center justify-center p-4">
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -317,7 +289,7 @@ export default function ChangeNamahattaModal({
                     <div
                       key={namahatta.id}
                       onClick={() => setSelectedNamahattaId(namahatta.id)}
-                      className={`p-3 cursor-pointer transition-colors hover-elevate ${
+                      className={`p-2.5 cursor-pointer transition-colors hover-elevate ${
                         selectedNamahattaId === namahatta.id
                           ? "bg-primary/10 border-l-2 border-l-primary"
                           : ""
@@ -333,7 +305,7 @@ export default function ChangeNamahattaModal({
                             Code: {namahatta.code}
                           </p>
                           {(namahatta.address?.village || namahatta.address?.district) && (
-                            <p className="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1 mt-1">
+                            <p className="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1 mt-0.5">
                               <MapPin className="h-3 w-3" />
                               {[namahatta.address?.village, namahatta.address?.district, namahatta.address?.state].filter(Boolean).join(", ")}
                             </p>
@@ -358,36 +330,38 @@ export default function ChangeNamahattaModal({
 
           {/* Selected Namahatta Preview */}
           {selectedNamahatta && (
-            <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-              <Label className="text-sm font-medium text-blue-600 dark:text-blue-400">
-                Selected Namahatta
-              </Label>
-              <p className="text-sm font-semibold text-blue-900 dark:text-blue-100">
-                {selectedNamahatta.name} ({selectedNamahatta.code})
-              </p>
-              {selectedNamahatta.meetingDay && selectedNamahatta.meetingTime && (
-                <p className="text-xs text-blue-700 dark:text-blue-300">
-                  Meetings: {selectedNamahatta.meetingDay} at {selectedNamahatta.meetingTime}
-                </p>
-              )}
+            <div className="p-2.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+              <div className="flex items-center justify-between gap-2">
+                <div>
+                  <span className="text-xs font-medium text-blue-600 dark:text-blue-400">Selected: </span>
+                  <span className="text-sm font-semibold text-blue-900 dark:text-blue-100">
+                    {selectedNamahatta.name} ({selectedNamahatta.code})
+                  </span>
+                </div>
+                {selectedNamahatta.meetingDay && selectedNamahatta.meetingTime && (
+                  <span className="text-xs text-blue-700 dark:text-blue-300">
+                    {selectedNamahatta.meetingDay} at {selectedNamahatta.meetingTime}
+                  </span>
+                )}
+              </div>
             </div>
           )}
 
-          {/* Reason */}
-          <div className="space-y-2">
-            <Label htmlFor="reason">Reason for Change *</Label>
-            <Textarea
+          {/* Reason - Single line with label */}
+          <div className="flex items-center gap-3">
+            <Label htmlFor="reason" className="text-sm whitespace-nowrap">Reason *</Label>
+            <Input
               id="reason"
-              placeholder="Please provide a reason for this assignment change..."
+              placeholder="Provide a reason for this assignment change..."
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              rows={3}
-              data-testid="textarea-reason"
+              data-testid="input-reason"
+              className="flex-1"
             />
           </div>
 
           {/* Action Buttons */}
-          <div className="flex justify-end gap-3 pt-4">
+          <div className="flex justify-end gap-3 pt-2">
             <Button
               type="button"
               variant="outline"
