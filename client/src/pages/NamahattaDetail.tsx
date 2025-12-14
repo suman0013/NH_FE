@@ -380,67 +380,151 @@ export default function NamahattaDetail() {
             <CardContent className="pt-2">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2">
                 {(namahatta as any).malaSenapotiName && (
-                  <div className="p-2 bg-gradient-to-br from-purple-50 to-indigo-100 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
-                    <div className="flex items-center mb-1">
-                      <Crown className="h-3 w-3 text-purple-600 dark:text-purple-400 mr-1" />
-                      <p className="text-xs font-medium text-purple-600 dark:text-purple-400">Mala Senapoti</p>
+                  (namahatta as any).malaSenapotiId ? (
+                    <Link href={`/devotees/${(namahatta as any).malaSenapotiId}`}>
+                      <div className="p-2 bg-gradient-to-br from-purple-50 to-indigo-100 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-lg border border-purple-200 dark:border-purple-800 cursor-pointer hover-elevate" data-testid={`link-leader-mala-senapoti-${(namahatta as any).malaSenapotiId}`}>
+                        <div className="flex items-center mb-1">
+                          <Crown className="h-3 w-3 text-purple-600 dark:text-purple-400 mr-1" />
+                          <p className="text-xs font-medium text-purple-600 dark:text-purple-400">Mala Senapoti</p>
+                        </div>
+                        <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namahatta as any).malaSenapotiName}</p>
+                      </div>
+                    </Link>
+                  ) : (
+                    <div className="p-2 bg-gradient-to-br from-purple-50 to-indigo-100 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
+                      <div className="flex items-center mb-1">
+                        <Crown className="h-3 w-3 text-purple-600 dark:text-purple-400 mr-1" />
+                        <p className="text-xs font-medium text-purple-600 dark:text-purple-400">Mala Senapoti</p>
+                      </div>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namahatta as any).malaSenapotiName}</p>
                     </div>
-                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namahatta as any).malaSenapotiName}</p>
-                  </div>
+                  )
                 )}
                 {(namahatta as any).mahaChakraSenapotiName && (
-                  <div className="p-2 bg-gradient-to-br from-blue-50 to-cyan-100 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                    <div className="flex items-center mb-1">
-                      <Users className="h-3 w-3 text-blue-600 dark:text-blue-400 mr-1" />
-                      <p className="text-xs font-medium text-blue-600 dark:text-blue-400">Maha Chakra Senapoti</p>
+                  (namahatta as any).mahaChakraSenapotiId ? (
+                    <Link href={`/devotees/${(namahatta as any).mahaChakraSenapotiId}`}>
+                      <div className="p-2 bg-gradient-to-br from-blue-50 to-cyan-100 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-lg border border-blue-200 dark:border-blue-800 cursor-pointer hover-elevate" data-testid={`link-leader-maha-chakra-senapoti-${(namahatta as any).mahaChakraSenapotiId}`}>
+                        <div className="flex items-center mb-1">
+                          <Users className="h-3 w-3 text-blue-600 dark:text-blue-400 mr-1" />
+                          <p className="text-xs font-medium text-blue-600 dark:text-blue-400">Maha Chakra Senapoti</p>
+                        </div>
+                        <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namahatta as any).mahaChakraSenapotiName}</p>
+                      </div>
+                    </Link>
+                  ) : (
+                    <div className="p-2 bg-gradient-to-br from-blue-50 to-cyan-100 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                      <div className="flex items-center mb-1">
+                        <Users className="h-3 w-3 text-blue-600 dark:text-blue-400 mr-1" />
+                        <p className="text-xs font-medium text-blue-600 dark:text-blue-400">Maha Chakra Senapoti</p>
+                      </div>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namahatta as any).mahaChakraSenapotiName}</p>
                     </div>
-                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namahatta as any).mahaChakraSenapotiName}</p>
-                  </div>
+                  )
                 )}
                 {(namahatta as any).chakraSenapotiName && (
-                  <div className="p-2 bg-gradient-to-br from-emerald-50 to-green-100 dark:from-emerald-900/20 dark:to-green-900/20 rounded-lg border border-emerald-200 dark:border-emerald-800">
-                    <div className="flex items-center mb-1">
-                      <Activity className="h-3 w-3 text-emerald-600 dark:text-emerald-400 mr-1" />
-                      <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400">Chakra Senapoti</p>
+                  (namahatta as any).chakraSenapotiId ? (
+                    <Link href={`/devotees/${(namahatta as any).chakraSenapotiId}`}>
+                      <div className="p-2 bg-gradient-to-br from-emerald-50 to-green-100 dark:from-emerald-900/20 dark:to-green-900/20 rounded-lg border border-emerald-200 dark:border-emerald-800 cursor-pointer hover-elevate" data-testid={`link-leader-chakra-senapoti-${(namahatta as any).chakraSenapotiId}`}>
+                        <div className="flex items-center mb-1">
+                          <Activity className="h-3 w-3 text-emerald-600 dark:text-emerald-400 mr-1" />
+                          <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400">Chakra Senapoti</p>
+                        </div>
+                        <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namahatta as any).chakraSenapotiName}</p>
+                      </div>
+                    </Link>
+                  ) : (
+                    <div className="p-2 bg-gradient-to-br from-emerald-50 to-green-100 dark:from-emerald-900/20 dark:to-green-900/20 rounded-lg border border-emerald-200 dark:border-emerald-800">
+                      <div className="flex items-center mb-1">
+                        <Activity className="h-3 w-3 text-emerald-600 dark:text-emerald-400 mr-1" />
+                        <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400">Chakra Senapoti</p>
+                      </div>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namahatta as any).chakraSenapotiName}</p>
                     </div>
-                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namahatta as any).chakraSenapotiName}</p>
-                  </div>
+                  )
                 )}
                 {(namahatta as any).upaChakraSenapotiName && (
-                  <div className="p-2 bg-gradient-to-br from-orange-50 to-amber-100 dark:from-orange-900/20 dark:to-amber-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
-                    <div className="flex items-center mb-1">
-                      <TrendingUp className="h-3 w-3 text-orange-600 dark:text-orange-400 mr-1" />
-                      <p className="text-xs font-medium text-orange-600 dark:text-orange-400">Upa Chakra Senapoti</p>
+                  (namahatta as any).upaChakraSenapotiId ? (
+                    <Link href={`/devotees/${(namahatta as any).upaChakraSenapotiId}`}>
+                      <div className="p-2 bg-gradient-to-br from-orange-50 to-amber-100 dark:from-orange-900/20 dark:to-amber-900/20 rounded-lg border border-orange-200 dark:border-orange-800 cursor-pointer hover-elevate" data-testid={`link-leader-upa-chakra-senapoti-${(namahatta as any).upaChakraSenapotiId}`}>
+                        <div className="flex items-center mb-1">
+                          <TrendingUp className="h-3 w-3 text-orange-600 dark:text-orange-400 mr-1" />
+                          <p className="text-xs font-medium text-orange-600 dark:text-orange-400">Upa Chakra Senapoti</p>
+                        </div>
+                        <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namahatta as any).upaChakraSenapotiName}</p>
+                      </div>
+                    </Link>
+                  ) : (
+                    <div className="p-2 bg-gradient-to-br from-orange-50 to-amber-100 dark:from-orange-900/20 dark:to-amber-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
+                      <div className="flex items-center mb-1">
+                        <TrendingUp className="h-3 w-3 text-orange-600 dark:text-orange-400 mr-1" />
+                        <p className="text-xs font-medium text-orange-600 dark:text-orange-400">Upa Chakra Senapoti</p>
+                      </div>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namahatta as any).upaChakraSenapotiName}</p>
                     </div>
-                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namahatta as any).upaChakraSenapotiName}</p>
-                  </div>
+                  )
                 )}
                 {(namahatta as any).secretaryName && (
-                  <div className="p-2 bg-gradient-to-br from-pink-50 to-rose-100 dark:from-pink-900/20 dark:to-rose-900/20 rounded-lg border border-pink-200 dark:border-pink-800">
-                    <div className="flex items-center mb-1">
-                      <User className="h-3 w-3 text-pink-600 dark:text-pink-400 mr-1" />
-                      <p className="text-xs font-medium text-pink-600 dark:text-pink-400">Secretary</p>
+                  (namahatta as any).secretaryId ? (
+                    <Link href={`/devotees/${(namahatta as any).secretaryId}`}>
+                      <div className="p-2 bg-gradient-to-br from-pink-50 to-rose-100 dark:from-pink-900/20 dark:to-rose-900/20 rounded-lg border border-pink-200 dark:border-pink-800 cursor-pointer hover-elevate" data-testid={`link-leader-secretary-${(namahatta as any).secretaryId}`}>
+                        <div className="flex items-center mb-1">
+                          <User className="h-3 w-3 text-pink-600 dark:text-pink-400 mr-1" />
+                          <p className="text-xs font-medium text-pink-600 dark:text-pink-400">Secretary</p>
+                        </div>
+                        <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namahatta as any).secretaryName}</p>
+                      </div>
+                    </Link>
+                  ) : (
+                    <div className="p-2 bg-gradient-to-br from-pink-50 to-rose-100 dark:from-pink-900/20 dark:to-rose-900/20 rounded-lg border border-pink-200 dark:border-pink-800">
+                      <div className="flex items-center mb-1">
+                        <User className="h-3 w-3 text-pink-600 dark:text-pink-400 mr-1" />
+                        <p className="text-xs font-medium text-pink-600 dark:text-pink-400">Secretary</p>
+                      </div>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namahatta as any).secretaryName}</p>
                     </div>
-                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namahatta as any).secretaryName}</p>
-                  </div>
+                  )
                 )}
                 {(namahatta as any).presidentName && (
-                  <div className="p-2 bg-gradient-to-br from-indigo-50 to-violet-100 dark:from-indigo-900/20 dark:to-violet-900/20 rounded-lg border border-indigo-200 dark:border-indigo-800">
-                    <div className="flex items-center mb-1">
-                      <User className="h-3 w-3 text-indigo-600 dark:text-indigo-400 mr-1" />
-                      <p className="text-xs font-medium text-indigo-600 dark:text-indigo-400">President</p>
+                  (namahatta as any).presidentId ? (
+                    <Link href={`/devotees/${(namahatta as any).presidentId}`}>
+                      <div className="p-2 bg-gradient-to-br from-indigo-50 to-violet-100 dark:from-indigo-900/20 dark:to-violet-900/20 rounded-lg border border-indigo-200 dark:border-indigo-800 cursor-pointer hover-elevate" data-testid={`link-leader-president-${(namahatta as any).presidentId}`}>
+                        <div className="flex items-center mb-1">
+                          <User className="h-3 w-3 text-indigo-600 dark:text-indigo-400 mr-1" />
+                          <p className="text-xs font-medium text-indigo-600 dark:text-indigo-400">President</p>
+                        </div>
+                        <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namahatta as any).presidentName}</p>
+                      </div>
+                    </Link>
+                  ) : (
+                    <div className="p-2 bg-gradient-to-br from-indigo-50 to-violet-100 dark:from-indigo-900/20 dark:to-violet-900/20 rounded-lg border border-indigo-200 dark:border-indigo-800">
+                      <div className="flex items-center mb-1">
+                        <User className="h-3 w-3 text-indigo-600 dark:text-indigo-400 mr-1" />
+                        <p className="text-xs font-medium text-indigo-600 dark:text-indigo-400">President</p>
+                      </div>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namahatta as any).presidentName}</p>
                     </div>
-                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namahatta as any).presidentName}</p>
-                  </div>
+                  )
                 )}
                 {(namahatta as any).accountantName && (
-                  <div className="p-2 bg-gradient-to-br from-teal-50 to-cyan-100 dark:from-teal-900/20 dark:to-cyan-900/20 rounded-lg border border-teal-200 dark:border-teal-800">
-                    <div className="flex items-center mb-1">
-                      <Briefcase className="h-3 w-3 text-teal-600 dark:text-teal-400 mr-1" />
-                      <p className="text-xs font-medium text-teal-600 dark:text-teal-400">Accountant</p>
+                  (namahatta as any).accountantId ? (
+                    <Link href={`/devotees/${(namahatta as any).accountantId}`}>
+                      <div className="p-2 bg-gradient-to-br from-teal-50 to-cyan-100 dark:from-teal-900/20 dark:to-cyan-900/20 rounded-lg border border-teal-200 dark:border-teal-800 cursor-pointer hover-elevate" data-testid={`link-leader-accountant-${(namahatta as any).accountantId}`}>
+                        <div className="flex items-center mb-1">
+                          <Briefcase className="h-3 w-3 text-teal-600 dark:text-teal-400 mr-1" />
+                          <p className="text-xs font-medium text-teal-600 dark:text-teal-400">Accountant</p>
+                        </div>
+                        <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namahatta as any).accountantName}</p>
+                      </div>
+                    </Link>
+                  ) : (
+                    <div className="p-2 bg-gradient-to-br from-teal-50 to-cyan-100 dark:from-teal-900/20 dark:to-cyan-900/20 rounded-lg border border-teal-200 dark:border-teal-800">
+                      <div className="flex items-center mb-1">
+                        <Briefcase className="h-3 w-3 text-teal-600 dark:text-teal-400 mr-1" />
+                        <p className="text-xs font-medium text-teal-600 dark:text-teal-400">Accountant</p>
+                      </div>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namahatta as any).accountantName}</p>
                     </div>
-                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{(namahatta as any).accountantName}</p>
-                  </div>
+                  )
                 )}
                 {!(namahatta as any).malaSenapotiName && !(namahatta as any).mahaChakraSenapotiName && !(namahatta as any).chakraSenapotiName && !(namahatta as any).upaChakraSenapotiName && !(namahatta as any).secretaryName && !(namahatta as any).presidentName && !(namahatta as any).accountantName && (
                   <div className="col-span-2 text-center py-12">
