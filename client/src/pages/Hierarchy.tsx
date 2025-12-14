@@ -208,6 +208,15 @@ export default function Hierarchy() {
 
   const canManageDefault = user?.role === 'ADMIN' || user?.role === 'OFFICE';
 
+  // Check if supervisor has any district where they can be set as default
+  const hasSettableDefaultDistrict = (supervisor: any): boolean => {
+    if (!supervisor.districtDetails) return false;
+    return supervisor.districtDetails.some((district: any) => {
+      const supervisorCount = getDistrictSupervisorCount(district.code);
+      return supervisorCount > 1 && !district.isDefault;
+    });
+  };
+
   if (isLoading || isLoadingDistrictSupervisors) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-100 via-purple-100 to-slate-100 dark:from-slate-900 dark:via-purple-900 dark:to-slate-900 text-black dark:text-white flex items-center justify-center">
@@ -651,7 +660,7 @@ export default function Hierarchy() {
                                   ))}
                                 </div>
                               )}
-                              {canManageDefault && supervisor.districtDetails && (
+                              {canManageDefault && hasSettableDefaultDistrict(supervisor) && (
                                 <DropdownMenu>
                                   <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                                     <Button
