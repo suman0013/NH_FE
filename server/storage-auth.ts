@@ -207,8 +207,42 @@ export async function getUserDistricts(userId: number) {
     .where(eq(userDistricts.userId, userId));
 }
 
-// Assign districts to user
-export async function assignDistrictsToUser(userId: number, districtCodes: string[]): Promise<void> {
+// Check if a district already has a default supervisor
+export async function hasDefaultSupervisorForDistrict(districtCode: string): Promise<boolean> {
+  const result = await db
+    .select({ id: userDistricts.id })
+    .from(userDistricts)
+    .innerJoin(users, eq(userDistricts.userId, users.id))
+    .where(and(
+      eq(userDistricts.districtCode, districtCode),
+      eq(userDistricts.isDefaultDistrictSupervisor, true),
+      eq(users.isActive, true),
+      eq(users.role, 'DISTRICT_SUPERVISOR')
+    ))
+    .limit(1);
+  return result.length > 0;
+}
+
+// Count supervisors for a district
+export async function countSupervisorsForDistrict(districtCode: string): Promise<number> {
+  const result = await db
+    .select({ id: userDistricts.id })
+    .from(userDistricts)
+    .innerJoin(users, eq(userDistricts.userId, users.id))
+    .where(and(
+      eq(userDistricts.districtCode, districtCode),
+      eq(users.isActive, true),
+      eq(users.role, 'DISTRICT_SUPERVISOR')
+    ));
+  return result.length;
+}
+
+// Assign districts to user with comments and auto-default logic
+export async function assignDistrictsToUser(
+  userId: number, 
+  districtCodes: string[], 
+  comments?: string
+): Promise<void> {
   // Remove existing district assignments
   await db.delete(userDistricts).where(eq(userDistricts.userId, userId));
   
@@ -224,14 +258,43 @@ export async function assignDistrictsToUser(userId: number, districtCodes: strin
       .from(addresses)
       .where(inArray(addresses.districtCode, districtCodes));
     
-    const assignments = distinctDistricts.map(district => ({
-      userId,
-      districtCode: district.districtCode!,
-      districtNameEnglish: district.districtNameEnglish!
-    }));
+    const assignments = [];
+    for (const district of distinctDistricts) {
+      // Check if this district already has a default supervisor
+      const hasDefault = await hasDefaultSupervisorForDistrict(district.districtCode!);
+      
+      assignments.push({
+        userId,
+        districtCode: district.districtCode!,
+        districtNameEnglish: district.districtNameEnglish!,
+        isDefaultDistrictSupervisor: !hasDefault, // Set as default if no existing default
+        comments: comments || null
+      });
+    }
     
     await db.insert(userDistricts).values(assignments);
   }
+}
+
+// Update default supervisor for a district
+export async function setDefaultSupervisorForDistrict(
+  userId: number, 
+  districtCode: string
+): Promise<void> {
+  // First, remove default flag from all supervisors in this district
+  await db
+    .update(userDistricts)
+    .set({ isDefaultDistrictSupervisor: false })
+    .where(eq(userDistricts.districtCode, districtCode));
+  
+  // Set the new default
+  await db
+    .update(userDistricts)
+    .set({ isDefaultDistrictSupervisor: true })
+    .where(and(
+      eq(userDistricts.userId, userId),
+      eq(userDistricts.districtCode, districtCode)
+    ));
 }
 
 // Remove specific district assignment

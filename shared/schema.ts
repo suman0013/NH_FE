@@ -194,6 +194,7 @@ export const userDistricts = pgTable("user_districts", {
   districtCode: text("district_code").notNull(), // References district from addresses table
   districtNameEnglish: text("district_name_english").notNull(), // Store district name for easy display
   isDefaultDistrictSupervisor: boolean("is_default_district_supervisor").default(false), // One default DS per district
+  comments: text("comments"), // Optional comments for the district supervisor assignment
   createdAt: timestamp("created_at").defaultNow(),
 }, (table) => ({
   uniqueUserDistrict: unique().on(table.userId, table.districtCode),
