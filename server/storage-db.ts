@@ -2392,6 +2392,7 @@ export class DatabaseStorage implements IStorage {
     phone?: string | null;
     password: string;
     districts: string[];
+    comments?: string | null;
   }): Promise<{ user: any; districts: string[] }> {
     try {
       const { createUser, assignDistrictsToUser } = await import('./storage-auth');
@@ -2407,8 +2408,8 @@ export class DatabaseStorage implements IStorage {
         isActive: true
       });
 
-      // Assign districts
-      await assignDistrictsToUser(user.id, data.districts);
+      // Assign districts with comments - auto-default is handled in assignDistrictsToUser
+      await assignDistrictsToUser(user.id, data.districts, data.comments || undefined);
 
       return {
         user,

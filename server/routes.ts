@@ -1348,7 +1348,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // District Supervisor Registration (Admin only)
   app.post("/api/admin/register-supervisor", authenticateJWT, authorize(['ADMIN', 'OFFICE']), async (req, res) => {
     try {
-      const { username, fullName, email, phone, password, districts } = req.body;
+      const { username, fullName, email, phone, password, districts, comments } = req.body;
       
       // Validate required fields
       if (!username || !fullName || !email || !password || !districts || !Array.isArray(districts) || districts.length === 0) {
@@ -1370,14 +1370,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Email already exists" });
       }
 
-      // Create the district supervisor
+      // Create the district supervisor with comments
       const result = await storage.createDistrictSupervisor({
         username,
         fullName,
         email,
         phone: phone || null,
         password,
-        districts
+        districts,
+        comments: comments || null
       });
 
       res.status(201).json({
@@ -1393,6 +1394,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error creating district supervisor:", error);
       res.status(500).json({ error: "Failed to create district supervisor" });
+    }
+  });
+
+  // Set default supervisor for a district (Admin only)
+  app.put("/api/admin/district-supervisor/set-default", authenticateJWT, authorize(['ADMIN', 'OFFICE']), async (req, res) => {
+    try {
+      const { userId, districtCode } = req.body;
+      
+      if (!userId || !districtCode) {
+        return res.status(400).json({ error: "userId and districtCode are required" });
+      }
+
+      const { setDefaultSupervisorForDistrict } = await import('./storage-auth');
+      await setDefaultSupervisorForDistrict(userId, districtCode);
+      
+      res.json({ message: "Default supervisor updated successfully" });
+    } catch (error) {
+      console.error("Error setting default supervisor:", error);
+      res.status(500).json({ error: "Failed to set default supervisor" });
     }
   });
 
