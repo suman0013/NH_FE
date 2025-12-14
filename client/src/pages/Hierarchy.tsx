@@ -1,9 +1,12 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronRight, MapPin, Crown, UserCheck, Users, Shield, TreePine, Network, Zap, Circle, ArrowRight, ArrowDown, Search, UserCog, MoreVertical } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { ChevronDown, ChevronRight, MapPin, Crown, UserCheck, Users, Shield, TreePine, Network, Zap, Circle, ArrowRight, ArrowDown, Search, UserCog, MoreVertical, Star } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import iskconLogo from "@assets/iskcon_logo_1757665218141.png";
 import namahattaLogo from "@assets/namhatta_logo_1757673165218.png";
@@ -50,6 +53,8 @@ export default function Hierarchy() {
   const [selectedDevoteeForRoleManagement, setSelectedDevoteeForRoleManagement] = useState<any>(null);
   const [showRoleManagementModal, setShowRoleManagementModal] = useState(false);
   const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
   
   const { data: hierarchy, isLoading, error } = useQuery<HierarchyData>({
     queryKey: ["/api/hierarchy"],
@@ -173,6 +178,35 @@ export default function Hierarchy() {
     }
     return 'UNKNOWN';
   };
+
+  // Mutation to set default supervisor for a district
+  const setDefaultSupervisorMutation = useMutation({
+    mutationFn: async ({ userId, districtCode }: { userId: number; districtCode: string }) => {
+      const res = await apiRequest("PUT", "/api/admin/district-supervisor/set-default", { userId, districtCode });
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Success", description: "Default supervisor updated successfully." });
+      queryClient.invalidateQueries({ queryKey: ["/api/district-supervisors/all"] });
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message || "Failed to update default supervisor", variant: "destructive" });
+    }
+  });
+
+  // Check if district has multiple supervisors
+  const getDistrictSupervisorCount = (districtCode: string): number => {
+    if (!districtSupervisors) return 0;
+    let count = 0;
+    (districtSupervisors as any[]).forEach((sup: any) => {
+      if (sup.districtDetails?.some((d: any) => d.code === districtCode)) {
+        count++;
+      }
+    });
+    return count;
+  };
+
+  const canManageDefault = user?.role === 'ADMIN' || user?.role === 'OFFICE';
 
   if (isLoading || isLoadingDistrictSupervisors) {
     return (
@@ -581,7 +615,7 @@ export default function Hierarchy() {
                           s.fullName.toLowerCase().includes(districtSearchTerm.toLowerCase())
                         )
                         .map((supervisor: any) => (
-                          <div key={supervisor.id}>
+                          <div key={supervisor.id} className="group">
                             <div 
                               className={`flex items-center gap-1.5 sm:gap-2 p-1.5 sm:p-2 rounded-md cursor-pointer transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 ${
                                 selectedDistrictSupervisor === supervisor.id ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800' : ''
@@ -596,8 +630,53 @@ export default function Hierarchy() {
                               )}
                               <Shield className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
                               <span className="text-xs sm:text-sm font-medium truncate">{supervisor.fullName}</span>
-                              {supervisor.districts && supervisor.districts.length > 0 && (
-                                <span className="text-xs text-slate-500 dark:text-slate-400 truncate">({supervisor.districts.join(", ")})</span>
+                              {supervisor.districtDetails && supervisor.districtDetails.length > 0 && (
+                                <div className="flex flex-wrap items-center gap-1">
+                                  {supervisor.districtDetails.map((district: any) => (
+                                    <span key={district.code} className="flex items-center gap-1">
+                                      <span className="text-xs text-slate-500 dark:text-slate-400">{district.name}</span>
+                                      {district.isDefault && (
+                                        <Badge variant="secondary" className="text-xs px-1 py-0 h-4 bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 no-default-hover-elevate no-default-active-elevate" data-testid={`badge-default-${supervisor.id}-${district.code}`}>
+                                          <Star className="h-2 w-2 mr-0.5" />
+                                          Default
+                                        </Badge>
+                                      )}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+                              {canManageDefault && supervisor.districtDetails && (
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-5 w-5 sm:h-6 sm:w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 ml-auto"
+                                      data-testid={`button-supervisor-menu-${supervisor.id}`}
+                                    >
+                                      <MoreVertical className="h-3 w-3" />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                                    {supervisor.districtDetails.map((district: any) => {
+                                      const supervisorCount = getDistrictSupervisorCount(district.code);
+                                      if (supervisorCount > 1 && !district.isDefault) {
+                                        return (
+                                          <DropdownMenuItem
+                                            key={district.code}
+                                            onClick={() => setDefaultSupervisorMutation.mutate({ userId: supervisor.id, districtCode: district.code })}
+                                            disabled={setDefaultSupervisorMutation.isPending}
+                                            data-testid={`button-set-default-${supervisor.id}-${district.code}`}
+                                          >
+                                            <Star className="mr-2 h-3 w-3" />
+                                            Set as Default for {district.name}
+                                          </DropdownMenuItem>
+                                        );
+                                      }
+                                      return null;
+                                    })}
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
                               )}
                             </div>
                             

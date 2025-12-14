@@ -2454,7 +2454,7 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async getAllDistrictSupervisors(): Promise<Array<{ id: number; username: string; fullName: string; email: string; districts: string[]; isDefault: boolean }>> {
+  async getAllDistrictSupervisors(): Promise<Array<{ id: number; username: string; fullName: string; email: string; districts: string[]; districtDetails: Array<{ code: string; name: string; isDefault: boolean }> }>> {
     try {
       const supervisors = await db
         .select({
@@ -2462,6 +2462,7 @@ export class DatabaseStorage implements IStorage {
           username: users.username,
           fullName: users.fullName,
           email: users.email,
+          districtCode: userDistricts.districtCode,
           districtName: userDistricts.districtNameEnglish,
           isDefault: userDistricts.isDefaultDistrictSupervisor
         })
@@ -2474,7 +2475,7 @@ export class DatabaseStorage implements IStorage {
           )
         );
 
-      // Group supervisors by ID and collect their districts
+      // Group supervisors by ID and collect their districts with details
       const supervisorMap = new Map();
       for (const sup of supervisors) {
         if (!supervisorMap.has(sup.id)) {
@@ -2484,10 +2485,16 @@ export class DatabaseStorage implements IStorage {
             fullName: sup.fullName,
             email: sup.email,
             districts: [],
-            isDefault: sup.isDefault || false
+            districtDetails: []
           });
         }
-        supervisorMap.get(sup.id).districts.push(sup.districtName);
+        const supervisor = supervisorMap.get(sup.id);
+        supervisor.districts.push(sup.districtName);
+        supervisor.districtDetails.push({
+          code: sup.districtCode || '',
+          name: sup.districtName || '',
+          isDefault: sup.isDefault || false
+        });
       }
 
       return Array.from(supervisorMap.values());

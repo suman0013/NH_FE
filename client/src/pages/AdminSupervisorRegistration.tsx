@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -64,7 +65,8 @@ const registrationSchema = z.object({
     .regex(/[0-9]/, "Password must contain at least one number")
     .regex(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/, "Password must contain at least one special character"),
   confirmPassword: z.string(),
-  districts: z.array(z.string()).optional()
+  districts: z.array(z.string()).optional(),
+  comments: z.string().optional()
 }).refine(data => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"]
@@ -215,7 +217,8 @@ export default function AdminSupervisorRegistration() {
       phone: "",
       password: "",
       confirmPassword: "",
-      districts: []
+      districts: [],
+      comments: ""
     },
     mode: "onBlur"
   });
@@ -1260,6 +1263,28 @@ export default function AdminSupervisorRegistration() {
                               />
                             ))}
                           </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+
+                  {registerUserType === 'DISTRICT_SUPERVISOR' && (
+                    <FormField
+                      control={form.control}
+                      name="comments"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Comments (Optional)</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              placeholder="Add any notes or comments about this district supervisor..."
+                              className="resize-none"
+                              rows={3}
+                              {...field}
+                              data-testid="input-comments"
+                            />
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}

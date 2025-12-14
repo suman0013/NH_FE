@@ -89,7 +89,7 @@ export interface IStorage {
   }>;
   getAllUsers(): Promise<any[]>;
   getAvailableDistricts(): Promise<Array<{ code: string; name: string }>>;
-  getAllDistrictSupervisors(): Promise<Array<{ id: number; username: string; fullName: string; email: string; districts: string[]; isDefault: boolean }>>;
+  getAllDistrictSupervisors(): Promise<Array<{ id: number; username: string; fullName: string; email: string; districts: string[]; districtDetails: Array<{ code: string; name: string; isDefault: boolean }> }>>;
   getDistrictSupervisors(district: string): Promise<Array<{ id: number; username: string; fullName: string; email: string; isDefault: boolean }>>;
   getUserAddressDefaults(userId: number): Promise<{ country?: string; state?: string; district?: string }>;
   searchPincodes(country: string, searchTerm: string, page: number, limit: number): Promise<{
