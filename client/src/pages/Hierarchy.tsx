@@ -612,8 +612,14 @@ export default function Hierarchy() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 md:gap-4">
                       {(districtSupervisors as any[])
                         .filter((s: any) => 
-                          s.fullName.toLowerCase().includes(districtSearchTerm.toLowerCase())
+                          s.fullName.toLowerCase().includes(districtSearchTerm.toLowerCase()) ||
+                          s.districtDetails?.some((d: any) => d.name?.toLowerCase().includes(districtSearchTerm.toLowerCase()))
                         )
+                        .sort((a: any, b: any) => {
+                          const districtA = a.districtDetails?.[0]?.name || '';
+                          const districtB = b.districtDetails?.[0]?.name || '';
+                          return districtA.localeCompare(districtB);
+                        })
                         .map((supervisor: any) => (
                           <div key={supervisor.id} className="group">
                             <div 
