@@ -74,6 +74,16 @@ Navigation layout: Horizontal top navigation bar instead of left sidebar for des
 - **Neon Pooler Cache Issue**: Resolved using `DISCARD ALL;` SQL command to clear cached prepared statements that were causing "column does not exist" errors after rename
 - **Resolution Note**: When renaming database columns with Neon PostgreSQL pooler, always run `DISCARD ALL;` to clear cached prepared statements
 
+### December 2025 - District Supervisor Default Flag & Comments COMPLETED ✅
+- **Comments Field**: Added optional comments text field when registering a District Supervisor
+- **Default Flag**: Added isDefaultDistrictSupervisor flag to userDistricts table
+- **Auto-Default**: First supervisor assigned to a district automatically becomes the default
+- **Hierarchy Page Updates**: 
+  - Shows "Default" badge (yellow with star) for default supervisors
+  - Admin/Office users can change default via dropdown menu
+  - "Set as Default" option only appears when district has multiple supervisors
+- **API Endpoints**: Added PUT /api/admin/district-supervisor/set-default for changing defaults
+
 ### January 2025 - District Supervisor Assignment Implementation COMPLETED ✅
 - **Database Schema**: Added mandatory `districtSupervisorId` field to namahattas table with NOT NULL constraint
 - **Backend APIs**: Implemented district supervisor lookup (`/api/district-supervisors`) and user address defaults (`/api/user/address-defaults`) endpoints
