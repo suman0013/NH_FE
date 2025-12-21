@@ -8,42 +8,37 @@ export const SENAPOTI_ROLES = ['MALA_SENAPOTI', 'MAHA_CHAKRA_SENAPOTI', 'CHAKRA_
 export const ROLE_HIERARCHY: Record<string, {
   level: number;
   reportsTo: string;
-  canPromoteTo: string[] | null;
-  canDemoteTo: string[] | null;
+  canReplaceTo: string[];
   manages: string[];
 }> = {
   'MALA_SENAPOTI': {
     level: 1,
     reportsTo: 'DISTRICT_SUPERVISOR',
-    canPromoteTo: null, // Cannot be promoted further
-    canDemoteTo: ['MAHA_CHAKRA_SENAPOTI', 'CHAKRA_SENAPOTI', 'UPA_CHAKRA_SENAPOTI'],
+    canReplaceTo: ['MALA_SENAPOTI', 'MAHA_CHAKRA_SENAPOTI', 'CHAKRA_SENAPOTI', 'UPA_CHAKRA_SENAPOTI'],
     manages: ['MAHA_CHAKRA_SENAPOTI']
   },
   'MAHA_CHAKRA_SENAPOTI': {
     level: 2,
     reportsTo: 'MALA_SENAPOTI',
-    canPromoteTo: ['MALA_SENAPOTI'],
-    canDemoteTo: ['CHAKRA_SENAPOTI', 'UPA_CHAKRA_SENAPOTI'],
+    canReplaceTo: ['MALA_SENAPOTI', 'MAHA_CHAKRA_SENAPOTI', 'CHAKRA_SENAPOTI', 'UPA_CHAKRA_SENAPOTI'],
     manages: ['CHAKRA_SENAPOTI']
   },
   'CHAKRA_SENAPOTI': {
     level: 3,
     reportsTo: 'MAHA_CHAKRA_SENAPOTI',
-    canPromoteTo: ['MAHA_CHAKRA_SENAPOTI'],
-    canDemoteTo: ['UPA_CHAKRA_SENAPOTI'],
+    canReplaceTo: ['MALA_SENAPOTI', 'MAHA_CHAKRA_SENAPOTI', 'CHAKRA_SENAPOTI', 'UPA_CHAKRA_SENAPOTI'],
     manages: ['UPA_CHAKRA_SENAPOTI']
   },
   'UPA_CHAKRA_SENAPOTI': {
     level: 4,
     reportsTo: 'CHAKRA_SENAPOTI',
-    canPromoteTo: ['CHAKRA_SENAPOTI'],
-    canDemoteTo: null, // Cannot be demoted further (will be removed)
+    canReplaceTo: ['MALA_SENAPOTI', 'MAHA_CHAKRA_SENAPOTI', 'CHAKRA_SENAPOTI', 'UPA_CHAKRA_SENAPOTI'],
     manages: []
   }
 };
 
 export type SenapotiRole = typeof SENAPOTI_ROLES[number];
-export type ChangeType = 'PROMOTE' | 'DEMOTE' | 'REMOVE' | 'REPLACE';
+export type ChangeType = 'REPLACE' | 'REMOVE';
 
 export interface RoleChangeRequest {
   devoteeId: number;
@@ -52,6 +47,7 @@ export interface RoleChangeRequest {
   changeType: ChangeType;
   reason: string;
   changedBy: number;
+  replacementDevoteeId?: number | null;
 }
 
 export interface ValidationResult {
@@ -83,54 +79,29 @@ export async function validateHierarchyChange(
     return result;
   }
 
-  // Handle role assignment (promotion/demotion)
-  if (!currentRole && !targetRole) {
-    result.errors.push('Both current role and target role cannot be null');
-    result.isValid = false;
-    return result;
-  }
-
-  if (!targetRole) {
-    result.errors.push('Target role cannot be null for role assignment');
-    result.isValid = false;
-    return result;
-  }
-
-  // Validate role exists in hierarchy
-  if (!ROLE_HIERARCHY[targetRole]) {
-    result.errors.push(`Invalid target role: ${targetRole}`);
-    result.isValid = false;
-    return result;
-  }
-
-  if (currentRole && !ROLE_HIERARCHY[currentRole]) {
-    result.errors.push(`Invalid current role: ${currentRole}`);
-    result.isValid = false;
-    return result;
-  }
-
-  // Handle new role assignment (no current role)
-  if (!currentRole) {
-    result.warnings.push(`Assigning new role ${targetRole} to devotee`);
-    return result;
-  }
-
-  // Validate promotion
-  if (changeType === 'PROMOTE') {
-    const allowedPromotions = ROLE_HIERARCHY[currentRole].canPromoteTo;
-    if (!allowedPromotions || !allowedPromotions.includes(targetRole)) {
-      result.errors.push(`Cannot promote from ${currentRole} to ${targetRole}`);
+  // Handle replacement
+  if (changeType === 'REPLACE') {
+    if (!currentRole) {
+      result.errors.push('Cannot replace: devotee has no current role');
       result.isValid = false;
+      return result;
     }
-  }
 
-  // Validate demotion
-  if (changeType === 'DEMOTE') {
-    const allowedDemotions = ROLE_HIERARCHY[currentRole].canDemoteTo;
-    if (!allowedDemotions || !allowedDemotions.includes(targetRole)) {
-      result.errors.push(`Cannot demote from ${currentRole} to ${targetRole}`);
+    if (!targetRole) {
+      result.errors.push('Target role must be specified for replacement');
       result.isValid = false;
+      return result;
     }
+
+    // Validate role exists in hierarchy
+    if (!ROLE_HIERARCHY[targetRole]) {
+      result.errors.push(`Invalid target role: ${targetRole}`);
+      result.isValid = false;
+      return result;
+    }
+
+    // Allow any replacement target role (promotion or lateral movement)
+    result.warnings.push(`Replacing current role ${currentRole} with ${targetRole}`);
   }
 
   return result;
@@ -203,17 +174,12 @@ export function getValidTargetRoles(
 
   const hierarchy = ROLE_HIERARCHY[currentRole];
 
-  switch (changeType) {
-    case 'PROMOTE':
-      return hierarchy.canPromoteTo || [];
-    case 'DEMOTE':
-      return hierarchy.canDemoteTo || [];
-    case 'REPLACE':
-      // For replacement, can be assigned any role at same level or different level
-      return [...SENAPOTI_ROLES];
-    default:
-      return [];
+  if (changeType === 'REPLACE') {
+    // For replacement, can replace with any role (promotion or lateral movement)
+    return hierarchy.canReplaceTo;
   }
+
+  return [];
 }
 
 /**
@@ -286,8 +252,8 @@ export function requiresSubordinateTransfer(
   
   const hasSubordinates = ROLE_HIERARCHY[currentRole].manages.length > 0;
   
-  // ALL role changes require subordinate transfer when devotee has subordinates
-  return hasSubordinates && (changeType === 'PROMOTE' || changeType === 'DEMOTE' || changeType === 'REMOVE' || changeType === 'REPLACE');
+  // Role changes require subordinate transfer when devotee has subordinates
+  return hasSubordinates && (changeType === 'REPLACE' || changeType === 'REMOVE');
 }
 
 // ============================================================================
@@ -620,25 +586,27 @@ export async function validateSubordinateTransfer(
     // Get all subordinates that need to be transferred
     const subordinates = await getDirectSubordinates(supervisorId);
     
-    if (subordinates.length === 0) {
-      return result; // No subordinates to transfer
-    }
-
-    // Check if we have a valid new supervisor for subordinate transfer
+    // For REMOVE: Only allowed if no subordinates
     if (changeType === 'REMOVE') {
-      if (!newSupervisorId) {
+      if (subordinates.length > 0) {
         result.errors.push(
-          `Cannot remove role: ${subordinates.length} subordinates need to be transferred to another supervisor`
+          `Cannot remove role: ${subordinates.length} subordinate(s) reporting to this devotee. First assign a replacement for this role, or remove/replace the reporting subordinates.`
         );
         result.isValid = false;
         return result;
       }
+      return result;
     }
 
-    if (changeType === 'PROMOTE' || changeType === 'DEMOTE' || changeType === 'REPLACE') {
+    // For REPLACE: Subordinates need to be transferred to the replacement
+    if (changeType === 'REPLACE') {
+      if (subordinates.length === 0) {
+        return result; // No subordinates to transfer
+      }
+
       if (!newSupervisorId) {
         result.errors.push(
-          `Role change requires subordinate transfer: ${subordinates.length} subordinates need new supervisor`
+          `Cannot replace role: ${subordinates.length} subordinate(s) will need to report to the replacement. Specify the replacement devotee.`
         );
         result.isValid = false;
         return result;
@@ -652,20 +620,18 @@ export async function validateSubordinateTransfer(
         .limit(1);
 
       if (!newSupervisor[0]) {
-        result.errors.push('New supervisor not found');
+        result.errors.push('Replacement person not found');
         result.isValid = false;
         return result;
       }
 
       if (!newSupervisor[0].leadershipRole) {
-        result.errors.push('New supervisor must have a leadership role');
+        result.errors.push('Replacement person must have a leadership role');
         result.isValid = false;
         return result;
       }
-    }
 
-    // Check for circular references
-    if (newSupervisorId) {
+      // Check for circular references
       for (const subordinate of subordinates) {
         const circularCheck = await checkCircularReference(subordinate.id, newSupervisorId);
         if (!circularCheck.isValid) {
@@ -673,12 +639,12 @@ export async function validateSubordinateTransfer(
           result.isValid = false;
         }
       }
-    }
 
-    // Add warning about the transfer
-    result.warnings.push(
-      `${subordinates.length} subordinate(s) will be transferred: ${subordinates.map(s => s.name).join(', ')}`
-    );
+      // Add warning about the transfer
+      result.warnings.push(
+        `${subordinates.length} subordinate(s) will report to the replacement: ${subordinates.map(s => s.name).join(', ')}`
+      );
+    }
 
     return result;
   } catch (error) {

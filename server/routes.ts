@@ -62,17 +62,12 @@ const changeDevoteeRoleSchema = z.object({
   districtCode: z.string().optional()
 });
 
-const promoteDevoteeSchema = z.object({
-  devoteeId: z.number().int().positive(),
-  targetRole: z.enum(['MALA_SENAPOTI', 'MAHA_CHAKRA_SENAPOTI', 'CHAKRA_SENAPOTI', 'UPA_CHAKRA_SENAPOTI', 'DISTRICT_SUPERVISOR']),
-  newReportingTo: z.number().int().positive().nullable(),
-  reason: z.string().min(3, 'Reason must be at least 3 characters long').max(500, 'Reason must be less than 500 characters')
-});
-
-const demoteDevoteeSchema = z.object({
-  devoteeId: z.number().int().positive(),
-  targetRole: z.enum(['MALA_SENAPOTI', 'MAHA_CHAKRA_SENAPOTI', 'CHAKRA_SENAPOTI', 'UPA_CHAKRA_SENAPOTI']).nullable(),
-  newReportingTo: z.number().int().positive().nullable(),
+const replaceRoleSchema = z.object({
+  devoteeId: z.number().int().positive('Devotee ID must be a positive number'),
+  replacementDevoteeId: z.number().int().positive('Replacement person ID must be a positive number'),
+  newRoleForReplacement: z.enum(['MALA_SENAPOTI', 'MAHA_CHAKRA_SENAPOTI', 'CHAKRA_SENAPOTI', 'UPA_CHAKRA_SENAPOTI'], {
+    errorMap: () => ({ message: 'New role must be one of: MALA_SENAPOTI, MAHA_CHAKRA_SENAPOTI, CHAKRA_SENAPOTI, UPA_CHAKRA_SENAPOTI' })
+  }),
   reason: z.string().min(3, 'Reason must be at least 3 characters long').max(500, 'Reason must be less than 500 characters')
 });
 
@@ -1716,10 +1711,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Promote devotee to higher role
-  app.post("/api/senapoti/promote", sanitizeInput, modifyRateLimit, authenticateJWT, authorize(['ADMIN', 'DISTRICT_SUPERVISOR']), async (req, res) => {
+  // Replace devotee in their current role with another person
+  app.post("/api/senapoti/replace-role", sanitizeInput, modifyRateLimit, authenticateJWT, authorize(['ADMIN', 'DISTRICT_SUPERVISOR']), async (req, res) => {
     try {
-      const validatedData = promoteDevoteeSchema.parse(req.body);
+      const validatedData = replaceRoleSchema.parse(req.body);
       
       // Get user's district for validation
       let districtCode = '';
@@ -1727,64 +1722,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
         districtCode = req.user.districts?.[0] || '';
       }
 
-      // Perform role change (promotion)
-      const result = await storage.changeDevoteeRole({
-        devoteeId: validatedData.devoteeId,
-        newRole: validatedData.targetRole,
-        newReportingTo: validatedData.newReportingTo,
-        changedBy: req.user!.id,
-        reason: `Promotion: ${validatedData.reason}`,
-        districtCode: districtCode
-      });
-
-      res.json({
-        message: `Successfully promoted devotee to ${validatedData.targetRole}`,
-        devotee: result.devotee,
-        subordinatesTransferred: result.subordinatesTransferred,
-        roleChangeRecord: result.roleChangeRecord
-      });
-    } catch (error) {
-      console.error('API Error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      res.status(400).json({ error: 'Failed to promote devotee', message: errorMessage });
-    }
-  });
-
-  // Demote devotee to lower role
-  app.post("/api/senapoti/demote", sanitizeInput, modifyRateLimit, authenticateJWT, authorize(['ADMIN', 'DISTRICT_SUPERVISOR']), async (req, res) => {
-    try {
-      const validatedData = demoteDevoteeSchema.parse(req.body);
-      
-      // Get user's district for validation
-      let districtCode = '';
-      if (req.user?.role === 'DISTRICT_SUPERVISOR') {
-        districtCode = req.user.districts?.[0] || '';
+      // Get the current devotee's role
+      const devotee = await storage.getDevotee(validatedData.devoteeId);
+      if (!devotee || !devotee.leadershipRole) {
+        return res.status(400).json({ error: 'Devotee does not have a leadership role to replace' });
       }
 
-      // Perform role change (demotion)
+      // Perform role replacement
       const result = await storage.changeDevoteeRole({
-        devoteeId: validatedData.devoteeId,
-        newRole: validatedData.targetRole,
-        newReportingTo: validatedData.newReportingTo,
+        devoteeId: validatedData.replacementDevoteeId,
+        newRole: validatedData.newRoleForReplacement,
+        newReportingTo: devotee.reportingToDevoteeId,
         changedBy: req.user!.id,
-        reason: `Demotion: ${validatedData.reason}`,
+        reason: `Replacement: ${validatedData.reason}`,
+        districtCode: districtCode
+      });
+
+      // Remove the old devotee's role
+      await storage.changeDevoteeRole({
+        devoteeId: validatedData.devoteeId,
+        newRole: null,
+        newReportingTo: null,
+        changedBy: req.user!.id,
+        reason: `Replaced from ${devotee.leadershipRole}`,
         districtCode: districtCode
       });
 
       res.json({
-        message: `Successfully demoted devotee${validatedData.targetRole ? ` to ${validatedData.targetRole}` : ' (role removed)'}`,
-        devotee: result.devotee,
+        message: `Successfully replaced ${devotee.name || devotee.legalName} with replacement person in their role`,
+        replacedDevotee: devotee,
+        replacementDevotee: result.devotee,
         subordinatesTransferred: result.subordinatesTransferred,
         roleChangeRecord: result.roleChangeRecord
       });
     } catch (error) {
       console.error('API Error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      res.status(400).json({ error: 'Failed to demote devotee', message: errorMessage });
+      res.status(400).json({ error: 'Failed to replace devotee in role', message: errorMessage });
     }
   });
 
-  // Remove role from devotee completely
+  // Remove role from devotee completely (only if no subordinates)
   app.post("/api/senapoti/remove-role", sanitizeInput, modifyRateLimit, authenticateJWT, authorize(['ADMIN', 'DISTRICT_SUPERVISOR']), async (req, res) => {
     try {
       const validatedData = removeRoleSchema.parse(req.body);
@@ -1793,6 +1771,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let districtCode = '';
       if (req.user?.role === 'DISTRICT_SUPERVISOR') {
         districtCode = req.user.districts?.[0] || '';
+      }
+
+      // Check if devotee has subordinates
+      const subordinates = await storage.getDirectSubordinates(validatedData.devoteeId);
+      if (subordinates.length > 0) {
+        return res.status(400).json({ 
+          error: 'Cannot remove role: Subordinates reporting',
+          message: `${subordinates.length} devotee(s) are reporting to this person. First assign a replacement for their role or reassign the reporting devotees.`,
+          subordinateCount: subordinates.length,
+          subordinates: subordinates
+        });
       }
 
       // Perform role removal
@@ -1808,7 +1797,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({
         message: 'Successfully removed leadership role from devotee',
         devotee: result.devotee,
-        subordinatesTransferred: result.subordinatesTransferred,
         roleChangeRecord: result.roleChangeRecord
       });
     } catch (error) {
