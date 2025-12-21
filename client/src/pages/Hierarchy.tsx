@@ -651,10 +651,7 @@ export default function Hierarchy() {
                                     <span key={district.code} className="flex items-center gap-1">
                                       <span className="text-xs text-slate-500 dark:text-slate-400">{district.name}</span>
                                       {district.isDefault && (
-                                        <Badge variant="secondary" className="text-xs px-1 py-0 h-4 bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 no-default-hover-elevate no-default-active-elevate" data-testid={`badge-default-${supervisor.id}-${district.code}`}>
-                                          <Star className="h-2 w-2 mr-0.5" />
-                                          Default
-                                        </Badge>
+                                        <Star className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-yellow-500 dark:text-yellow-400 flex-shrink-0" data-testid={`icon-default-${supervisor.id}-${district.code}`} />
                                       )}
                                     </span>
                                   ))}
