@@ -276,7 +276,7 @@ export default function DevoteeDetail() {
             <Button 
               variant="outline" 
               className="glass text-xs sm:text-sm flex-1 sm:flex-none" 
-              onClick={() => setShowRoleManagementModal(true)}
+              onClick={() => devotee.leadershipRole ? setShowReplacementModal(true) : setShowPromotionModal(true)}
               data-testid="button-role-management"
             >
               <Shield className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
@@ -445,7 +445,7 @@ export default function DevoteeDetail() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setShowRoleManagementModal(true)}
+                      onClick={() => setShowPromotionModal(true)}
                       className="text-xs"
                       data-testid="button-assign-senapoti-role"
                     >
@@ -486,7 +486,7 @@ export default function DevoteeDetail() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setShowRoleManagementModal(true)}
+                        onClick={() => setShowReplacementModal(true)}
                         className="text-xs"
                         data-testid="button-manage-leadership-role"
                       >
