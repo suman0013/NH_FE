@@ -3,6 +3,8 @@ import { createServer, type Server } from "http";
 import cookieParser from "cookie-parser";
 import { z } from "zod";
 import { DatabaseStorage } from "./storage-db";
+import { getEligibleReplacements, getSenapotiByLevelInDistrict, executeRoleReplacement, getDirectSubordinates } from "./role-management-utils";
+import { eq, and } from "drizzle-orm";
 
 const storage = new DatabaseStorage();
 import { insertDevoteeSchema, insertNamahattaSchema, insertDevotionalStatusSchema, insertShraddhakutirSchema, insertNamahattaUpdateSchema, insertGurudevSchema, insertRoleChangeHistorySchema } from "@shared/schema";
@@ -1904,6 +1906,104 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error('API Error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       res.status(400).json({ error: 'Failed to get all subordinates', message: errorMessage });
+    }
+  });
+
+  // ============================================================================
+  // PHASE 1: ROLE REPLACEMENT MODEL API ENDPOINTS (Task 1.3)
+  // ============================================================================
+
+  // Get eligible replacements for a senapoti (Task 1.3 API)
+  app.get("/api/roles/eligible-replacements/:districtCode", authenticateJWT, authorize(['ADMIN', 'DISTRICT_SUPERVISOR']), modifyRateLimit, async (req, res) => {
+    try {
+      const { districtCode } = req.params;
+      const { excludeDevoteeId } = req.query;
+      
+      if (!excludeDevoteeId || typeof excludeDevoteeId !== 'string') {
+        return res.status(400).json({ error: 'excludeDevoteeId query parameter is required' });
+      }
+
+      const eligibleReplacements = await getEligibleReplacements(districtCode, parseInt(excludeDevoteeId));
+      
+      res.json({
+        districtCode,
+        eligibleReplacements,
+        count: eligibleReplacements.length
+      });
+    } catch (error) {
+      console.error('API Error:', error);
+      res.status(400).json({ error: 'Failed to get eligible replacements', message: error instanceof Error ? error.message : 'Unknown error' });
+    }
+  });
+
+  // Get senapotis at a specific level in district (Task 1.3 API)
+  app.get("/api/roles/senapotis-by-level/:districtCode/:level", authenticateJWT, authorize(['ADMIN', 'DISTRICT_SUPERVISOR']), async (req, res) => {
+    try {
+      const { districtCode, level } = req.params;
+      
+      const validRoles = ['MALA_SENAPOTI', 'MAHA_CHAKRA_SENAPOTI', 'CHAKRA_SENAPOTI', 'UPA_CHAKRA_SENAPOTI'];
+      if (!validRoles.includes(level)) {
+        return res.status(400).json({ error: 'Invalid senapoti level' });
+      }
+
+      const senapotis = await getSenapotiByLevelInDistrict(districtCode, level as any);
+      
+      res.json({
+        districtCode,
+        level,
+        senapotis,
+        count: senapotis.length
+      });
+    } catch (error) {
+      console.error('API Error:', error);
+      res.status(400).json({ error: 'Failed to get senapotis by level', message: error instanceof Error ? error.message : 'Unknown error' });
+    }
+  });
+
+  // Replace a senapoti (Task 1.3 API)
+  app.post("/api/roles/replace", authenticateJWT, authorize(['ADMIN', 'DISTRICT_SUPERVISOR']), modifyRateLimit, async (req, res) => {
+    try {
+      const parsed = replaceRoleSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ error: 'Invalid request data', details: parsed.error.errors });
+      }
+
+      const { devoteeId, replacementDevoteeId, reason } = parsed.data;
+      const userId = (req as any).user?.id;
+
+      if (!userId) {
+        return res.status(401).json({ error: 'User not authenticated' });
+      }
+
+      // Get district code from current devotee's namahatta
+      const devotee = await storage.getDevotee(devoteeId);
+      if (!devotee || !devotee.namahattaId) {
+        return res.status(404).json({ error: 'Devotee or namahatta not found' });
+      }
+
+      // Get the namahatta and its district
+      const namahattaData = await storage.getNamahatta(devotee.namahattaId);
+      const districtCode = namahattaData?.addresses?.[0]?.districtCode || 'UNKNOWN';
+
+      // Get current active assignment
+      const roleAssignments = await storage.db.query.roleAssignments.findFirst({
+        where: and(eq(roleAssignments.devoteeId, devoteeId), eq(roleAssignments.status, 'ACTIVE'))
+      }).catch(() => null);
+
+      if (!roleAssignments) {
+        return res.status(404).json({ error: 'No active role assignment found for devotee' });
+      }
+
+      const result = await executeRoleReplacement(roleAssignments.id, replacementDevoteeId, districtCode, reason, userId);
+      
+      if (!result.isValid) {
+        return res.status(400).json({ error: 'Role replacement failed', errors: result.errors });
+      }
+
+      res.json({ success: true, message: 'Role replacement completed', warnings: result.warnings });
+    } catch (error) {
+      console.error('API Error:', error);
+      res.status(400).json({ error: 'Failed to replace role', message: error instanceof Error ? error.message : 'Unknown error' });
     }
   });
 

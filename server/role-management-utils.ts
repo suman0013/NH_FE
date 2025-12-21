@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { devotees, namahattas, namahattaAddresses, addresses, userDistricts } from "@shared/schema";
+import { devotees, namahattas, namahattaAddresses, addresses, userDistricts, roleAssignments } from "@shared/schema";
 import { eq, and, isNull, isNotNull } from "drizzle-orm";
 
 // Define the role hierarchy and progression rules
@@ -744,5 +744,230 @@ export async function getSubordinatesByRole(
   } catch (error) {
     console.error('Error getting subordinates by role:', error);
     return [];
+  }
+}
+
+// ============================================================================
+// PHASE 1: ROLE REPLACEMENT MODEL FUNCTIONS (Task 1.2 & 1.4)
+// ============================================================================
+
+/**
+ * Gets eligible replacement devotees (same district, no active role)
+ */
+export async function getEligibleReplacements(
+  districtCode: string,
+  excludeDevoteeId: number
+): Promise<Array<{
+  id: number;
+  name: string;
+  legalName: string;
+  namahattaId: number | null;
+  leadershipRole: string | null;
+}>> {
+  try {
+    // Get devotees in same district with NO leadership role
+    const eligibleDevotees = await db
+      .select({
+        id: devotees.id,
+        name: devotees.name,
+        legalName: devotees.legalName,
+        namahattaId: devotees.namahattaId,
+        leadershipRole: devotees.leadershipRole
+      })
+      .from(devotees)
+      .innerJoin(namahattas, eq(devotees.namahattaId, namahattas.id))
+      .innerJoin(namahattaAddresses, eq(namahattas.id, namahattaAddresses.namahattaId))
+      .innerJoin(addresses, eq(namahattaAddresses.addressId, addresses.id))
+      .where(
+        and(
+          eq(addresses.districtCode, districtCode),
+          isNull(devotees.leadershipRole),
+          isNotNull(devotees.namahattaId)
+        )
+      );
+
+    return eligibleDevotees
+      .filter(d => d.id !== excludeDevoteeId)
+      .map(d => ({
+        ...d,
+        name: d.name || d.legalName
+      }));
+  } catch (error) {
+    console.error('Error getting eligible replacements:', error);
+    return [];
+  }
+}
+
+/**
+ * Gets senapoti at a specific level in a district
+ */
+export async function getSenapotiByLevelInDistrict(
+  districtCode: string,
+  level: SenapotiRole
+): Promise<Array<{
+  id: number;
+  name: string;
+  legalName: string;
+  leadershipRole: string;
+  subordinateCount: number;
+  assignmentId: number;
+}>> {
+  try {
+    const senapotiList = await db
+      .select({
+        id: devotees.id,
+        name: devotees.name,
+        legalName: devotees.legalName,
+        leadershipRole: devotees.leadershipRole,
+        assignmentId: roleAssignments.id
+      })
+      .from(devotees)
+      .innerJoin(roleAssignments, eq(devotees.id, roleAssignments.devoteeId))
+      .innerJoin(namahattas, eq(devotees.namahattaId, namahattas.id))
+      .innerJoin(namahattaAddresses, eq(namahattas.id, namahattaAddresses.namahattaId))
+      .innerJoin(addresses, eq(namahattaAddresses.addressId, addresses.id))
+      .where(
+        and(
+          eq(addresses.districtCode, districtCode),
+          eq(roleAssignments.role, level),
+          eq(roleAssignments.status, 'ACTIVE')
+        )
+      );
+
+    // Get subordinate counts for each senapoti
+    const result = await Promise.all(
+      senapotiList.map(async (s) => {
+        const subordinates = await getDirectSubordinates(s.id);
+        return {
+          id: s.id,
+          name: s.name || s.legalName,
+          legalName: s.legalName,
+          leadershipRole: s.leadershipRole || level,
+          subordinateCount: subordinates.length,
+          assignmentId: s.assignmentId
+        };
+      })
+    );
+
+    return result;
+  } catch (error) {
+    console.error('Error getting senapoti by level in district:', error);
+    return [];
+  }
+}
+
+/**
+ * Executes a role replacement (Task 1.4)
+ * Deactivates old assignment, activates new one, updates reporting structure
+ */
+export async function executeRoleReplacement(
+  oldAssignmentId: number,
+  replacementDevoteeId: number,
+  districtCode: string,
+  replacementReason: string,
+  assignedBy: number
+): Promise<ValidationResult> {
+  const result: ValidationResult = {
+    isValid: true,
+    errors: [],
+    warnings: []
+  };
+
+  try {
+    // Get the old assignment
+    const oldAssignment = await db
+      .select()
+      .from(roleAssignments)
+      .where(eq(roleAssignments.id, oldAssignmentId))
+      .limit(1);
+
+    if (!oldAssignment[0]) {
+      result.errors.push('Old role assignment not found');
+      result.isValid = false;
+      return result;
+    }
+
+    const oldDevoteeId = oldAssignment[0].devoteeId;
+    const role = oldAssignment[0].role;
+
+    // Get the replacement devotee
+    const replacementDevotee = await db
+      .select()
+      .from(devotees)
+      .where(eq(devotees.id, replacementDevoteeId))
+      .limit(1);
+
+    if (!replacementDevotee[0]) {
+      result.errors.push('Replacement devotee not found');
+      result.isValid = false;
+      return result;
+    }
+
+    // Create new role assignment for replacement
+    const newAssignment = await db
+      .insert(roleAssignments)
+      .values({
+        devoteeId: replacementDevoteeId,
+        role,
+        status: 'ACTIVE',
+        districtCode,
+        assignedBy,
+        replacementReason
+      })
+      .returning();
+
+    // Mark old assignment as replaced
+    await db
+      .update(roleAssignments)
+      .set({
+        status: 'REPLACED',
+        replacedById: newAssignment[0].id,
+        replacementDate: new Date(),
+        replacementReason
+      })
+      .where(eq(roleAssignments.id, oldAssignmentId));
+
+    // Update devotees table
+    await db
+      .update(devotees)
+      .set({
+        leadershipRole: role,
+        reportingToDevoteeId: null, // Will be set after subordinate transfer
+        updatedAt: new Date()
+      })
+      .where(eq(devotees.id, replacementDevoteeId));
+
+    // Clear the old devotee's role
+    await db
+      .update(devotees)
+      .set({
+        leadershipRole: null,
+        reportingToDevoteeId: null,
+        updatedAt: new Date()
+      })
+      .where(eq(devotees.id, oldDevoteeId));
+
+    // Transfer subordinates from old to new senapoti
+    const subordinates = await getDirectSubordinates(oldDevoteeId);
+    if (subordinates.length > 0) {
+      for (const subordinate of subordinates) {
+        await db
+          .update(devotees)
+          .set({
+            reportingToDevoteeId: replacementDevoteeId,
+            updatedAt: new Date()
+          })
+          .where(eq(devotees.id, subordinate.id));
+      }
+      result.warnings.push(`Transferred ${subordinates.length} subordinates to replacement`);
+    }
+
+    result.warnings.push('Role replacement completed successfully');
+    return result;
+  } catch (error) {
+    console.error('Error executing role replacement:', error);
+    result.errors.push(`Failed to execute role replacement: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    result.isValid = false;
+    return result;
   }
 }

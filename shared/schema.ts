@@ -232,6 +232,21 @@ export const roleChangeHistory = pgTable("role_change_history", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Role Assignments table - Replacement Model (Phase 1.1)
+export const roleAssignments = pgTable("role_assignments", {
+  id: serial("id").primaryKey(),
+  devoteeId: integer("devotee_id").notNull().references(() => devotees.id),
+  role: text("role").notNull(), // MALA_SENAPOTI, MAHA_CHAKRA_SENAPOTI, CHAKRA_SENAPOTI, UPA_CHAKRA_SENAPOTI
+  status: text("status").notNull().default("ACTIVE"), // ACTIVE, REPLACED, REMOVED
+  districtCode: text("district_code").notNull(), // District where role is assigned
+  assignedDate: timestamp("assigned_date").defaultNow(),
+  assignedBy: integer("assigned_by").notNull(), // User ID who assigned
+  replacedById: integer("replaced_by_id"), // References roleAssignments.id for the replacement
+  replacementReason: text("replacement_reason"), // Reason for replacement
+  replacementDate: timestamp("replacement_date"), // When the replacement occurred
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertDevoteeSchema = createInsertSchema(devotees).omit({
   id: true,
@@ -403,6 +418,13 @@ export const insertRoleChangeHistorySchema = createInsertSchema(roleChangeHistor
   createdAt: true,
 });
 
+export const insertRoleAssignmentSchema = createInsertSchema(roleAssignments).omit({
+  id: true,
+  createdAt: true,
+  assignedDate: true,
+  replacementDate: true,
+});
+
 // Types
 export type Devotee = typeof devotees.$inferSelect & {
   devotionalStatusName?: string;
@@ -478,3 +500,6 @@ export type InsertJwtBlacklist = z.infer<typeof insertJwtBlacklistSchema>;
 
 export type RoleChangeHistory = typeof roleChangeHistory.$inferSelect;
 export type InsertRoleChangeHistory = z.infer<typeof insertRoleChangeHistorySchema>;
+
+export type RoleAssignment = typeof roleAssignments.$inferSelect;
+export type InsertRoleAssignment = z.infer<typeof insertRoleAssignmentSchema>;

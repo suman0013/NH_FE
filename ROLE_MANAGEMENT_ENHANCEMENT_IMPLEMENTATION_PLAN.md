@@ -95,30 +95,30 @@ When promoting a non-leadership devotee:
 ## Implementation Tasks
 
 ### Phase 1: Database & Backend Logic
-- [ ] **Task 1.1**: Create/Update role assignment schema to support replacement model
-  - [ ] Add status field (active/replaced) to track role history
-  - [ ] Add replaced_by field to link to replacement assignment
-  - [ ] Add replacement_reason field for audit trail
-  - Status: `NOT STARTED`
+- [x] **Task 1.1**: Create/Update role assignment schema to support replacement model
+  - [x] Add status field (active/replaced) to track role history
+  - [x] Add replaced_by field to link to replacement assignment
+  - [x] Add replacement_reason field for audit trail
+  - Status: `COMPLETED`
 
-- [ ] **Task 1.2**: Create helper functions in backend
-  - [ ] Function to find eligible replacement devotees (same district, no role)
-  - [ ] Function to get senapoti at specific level in district
-  - [ ] Function to execute replacement (deactivate old, activate new, update reporting)
-  - Status: `NOT STARTED`
+- [x] **Task 1.2**: Create helper functions in backend
+  - [x] Function to find eligible replacement devotees (same district, no role)
+  - [x] Function to get senapoti at specific level in district
+  - [x] Function to execute replacement (deactivate old, activate new, update reporting)
+  - Status: `COMPLETED`
 
-- [ ] **Task 1.3**: Create/Update API endpoints
-  - [ ] `POST /api/roles/replace` - Replace a senapoti
-  - [ ] `GET /api/roles/eligible-replacements/:roleAssignmentId` - Get eligible replacements for a senapoti
-  - [ ] `GET /api/roles/senapotis-by-level/:district/:level` - Get senapoti at specific level
-  - [ ] Update existing endpoints to handle replacement logic
-  - Status: `NOT STARTED`
+- [x] **Task 1.3**: Create/Update API endpoints
+  - [x] `POST /api/roles/replace` - Replace a senapoti
+  - [x] `GET /api/roles/eligible-replacements/:roleAssignmentId` - Get eligible replacements for a senapoti
+  - [x] `GET /api/roles/senapotis-by-level/:district/:level` - Get senapoti at specific level
+  - [x] Update existing endpoints to handle replacement logic
+  - Status: `COMPLETED`
 
-- [ ] **Task 1.4**: Update reporting structure logic
-  - [ ] When senapoti is replaced, update all subordinates' reporting references
-  - [ ] Ensure no orphaned assignments
-  - [ ] Add transaction handling to prevent partial updates
-  - Status: `NOT STARTED`
+- [x] **Task 1.4**: Update reporting structure logic
+  - [x] When senapoti is replaced, update all subordinates' reporting references
+  - [x] Ensure no orphaned assignments
+  - [x] Add transaction handling to prevent partial updates
+  - Status: `COMPLETED`
 
 ### Phase 2: Frontend UI Components
 - [ ] **Task 2.1**: Create Senapoti Replacement Modal
@@ -185,6 +185,13 @@ When promoting a non-leadership devotee:
 
 ## Summary
 - **Total Tasks**: 13 major tasks across 4 phases
-- **Current Status**: Enhancement planned, implementation not started
+- **Current Status**: Phase 1 COMPLETED - Database schema, backend functions, and API endpoints implemented
+- **Next Phase**: Phase 2 (Frontend UI Components) - Ready to start
 - **Priority**: High (Core role management system revision)
 - **Complexity**: Medium-High (Affects hierarchy, reporting, and audit trails)
+
+## Phase 1 Implementation Details
+- Added `roleAssignments` table with status tracking (ACTIVE/REPLACED/REMOVED)
+- Helper functions: `getEligibleReplacements`, `getSenapotiByLevelInDistrict`, `executeRoleReplacement`
+- API endpoints: POST /api/roles/replace, GET /api/roles/eligible-replacements/:roleAssignmentId, GET /api/roles/senapotis-by-level/:districtCode/:level
+- Subordinate transfer logic implemented and integrated with replacement execution
