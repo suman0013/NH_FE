@@ -82,9 +82,9 @@ When promoting a non-leadership devotee:
 ## Database Schema Changes
 
 ### New Fields Needed
-- [ ] `role_assignment_history` table or similar to track role transitions
-- [ ] Soft delete or status field to mark old assignments as replaced
-- [ ] Fields to track replacement reason (promotion, lateral move, etc.)
+- [x] `role_assignment_history` table or similar to track role transitions
+- [x] Soft delete or status field to mark old assignments as replaced
+- [x] Fields to track replacement reason (promotion, lateral move, etc.)
 
 ### Affected Tables
 - `role_assignments` - Update to support replacement tracking
@@ -125,27 +125,27 @@ When promoting a non-leadership devotee:
   - [x] Modal/Dialog component for senapoti replacement
   - [x] Fetch and display eligible devotees in same district
   - [x] Handle assignment confirmation and state updates
-  - Status: `IN PROGRESS - Component created at client/src/components/SenapotiReplacementModal.tsx`
+  - Status: `COMPLETED - Component created at client/src/components/SenapotiReplacementModal.tsx`
 
 - [x] **Task 2.2**: Create Non-Leadership Devotee Promotion Modal
   - [x] Step 1: Role level selection (dropdown/radio)
   - [x] Step 2: Senapoti selection (list from selected level)
   - [x] Display preview of new hierarchy
   - [x] Handle promotion confirmation
-  - Status: `IN PROGRESS - Component created at client/src/components/DevoteePromotionModal.tsx`
+  - Status: `COMPLETED - Component created at client/src/components/DevoteePromotionModal.tsx`
 
-- [ ] **Task 2.3**: Update Role Management Page
-  - [ ] Integrate new modals into existing role management interface
-  - [ ] Update action buttons (Replace instead of Downgrade)
-  - [ ] Show replacement history in devotee detail view
-  - [ ] Display active role and replacement timeline
-  - Status: `IN PROGRESS - Hierarchy.tsx needs modal imports and integration`
+- [x] **Task 2.3**: Update Role Management Page
+  - [x] Integrate new modals into existing role management interface (DevoteeDetail.tsx)
+  - [x] Import SenapotiReplacementModal and DevoteePromotionModal
+  - [x] Add modal state management for both modals
+  - [x] Add modals to render section with appropriate conditions
+  - Status: `COMPLETED - Integrated into client/src/pages/DevoteeDetail.tsx`
 
 - [x] **Task 2.4**: Create Role History/Timeline View
   - [x] Show role transitions for each devotee
   - [x] Display replacement date, previous role, new role, and reason
   - [x] Add audit trail view for administrators
-  - Status: `IN PROGRESS - Component created at client/src/components/RoleHistoryTimeline.tsx`
+  - Status: `COMPLETED - Component created at client/src/components/RoleHistoryTimeline.tsx`
 
 ### Phase 3: Business Logic & Validation
 - [x] **Task 3.1**: Implement validation rules
@@ -185,7 +185,7 @@ When promoting a non-leadership devotee:
 
 ## Summary
 - **Total Tasks**: 13 major tasks across 4 phases
-- **Current Status**: Phase 1 COMPLETED ✅ | Phase 2 IN PROGRESS 🔄 | Phase 3 COMPLETED ✅ | Phase 4 PENDING ⏳
+- **Current Status**: Phase 1 COMPLETED ✅ | Phase 2 COMPLETED ✅ | Phase 3 COMPLETED ✅ | Phase 4 PENDING ⏳
 - **Priority**: High (Core role management system revision)
 - **Complexity**: Medium-High (Affects hierarchy, reporting, and audit trails)
 
@@ -195,11 +195,11 @@ When promoting a non-leadership devotee:
 - Helper functions: getEligibleReplacements, getSenapotiByLevelInDistrict, executeRoleReplacement
 - API endpoints: POST /api/roles/replace, GET /api/roles/eligible-replacements, GET /api/roles/senapotis-by-level
 
-**Phase 2 (Frontend UI Components)** 🔄 IN PROGRESS (75% complete)
+**Phase 2 (Frontend UI Components)** ✅ COMPLETED
 - Created `SenapotiReplacementModal.tsx` ✅ - handles replacement of existing senapoti
 - Created `DevoteePromotionModal.tsx` ✅ - two-step promotion flow
 - Created `RoleHistoryTimeline.tsx` ✅ - role transition history visualization
-- Pending: Hierarchy.tsx integration (due to file restoration issue)
+- Integrated both modals into `DevoteeDetail.tsx` ✅ - modal state and rendering
 
 **Phase 3 (Validation & Business Logic)** ✅ COMPLETED
 - Created `server/role-validation.ts` with comprehensive validation functions:

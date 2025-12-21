@@ -39,6 +39,8 @@ import type { Devotee } from "@/lib/types";
 import DevoteeForm from "@/components/forms/DevoteeForm";
 import ChangeNamahattaModal from "@/components/ChangeNamahattaModal";
 import RoleManagementModal from "@/components/RoleManagementModal";
+import SenapotiReplacementModal from "@/components/SenapotiReplacementModal";
+import DevoteePromotionModal from "@/components/DevoteePromotionModal";
 import { Shield, UserCog, History } from "lucide-react";
 
 
@@ -55,6 +57,8 @@ export default function DevoteeDetail() {
   const [backUrl, setBackUrl] = useState("/devotees");
   const [showChangeNamahattaModal, setShowChangeNamahattaModal] = useState(false);
   const [showRoleManagementModal, setShowRoleManagementModal] = useState(false);
+  const [showReplacementModal, setShowReplacementModal] = useState(false);
+  const [showPromotionModal, setShowPromotionModal] = useState(false);
 
   // Check if we came from a Namahatta page
   useEffect(() => {
@@ -1154,6 +1158,29 @@ export default function DevoteeDetail() {
           onClose={() => setShowRoleManagementModal(false)}
           devotee={devotee}
           districtCode={devoteeDistrict}
+        />
+      )}
+
+      {/* Senapoti Replacement Modal - For replacing existing senapoti */}
+      {showReplacementModal && devotee?.leadershipRole && (
+        <SenapotiReplacementModal
+          isOpen={showReplacementModal}
+          onClose={() => setShowReplacementModal(false)}
+          currentSenapotiId={devotee.id}
+          currentSenapotiName={devotee.name}
+          roleLevel={devotee.leadershipRole}
+          district={devoteeDistrict}
+        />
+      )}
+
+      {/* Devotee Promotion Modal - For promoting non-leadership devotees */}
+      {showPromotionModal && !devotee?.leadershipRole && (
+        <DevoteePromotionModal
+          isOpen={showPromotionModal}
+          onClose={() => setShowPromotionModal(false)}
+          devoteeId={devotee.id}
+          devoteeName={devotee.name}
+          district={devoteeDistrict}
         />
       )}
     </div>
