@@ -829,7 +829,7 @@ export async function getSenapotiByLevelInDistrict(
       .where(
         and(
           eq(addresses.districtCode, districtCode),
-          eq(roleAssignments.role, level),
+          eq(roleAssignments.role_level, level),
           eq(roleAssignments.status, 'ACTIVE')
         )
       );
@@ -888,7 +888,7 @@ export async function executeRoleReplacement(
     }
 
     const oldDevoteeId = oldAssignment[0].devoteeId;
-    const role = oldAssignment[0].role;
+    const role = oldAssignment[0].role_level;
 
     // Get the replacement devotee
     const replacementDevotee = await db
