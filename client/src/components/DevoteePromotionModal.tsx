@@ -38,6 +38,11 @@ export default function DevoteePromotionModal({
   // Fetch senapotis for selected level
   const { data: senapotisAtLevel = [], isLoading: isLoadingSenapotis } = useQuery({
     queryKey: [`/api/roles/senapotis-by-level/${district}/${selectedRoleLevel}`],
+    queryFn: async () => {
+      const res = await fetch(`/api/roles/senapotis-by-level/${encodeURIComponent(district)}/${encodeURIComponent(selectedRoleLevel)}`);
+      const data = await res.json();
+      return data.senapotis || [];
+    },
     enabled: isOpen && !!selectedRoleLevel,
   });
 
@@ -45,9 +50,10 @@ export default function DevoteePromotionModal({
   const promotionMutation = useMutation({
     mutationFn: async (senapotiBeingReplacedId: number) => {
       return apiRequest("POST", "/api/roles/replace", {
-        devoteeBeingPromotedId: devoteeId,
-        senapotiBeingReplacedId: senapotiBeingReplacedId,
-        replacementReason: "PROMOTION",
+        devoteeId: devoteeId,
+        replacementDevoteeId: senapotiBeingReplacedId,
+        newRoleForReplacement: selectedRoleLevel,
+        reason: "Devotee promotion",
       });
     },
     onSuccess: () => {

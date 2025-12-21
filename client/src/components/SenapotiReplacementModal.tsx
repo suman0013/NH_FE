@@ -30,17 +30,23 @@ export default function SenapotiReplacementModal({
 
   // Fetch eligible replacement devotees
   const { data: eligibleReplacements = [], isLoading: isLoadingReplacements } = useQuery({
-    queryKey: [`/api/roles/eligible-replacements/${currentSenapotiId}`],
-    enabled: isOpen,
+    queryKey: [`/api/roles/eligible-replacements/${district}?excludeDevoteeId=${currentSenapotiId}`],
+    queryFn: async () => {
+      const res = await fetch(`/api/roles/eligible-replacements/${encodeURIComponent(district)}?excludeDevoteeId=${currentSenapotiId}`);
+      const data = await res.json();
+      return data.eligibleReplacements || [];
+    },
+    enabled: isOpen && !!district,
   });
 
   // Mutation for executing replacement
   const replacementMutation = useMutation({
     mutationFn: async (replacementDevoteeId: number) => {
       return apiRequest("POST", "/api/roles/replace", {
-        senapotiBeingReplacedId: currentSenapotiId,
-        newSenapotiId: replacementDevoteeId,
-        replacementReason: "REPLACEMENT",
+        devoteeId: currentSenapotiId,
+        replacementDevoteeId: replacementDevoteeId,
+        newRoleForReplacement: roleLevel,
+        reason: "Senapoti replacement",
       });
     },
     onSuccess: () => {
