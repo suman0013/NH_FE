@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import { z } from "zod";
 import { DatabaseStorage } from "./storage-db";
 import { getEligibleReplacements, getSenapotiByLevelInDistrict, executeRoleReplacement, getDirectSubordinates } from "./role-management-utils";
+import { validateRoleReplacement, validatePromotionPreconditions, checkSubordinateTransferNeeded } from "./role-validation";
 import { eq, and } from "drizzle-orm";
 
 const storage = new DatabaseStorage();

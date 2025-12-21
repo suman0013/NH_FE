@@ -148,19 +148,19 @@ When promoting a non-leadership devotee:
   - Status: `IN PROGRESS - Component created at client/src/components/RoleHistoryTimeline.tsx`
 
 ### Phase 3: Business Logic & Validation
-- [ ] **Task 3.1**: Implement validation rules
-  - [ ] Ensure devotee being replaced is still active in a role
-  - [ ] Ensure replacement devotee has no active role
-  - [ ] Ensure both devotees are in same district
-  - [ ] Prevent circular reporting (devotee reporting to subordinate)
-  - Status: `NOT STARTED`
+- [x] **Task 3.1**: Implement validation rules
+  - [x] Ensure devotee being replaced is still active in a role
+  - [x] Ensure replacement devotee has no active role
+  - [x] Ensure both devotees are in same district
+  - [x] Prevent circular reporting (devotee reporting to subordinate)
+  - Status: `COMPLETED - Created server/role-validation.ts with comprehensive validation`
 
-- [ ] **Task 3.2**: Handle edge cases
-  - [ ] What if senapoti has no subordinates? (Simple replacement)
-  - [ ] What if devotee being promoted still has role? (Must replace first)
-  - [ ] Bulk operations (replace multiple roles in workflow)
-  - [ ] Rollback capability
-  - Status: `NOT STARTED`
+- [x] **Task 3.2**: Handle edge cases
+  - [x] What if senapoti has no subordinates? (Simple replacement)
+  - [x] What if devotee being promoted still has role? (Must replace first)
+  - [x] Bulk operations (replace multiple roles in workflow)
+  - [x] Rollback capability (via transaction handling in executeRoleReplacement)
+  - Status: `COMPLETED - Implemented checkSubordinateTransferNeeded, validatePromotionPreconditions, validateBulkRoleChanges`
 
 ### Phase 4: Testing & Deployment
 - [ ] **Task 4.1**: Unit tests
@@ -185,16 +185,34 @@ When promoting a non-leadership devotee:
 
 ## Summary
 - **Total Tasks**: 13 major tasks across 4 phases
-- **Current Status**: Phase 1 COMPLETED - Database schema, backend functions, and API endpoints implemented. Phase 2 IN PROGRESS - Frontend components created
-- **Next Phase**: Phase 2 (Frontend UI Components) - Complete Hierarchy.tsx integration, then Phase 3 & 4
+- **Current Status**: Phase 1 COMPLETED ✅ | Phase 2 IN PROGRESS 🔄 | Phase 3 COMPLETED ✅ | Phase 4 PENDING ⏳
 - **Priority**: High (Core role management system revision)
 - **Complexity**: Medium-High (Affects hierarchy, reporting, and audit trails)
 
-## Phase 2 Implementation Details (IN PROGRESS)
-- Created `SenapotiReplacementModal.tsx` - handles replacement of existing senapoti with eligible devotees
-- Created `DevoteePromotionModal.tsx` - two-step process for promoting non-leadership devotees (select role level, then select senapoti to replace)
-- Created `RoleHistoryTimeline.tsx` - displays role transition history with timeline visualization
-- **Next Step**: Restore Hierarchy.tsx and integrate the new modals into the page
+## Implementation Summary
+**Phase 1 (Backend Database & API)** ✅ COMPLETED
+- roleAssignments table with status tracking (ACTIVE/REPLACED/REMOVED)
+- Helper functions: getEligibleReplacements, getSenapotiByLevelInDistrict, executeRoleReplacement
+- API endpoints: POST /api/roles/replace, GET /api/roles/eligible-replacements, GET /api/roles/senapotis-by-level
+
+**Phase 2 (Frontend UI Components)** 🔄 IN PROGRESS (75% complete)
+- Created `SenapotiReplacementModal.tsx` ✅ - handles replacement of existing senapoti
+- Created `DevoteePromotionModal.tsx` ✅ - two-step promotion flow
+- Created `RoleHistoryTimeline.tsx` ✅ - role transition history visualization
+- Pending: Hierarchy.tsx integration (due to file restoration issue)
+
+**Phase 3 (Validation & Business Logic)** ✅ COMPLETED
+- Created `server/role-validation.ts` with comprehensive validation functions:
+  - validateRoleReplacement() - ensures valid replacement pairs
+  - validatePromotionPreconditions() - validates promotion requirements
+  - checkSubordinateTransferNeeded() - handles edge cases
+  - validateBulkRoleChanges() - supports batch operations
+  - checkCircularReporting() - prevents circular dependencies
+
+**Phase 4 (Testing & Deployment)** ⏳ NOT STARTED
+- Unit tests for validation rules
+- Integration tests for full replacement workflow
+- UAT with test data
 
 ## Phase 1 Implementation Details
 - Added `roleAssignments` table with status tracking (ACTIVE/REPLACED/REMOVED)
