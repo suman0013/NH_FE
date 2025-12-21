@@ -238,50 +238,50 @@ export const insertDevoteeSchema = createInsertSchema(devotees).omit({
   createdAt: true,
 }).extend({
   // Add proper type coercion for numeric fields that might come as strings from forms
-  reportingToDevoteeId: z.union([z.string(), z.number()]).optional().transform((val) => {
+  reportingToDevoteeId: z.union([z.string(), z.number(), z.null()]).optional().transform((val) => {
     if (val === null || val === undefined || val === '') return undefined;
     const num = typeof val === 'string' ? parseInt(val, 10) : val;
     return isNaN(num) ? undefined : num;
   }),
-  devotionalStatusId: z.union([z.string(), z.number()]).optional().transform((val) => {
+  devotionalStatusId: z.union([z.string(), z.number(), z.null()]).optional().transform((val) => {
     if (val === null || val === undefined || val === '') return undefined;
     const num = typeof val === 'string' ? parseInt(val, 10) : val;
     return isNaN(num) ? undefined : num;
   }),
-  harinamInitiationGurudevId: z.union([z.string(), z.number()]).optional().transform((val) => {
+  harinamInitiationGurudevId: z.union([z.string(), z.number(), z.null()]).optional().transform((val) => {
     if (val === null || val === undefined || val === '') return undefined;
     const num = typeof val === 'string' ? parseInt(val, 10) : val;
     return isNaN(num) ? undefined : num;
   }),
-  pancharatrikInitiationGurudevId: z.union([z.string(), z.number()]).optional().transform((val) => {
+  pancharatrikInitiationGurudevId: z.union([z.string(), z.number(), z.null()]).optional().transform((val) => {
     if (val === null || val === undefined || val === '') return undefined;
     const num = typeof val === 'string' ? parseInt(val, 10) : val;
     return isNaN(num) ? undefined : num;
   }),
-  shraddhakutirId: z.union([z.string(), z.number()]).optional().transform((val) => {
+  shraddhakutirId: z.union([z.string(), z.number(), z.null()]).optional().transform((val) => {
     if (val === null || val === undefined || val === '') return undefined;
     const num = typeof val === 'string' ? parseInt(val, 10) : val;
     return isNaN(num) ? undefined : num;
   }),
-  namahattaId: z.union([z.string(), z.number()]).optional().transform((val) => {
+  namahattaId: z.union([z.string(), z.number(), z.null()]).optional().transform((val) => {
     if (val === null || val === undefined || val === '') return undefined;
     const num = typeof val === 'string' ? parseInt(val, 10) : val;
     return isNaN(num) ? undefined : num;
   }),
   // Handle empty strings for optional text fields
-  leadershipRole: z.string().optional().transform((val) => {
+  leadershipRole: z.string().nullable().optional().transform((val) => {
     if (val === '' || val === null) return undefined;
     return val;
   }),
-  initiatedName: z.string().optional().transform((val) => {
+  initiatedName: z.string().nullable().optional().transform((val) => {
     if (val === '' || val === null) return undefined;
     return val;
   }),
-  harinamDate: z.string().optional().transform((val) => {
+  harinamDate: z.string().nullable().optional().transform((val) => {
     if (val === '' || val === null) return undefined;
     return val;
   }),
-  pancharatrikDate: z.string().optional().transform((val) => {
+  pancharatrikDate: z.string().nullable().optional().transform((val) => {
     if (val === '' || val === null) return undefined;
     return val;
   })
