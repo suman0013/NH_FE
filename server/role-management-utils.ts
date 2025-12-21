@@ -752,7 +752,7 @@ export async function getSubordinatesByRole(
 // ============================================================================
 
 /**
- * Gets eligible replacement devotees (same district, no active role)
+ * Gets eligible replacement devotees (same district, no active role assignment)
  */
 export async function getEligibleReplacements(
   districtCode: string,
@@ -765,8 +765,8 @@ export async function getEligibleReplacements(
   leadershipRole: string | null;
 }>> {
   try {
-    // Get devotees in same district with NO leadership role
-    const eligibleDevotees = await db
+    // First, get all devotees in the district with a namahatta
+    const allDevoteesInDistrict = await db
       .select({
         id: devotees.id,
         name: devotees.name,
@@ -781,13 +781,28 @@ export async function getEligibleReplacements(
       .where(
         and(
           eq(addresses.districtCode, districtCode),
-          isNull(devotees.leadershipRole),
           isNotNull(devotees.namahattaId)
         )
       );
 
-    return eligibleDevotees
-      .filter(d => d.id !== excludeDevoteeId)
+    // Get all devotees with ACTIVE role assignments in this district
+    const devoteesWithActiveRoles = await db
+      .select({
+        devoteeId: roleAssignments.devoteeId
+      })
+      .from(roleAssignments)
+      .where(
+        and(
+          eq(roleAssignments.districtCode, districtCode),
+          eq(roleAssignments.status, 'ACTIVE')
+        )
+      );
+
+    const activeRoleDevoteeIds = new Set(devoteesWithActiveRoles.map(r => r.devoteeId));
+
+    // Return devotees who don't have active roles
+    return allDevoteesInDistrict
+      .filter(d => !activeRoleDevoteeIds.has(d.id) && d.id !== excludeDevoteeId)
       .map(d => ({
         ...d,
         name: d.name || d.legalName
