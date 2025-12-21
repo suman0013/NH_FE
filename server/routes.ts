@@ -697,7 +697,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const id = parseInt(req.params.id);
     try {
       // Extract address and other fields separately (similar to create operations)
-      const { presentAddress, permanentAddress, allowedDistricts, devotionalCourses, ...devoteeFields } = req.body;
+      const { presentAddress, permanentAddress, allowedDistricts, devotionalCourses, namahattaId, ...devoteeFields } = req.body;
       
       // For DISTRICT_SUPERVISOR, check if they have access to this devotee
       if (req.user?.role === 'DISTRICT_SUPERVISOR') {
@@ -710,20 +710,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Validate only the devotee fields against schema
-      const validatedDevoteeData = insertDevoteeSchema.partial().parse(devoteeFields);
-      
-      // Add addresses and other non-schema fields back to the data
-      const devoteeDataWithAddresses = {
-        ...validatedDevoteeData,
-        presentAddress: presentAddress,
-        permanentAddress: permanentAddress,
-        devotionalCourses: devotionalCourses
-      };
-      
-      const devotee = await storage.updateDevotee(id, devoteeDataWithAddresses);
-      res.json(devotee);
+      try {
+        const validatedDevoteeData = insertDevoteeSchema.partial().parse(devoteeFields);
+        
+        // Add addresses and other non-schema fields back to the data
+        const devoteeDataWithAddresses = {
+          ...validatedDevoteeData,
+          presentAddress: presentAddress,
+          permanentAddress: permanentAddress,
+          devotionalCourses: devotionalCourses
+        };
+        
+        const devotee = await storage.updateDevotee(id, devoteeDataWithAddresses);
+        res.json(devotee);
+      } catch (validationError) {
+        console.error("Validation error details:", {
+          error: validationError instanceof Error ? validationError.message : String(validationError),
+          devoteeFields: JSON.stringify(devoteeFields, null, 2)
+        });
+        throw validationError;
+      }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      console.error("PUT /api/devotees/:id error:", errorMessage);
       res.status(400).json({ message: "Invalid devotee data", error: errorMessage });
     }
   });

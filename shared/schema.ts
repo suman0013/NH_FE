@@ -267,6 +267,23 @@ export const insertDevoteeSchema = createInsertSchema(devotees).omit({
     if (val === null || val === undefined || val === '') return undefined;
     const num = typeof val === 'string' ? parseInt(val, 10) : val;
     return isNaN(num) ? undefined : num;
+  }),
+  // Handle empty strings for optional text fields
+  leadershipRole: z.string().optional().transform((val) => {
+    if (val === '' || val === null) return undefined;
+    return val;
+  }),
+  initiatedName: z.string().optional().transform((val) => {
+    if (val === '' || val === null) return undefined;
+    return val;
+  }),
+  harinamDate: z.string().optional().transform((val) => {
+    if (val === '' || val === null) return undefined;
+    return val;
+  }),
+  pancharatrikDate: z.string().optional().transform((val) => {
+    if (val === '' || val === null) return undefined;
+    return val;
   })
 });
 
