@@ -121,31 +121,31 @@ When promoting a non-leadership devotee:
   - Status: `COMPLETED`
 
 ### Phase 2: Frontend UI Components
-- [ ] **Task 2.1**: Create Senapoti Replacement Modal
-  - [ ] Modal/Dialog component for senapoti replacement
-  - [ ] Fetch and display eligible devotees in same district
-  - [ ] Handle assignment confirmation and state updates
-  - Status: `NOT STARTED`
+- [x] **Task 2.1**: Create Senapoti Replacement Modal
+  - [x] Modal/Dialog component for senapoti replacement
+  - [x] Fetch and display eligible devotees in same district
+  - [x] Handle assignment confirmation and state updates
+  - Status: `IN PROGRESS - Component created at client/src/components/SenapotiReplacementModal.tsx`
 
-- [ ] **Task 2.2**: Create Non-Leadership Devotee Promotion Modal
-  - [ ] Step 1: Role level selection (dropdown/radio)
-  - [ ] Step 2: Senapoti selection (list from selected level)
-  - [ ] Display preview of new hierarchy
-  - [ ] Handle promotion confirmation
-  - Status: `NOT STARTED`
+- [x] **Task 2.2**: Create Non-Leadership Devotee Promotion Modal
+  - [x] Step 1: Role level selection (dropdown/radio)
+  - [x] Step 2: Senapoti selection (list from selected level)
+  - [x] Display preview of new hierarchy
+  - [x] Handle promotion confirmation
+  - Status: `IN PROGRESS - Component created at client/src/components/DevoteePromotionModal.tsx`
 
 - [ ] **Task 2.3**: Update Role Management Page
   - [ ] Integrate new modals into existing role management interface
   - [ ] Update action buttons (Replace instead of Downgrade)
   - [ ] Show replacement history in devotee detail view
   - [ ] Display active role and replacement timeline
-  - Status: `NOT STARTED`
+  - Status: `IN PROGRESS - Hierarchy.tsx needs modal imports and integration`
 
-- [ ] **Task 2.4**: Create Role History/Timeline View
-  - [ ] Show role transitions for each devotee
-  - [ ] Display replacement date, previous role, new role, and reason
-  - [ ] Add audit trail view for administrators
-  - Status: `NOT STARTED`
+- [x] **Task 2.4**: Create Role History/Timeline View
+  - [x] Show role transitions for each devotee
+  - [x] Display replacement date, previous role, new role, and reason
+  - [x] Add audit trail view for administrators
+  - Status: `IN PROGRESS - Component created at client/src/components/RoleHistoryTimeline.tsx`
 
 ### Phase 3: Business Logic & Validation
 - [ ] **Task 3.1**: Implement validation rules
@@ -185,10 +185,16 @@ When promoting a non-leadership devotee:
 
 ## Summary
 - **Total Tasks**: 13 major tasks across 4 phases
-- **Current Status**: Phase 1 COMPLETED - Database schema, backend functions, and API endpoints implemented
-- **Next Phase**: Phase 2 (Frontend UI Components) - Ready to start
+- **Current Status**: Phase 1 COMPLETED - Database schema, backend functions, and API endpoints implemented. Phase 2 IN PROGRESS - Frontend components created
+- **Next Phase**: Phase 2 (Frontend UI Components) - Complete Hierarchy.tsx integration, then Phase 3 & 4
 - **Priority**: High (Core role management system revision)
 - **Complexity**: Medium-High (Affects hierarchy, reporting, and audit trails)
+
+## Phase 2 Implementation Details (IN PROGRESS)
+- Created `SenapotiReplacementModal.tsx` - handles replacement of existing senapoti with eligible devotees
+- Created `DevoteePromotionModal.tsx` - two-step process for promoting non-leadership devotees (select role level, then select senapoti to replace)
+- Created `RoleHistoryTimeline.tsx` - displays role transition history with timeline visualization
+- **Next Step**: Restore Hierarchy.tsx and integrate the new modals into the page
 
 ## Phase 1 Implementation Details
 - Added `roleAssignments` table with status tracking (ACTIVE/REPLACED/REMOVED)
